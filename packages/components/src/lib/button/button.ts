@@ -1,5 +1,3 @@
-// noinspection ES6PreferShortImport
-
 import { booleanAttribute, Component, computed, ElementRef, HostListener, inject, input, output } from '@angular/core';
 import { Spinner } from '../spinner/spinner';
 

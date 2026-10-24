@@ -1,6 +1,5 @@
 // noinspection ES6PreferShortImport
-
-import { addMonths, fromIso, isBetween, IsoDate, monthGrid, toIso } from './date-utils';
+import { addMonths, fromIso, isBetween, IsoDate, monthGrid, toIso } from './date.utils';
 
 describe('date-utils', () => {
   it('convertit sans décalage de fuseau', () => {

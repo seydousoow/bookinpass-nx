@@ -12,8 +12,6 @@ module.exports = {
       },
     ],
   },
-  // Paquets livrés seulement en modules ES (Transloco, ses utilitaires, libphonenumber) : transformés comme les .mjs.
-  transformIgnorePatterns: ['node_modules/(?!(.*\\.mjs$|@jsverse/|libphonenumber-js/))'],
   snapshotSerializers: [
     'jest-preset-angular/build/serializers/no-ng-attributes',
     'jest-preset-angular/build/serializers/ng-snapshot',

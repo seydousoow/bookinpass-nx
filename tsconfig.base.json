@@ -19,7 +19,12 @@
     "types": ["*"],
     "paths": {
       "components": ["./packages/components/src/index.ts"],
-      "models": ["./packages/models/src/index.ts"]
+      "models": ["./packages/models/src/index.ts"],
+      "configs": ["./packages/configurations/src/index.ts"],
+      "utils": ["./packages/utils/src/index.ts"],
+      "pipes": ["./packages/pipes/src/index.ts"],
+      "state": ["./packages/state/src/index.ts"],
+      "payment": ["./packages/payment/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

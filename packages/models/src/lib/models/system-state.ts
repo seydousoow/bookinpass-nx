@@ -6,15 +6,7 @@ import { AppError } from './app-error';
  * pas « des offres », il manipule « un état de chargement d'offres » — AC13
  * devient alors structurellement vrai.
  */
-export type SystemStatus =
-  | 'idle'
-  | 'loading'
-  | 'success'
-  | 'empty'
-  | 'expired'
-  | 'partial'
-  | 'error'
-  | 'offline';
+export type SystemStatus = 'idle' | 'loading' | 'success' | 'empty' | 'expired' | 'partial' | 'error' | 'offline';
 
 export type SystemState<T> =
   | { readonly status: 'idle' }

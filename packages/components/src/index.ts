@@ -20,5 +20,6 @@ export { ScrollLock } from './lib/scroll-lock/scroll-lock';
 export { Select } from './lib/select/select';
 export { Slider } from './lib/slider/slider';
 export { Spinner } from './lib/spinner/spinner';
+export { SystemState } from './lib/system-state/system-state';
 export { Textarea } from './lib/textarea/textarea';
 export { Viewport } from './lib/viewport/viewport';

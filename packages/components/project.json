@@ -4,5 +4,5 @@
   "sourceRoot": "packages/components/src",
   "prefix": "bip",
   "projectType": "library",
-  "tags": ["lib", "lint", "test"]
+  "tags": ["lint", "test", "type:ui"]
 }

@@ -1,0 +1,9 @@
+{
+  "name": "pipes",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/pipes/src",
+  "prefix": "bip",
+  "projectType": "library",
+  "tags": ["test", "lint", "type:ui"],
+  "targets": {}
+}

@@ -1,5 +1,3 @@
-// noinspection ES6PreferShortImport
-
 import { booleanAttribute, Component, computed, inject, input, model, output, signal } from '@angular/core';
 import { FormValueControl, ValidationError, WithOptionalFieldTree } from '@angular/forms/signals';
 import { NgIcon, provideIcons } from '@ng-icons/core';
@@ -8,7 +6,7 @@ import { TranslocoDirective, TranslocoPipe, TranslocoService } from '@jsverse/tr
 
 import { Button } from '../button/button';
 import { Dropdown } from '../dropdown/dropdown';
-import { addMonths, DayCell, formatDisplay, fromIso, isBetween, IsoDate, isSameDay, monthGrid, monthLabel, todayIso } from './date-utils';
+import { addMonths, DayCell, formatDisplay, fromIso, isBetween, IsoDate, isSameDay, monthGrid, monthLabel, todayIso } from 'utils';
 import { IDateRangeValue } from 'models';
 
 export type DatePickerMode = 'single' | 'range';
@@ -46,6 +44,35 @@ export class DatePicker implements FormValueControl<IDateRangeValue> {
 
   protected readonly opened = signal(false);
   protected readonly hovered = signal<IsoDate | null>(null);
+  /**
+   * Previous button is disabled when the first visible month
+   * is already the minDate month.
+   */
+  protected readonly canGoBack = computed(() => {
+    const min = this.minDate();
+    if (!min) {
+      return true;
+    }
+
+    const firstMonth = this.monthStart(this.displayAnchor());
+    const minMonth = this.monthStart(fromIso(min));
+    return firstMonth > minMonth;
+  });
+  /**
+   * Next button is disabled when the last visible month
+   * is already the maxDate month.
+   */
+  protected readonly canGoForward = computed(() => {
+    const max = this.maxDate();
+    if (!max) {
+      return true;
+    }
+
+    const visible = Math.max(1, this.visibleMonths());
+    const lastVisibleMonth = addMonths(this.displayAnchor(), visible - 1);
+    const maxMonth = this.monthStart(fromIso(max));
+    return lastVisibleMonth < maxMonth;
+  });
   private readonly transloco = inject(TranslocoService);
   protected readonly helperText = computed(() => {
     if (this.mode() === 'single') {
@@ -72,6 +99,21 @@ export class DatePicker implements FormValueControl<IDateRangeValue> {
       return formatDisplay(start, locale);
     }
     return !end ? `${formatDisplay(start, locale)} → …` : `${formatDisplay(start, locale)} → ${formatDisplay(end, locale)}`;
+  });
+  protected readonly months = computed(() => {
+    const locale = this.transloco.activeLang();
+    const count = Math.max(1, this.visibleMonths());
+    const anchor = this.displayAnchor();
+
+    return Array.from({ length: count }, (_, index) => {
+      const date = addMonths(anchor, index);
+      const cells = monthGrid(date);
+      const weeks: DayCell[][] = [];
+      for (let week = 0; week < 6; week++) {
+        weeks.push(cells.slice(week * 7, week * 7 + 7));
+      }
+      return { key: `${date.getFullYear()}-${date.getMonth()}`, label: monthLabel(date, locale), weeks };
+    });
   });
   /**
    * First month displayed by the calendar.
@@ -125,50 +167,6 @@ export class DatePicker implements FormValueControl<IDateRangeValue> {
     }
 
     return result;
-  });
-  /**
-   * Previous button is disabled when the first visible month
-   * is already the minDate month.
-   */
-  protected readonly canGoBack = computed(() => {
-    const min = this.minDate();
-    if (!min) {
-      return true;
-    }
-
-    const firstMonth = this.monthStart(this.displayAnchor());
-    const minMonth = this.monthStart(fromIso(min));
-    return firstMonth > minMonth;
-  });
-  /**
-   * Next button is disabled when the last visible month
-   * is already the maxDate month.
-   */
-  protected readonly canGoForward = computed(() => {
-    const max = this.maxDate();
-    if (!max) {
-      return true;
-    }
-
-    const visible = Math.max(1, this.visibleMonths());
-    const lastVisibleMonth = addMonths(this.displayAnchor(), visible - 1);
-    const maxMonth = this.monthStart(fromIso(max));
-    return lastVisibleMonth < maxMonth;
-  });
-  protected readonly months = computed(() => {
-    const locale = this.transloco.activeLang();
-    const count = Math.max(1, this.visibleMonths());
-    const anchor = this.displayAnchor();
-
-    return Array.from({ length: count }, (_, index) => {
-      const date = addMonths(anchor, index);
-      const cells = monthGrid(date);
-      const weeks: DayCell[][] = [];
-      for (let week = 0; week < 6; week++) {
-        weeks.push(cells.slice(week * 7, week * 7 + 7));
-      }
-      return { key: `${date.getFullYear()}-${date.getMonth()}`, label: monthLabel(date, locale), weeks };
-    });
   });
 
   clear(): void {

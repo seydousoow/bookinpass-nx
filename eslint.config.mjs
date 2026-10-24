@@ -15,11 +15,14 @@ export default [
         {
           enforceBuildableLibDependency: true,
           allow: ['^.*/eslint(\\.base)?\\.config\\.[cm]?[jt]s$'],
+          // Sens unique : models ← utils ← configs ← state ← ui (components, pipes) ← app.
           depConstraints: [
-            {
-              sourceTag: '*',
-              onlyDependOnLibsWithTags: ['*'],
-            },
+            { sourceTag: 'type:models', onlyDependOnLibsWithTags: [] },
+            { sourceTag: 'type:util', onlyDependOnLibsWithTags: ['type:models'] },
+            { sourceTag: 'type:config', onlyDependOnLibsWithTags: ['type:models', 'type:util'] },
+            { sourceTag: 'type:state', onlyDependOnLibsWithTags: ['type:models', 'type:util', 'type:config'] },
+            { sourceTag: 'type:ui', onlyDependOnLibsWithTags: ['type:models', 'type:util', 'type:config', 'type:state', 'type:ui'] },
+            { sourceTag: 'type:app', onlyDependOnLibsWithTags: ['type:models', 'type:util', 'type:config', 'type:state', 'type:ui'] },
           ],
         },
       ],
