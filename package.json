@@ -1,11 +1,18 @@
 {
-  "name": "@org/source",
+  "name": "@bip",
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {},
   "private": true,
-  "dependencies": {},
+  "dependencies": {
+    "@juristr/nx-tailwind-sync": "^0.0.9",
+    "@tailwindcss/postcss": "^4.3.3",
+    "postcss": "^8.5.31",
+    "tailwindcss": "^4.3.3"
+  },
   "devDependencies": {
+    "@angular-devkit/core": "~22.2.0",
+    "@nx/angular": "^24.0.0",
     "@nx/js": "24.0.0",
     "@swc-node/register": "1.11.1",
     "@swc/core": "1.15.8",
@@ -16,8 +23,19 @@
     "tslib": "^2.3.0",
     "typescript": "~6.0.3"
   },
-  "workspaces": [
-    "packages/*"
-  ],
-  "packageManager": "npm@11.19.0"
+  "packageManager": "npm@11.19.0",
+  "nx": {
+    "targets": {
+      "build": {
+        "syncGenerators": [
+          "@juristr/nx-tailwind-sync:source-directives"
+        ]
+      },
+      "serve": {
+        "syncGenerators": [
+          "@juristr/nx-tailwind-sync:source-directives"
+        ]
+      }
+    }
+  }
 }
