@@ -1,0 +1,13 @@
+{
+  "name": "bip",
+  "targets": {
+    "build": {
+      "executor": "@angular/build:application",
+      "syncGenerators": ["@juristr/nx-tailwind-sync:source-directives"]
+    },
+    "serve": {
+      "executor": "@angular/build:dev-server",
+      "syncGenerators": ["@juristr/nx-tailwind-sync:source-directives"]
+    }
+  }
+}
