@@ -25,7 +25,7 @@ import { TranslocoPipe } from '@jsverse/transloco';
     @if (showErrors()) {
       <!-- Cible de l'aria-describedby des champs (\`<name>-error\`). -->
       <div [id]="name() + '-error'">
-        @for (error of errors(); track error) {
+        @for (error of errors(); track $index) {
           <p class="text-xs text-state-error flex items-center gap-1">
             <ng-icon color="red" name="heroExclamationCircleSolid" />
             <span>{{ error.message | transloco }}</span>

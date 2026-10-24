@@ -6,6 +6,7 @@ import {
   booleanAttribute,
   Component,
   computed,
+  DestroyRef,
   effect,
   ElementRef,
   inject,
@@ -101,8 +102,7 @@ export class PhoneInput implements FormValueControl<string> {
     }
     const dial = digits(query);
     return this.countries().filter(
-      (c) =>
-        normalize(c.name).includes(query) || c.code.toLowerCase() === query || (!!dial && dial === query.replace('+', '') && c.dial.startsWith(dial)),
+      (c) => normalize(c.name).includes(query) || c.code.toLowerCase() === query || (!!dial && dial === query.replace('+', '') && c.dial.startsWith(dial)),
     );
   });
   protected readonly selectedName = computed(() => this.countries().find((c) => c.code === this.selected())?.name ?? this.selected());
@@ -118,6 +118,7 @@ export class PhoneInput implements FormValueControl<string> {
   private readonly searchField = viewChild<ElementRef<HTMLInputElement>>('searchField');
   private readonly trigger = viewChild.required<ElementRef<HTMLButtonElement>>('trigger');
   private readonly injector = inject(Injector);
+  private readonly destroyRef = inject(DestroyRef);
   /** Dernière valeur émise : une valeur venue de l'extérieur (brouillon, saisie automatique) est relue, pas celle-ci. */
   private emitted = '';
 
@@ -176,7 +177,7 @@ export class PhoneInput implements FormValueControl<string> {
   /** Clic ou Entrée sur un pays : après la sélection (traitée par la liste), on ferme et la saisie reprend. */
   protected commit(): void {
     setTimeout(() => {
-      if (this.open()) {
+      if (!this.destroyRef.destroyed && this.open()) {
         this.open.set(false);
         this.field().nativeElement.focus();
       }
@@ -212,14 +213,17 @@ export class PhoneInput implements FormValueControl<string> {
   }
 
   protected onBlur(): void {
+    // Champ retiré du DOM alors qu'il avait le focus (navigation, étape suivante) : le navigateur émet « blur »
+    // après la destruction du composant, quand une sortie ne peut plus être émise (NG0953).
+    if (this.destroyRef.destroyed) {
+      return;
+    }
     this.national.set(formatNational(digits(this.national()), this.selected()));
     this.touch.emit();
   }
 
   protected controlClass(): string {
-    const base = [
-      'relative flex min-h-11 w-full items-stretch rounded-field border bg-surface-card transition-colors focus-within:ring-2 focus-within:ring-brand-primary/40',
-    ];
+    const base = ['relative flex min-h-11 w-full items-stretch rounded-field border bg-surface-card transition-colors focus-within:ring-2 focus-within:ring-brand-primary/40'];
     if (this.showErrors()) {
       base.push('border-state-error');
     } else {

@@ -6,15 +6,7 @@ import { Field } from './field';
 @Component({
   imports: [Field],
   template: `
-    <bip-field
-      label="form.email"
-      name="email"
-      [hint]="hint()"
-      [errors]="errors()"
-      [showErrors]="showErrors()"
-      [required]="required()"
-      [hideLabel]="hideLabel()"
-    >
+    <bip-field label="form.email" name="email" [hint]="hint()" [errors]="errors()" [showErrors]="showErrors()" [required]="required()" [hideLabel]="hideLabel()">
       <input id="email" />
     </bip-field>
   `,
@@ -61,5 +53,18 @@ describe('Field', () => {
     expect(element.querySelector('#email-hint')).toBeNull();
     // Les champs pointent leur aria-describedby sur `<name>-error`.
     expect(element.querySelector('#email-error')?.textContent).toContain('form.required');
+  });
+
+  it('garde les nœuds des erreurs quand la validation renvoie de nouveaux objets', async () => {
+    const { element, host, stable } = await render(Host);
+    host.showErrors.set(true);
+    await stable();
+    const before = element.querySelector('#email-error p');
+
+    // Les formulaires signal recréent leurs erreurs à chaque validation : même contenu, autre objet.
+    host.errors.set([{ kind: 'required', message: 'form.required' }]);
+    await stable();
+
+    expect(element.querySelector('#email-error p')).toBe(before);
   });
 });
