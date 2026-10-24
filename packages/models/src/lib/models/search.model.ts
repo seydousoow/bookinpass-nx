@@ -1,5 +1,5 @@
-import { IsoDate } from '@shared/ui/date-picker/date-utils';
-import { IPassengerCount } from '@shared/ui/people-selector/passenger.helper';
+import { IsoDate } from './date.model';
+import { IPassengerCount } from './passenger.model';
 import { IFlightLocation, IFlightOffer, ILoyaltyProgrammeAccount } from './flight.model';
 
 export const CABIN_CLASSES = ['economy', 'premium_economy', 'business', 'first'] as const;
@@ -21,10 +21,11 @@ export type TLegroom = 'standard' | 'more' | 'less' | 'n/a';
 export type TSeatType = 'standard' | 'skycouch' | 'recliner' | 'angle_flat' | 'full_flat' | 'full_flat_pod' | 'private_suite';
 
 export function normalizeCabin(value: string | undefined): TCabinClass {
-  if (!value || !CABIN_CLASSES.includes(value as TCabinClass)) {
+  const cabin = value?.toLowerCase();
+  if (!cabin || !CABIN_CLASSES.includes(cabin as TCabinClass)) {
     return 'economy';
   }
-  return value.toLowerCase() as TCabinClass;
+  return cabin as TCabinClass;
 }
 
 export interface IAirlineFilter {

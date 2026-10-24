@@ -1,8 +1,8 @@
 // noinspection ES6PreferShortImport
 
 import { Component, computed, input, output } from '@angular/core';
-import { AppError } from '../../models/app-error';
-import { SystemStatus } from '../../models/system-state';
+import { AppError } from 'models';
+import { SystemStatus } from 'models';
 import { Button } from '../button/button';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroExclamationCircleSolid } from '@ng-icons/heroicons/solid';
@@ -19,39 +19,40 @@ import { heroExclamationCircleSolid } from '@ng-icons/heroicons/solid';
   host: { class: 'block' },
   providers: [provideIcons({ heroExclamationCircleSolid })],
   template: `
-    @switch (status()) {
-      @case ('success') {
-        <ng-content />
-      }
-      @case ('partial') {
+    <!-- Un seul <ng-content> : Angular ne projette que dans le dernier, un second laisserait l'état « success » vide. -->
+    @if (status() === 'success' || status() === 'partial') {
+      @if (status() === 'partial') {
         <div class="border-state-warning bg-state-warning-soft rounded-card mb-3 border p-3">
           <p class="text-sm text-ink font-semibold">{{ title() || 'Confirmation partielle' }}</p>
           <p class="text-sm text-ink/80 mt-1">{{ message() }}</p>
         </div>
-        <ng-content />
       }
-      @case ('loading') {
-        <div [attr.aria-busy]="true" aria-live="polite" class="animate-pulse space-y-3">
-          <span class="sr-only">Chargement en cours</span>
-          @for (line of skeletonLines(); track $index) {
-            <div [style.height.px]="skeletonHeight()" class="bg-border-subtle rounded-card"></div>
-          }
-        </div>
-      }
-      @default {
-        <div [class]="panelClass()" role="status">
-          <ng-icon name="heroExclamationCircleSolid" aria-hidden="true" [color]="iconClass()" />
-          <div class="min-w-0 flex-1">
-            <p class="text-sm text-ink font-semibold">{{ resolvedTitle() }}</p>
-            <p class="text-sm text-muted mt-1">{{ resolvedMessage() }}</p>
-            @if (error()?.preserved; as preserved) {
-              <p class="text-xs text-muted mt-1.5 italic">{{ preserved }}</p>
+      <ng-content />
+    } @else {
+      @switch (status()) {
+        @case ('loading') {
+          <div [attr.aria-busy]="true" aria-live="polite" class="animate-pulse space-y-3">
+            <span class="sr-only">Chargement en cours</span>
+            @for (line of skeletonLines(); track $index) {
+              <div [style.height.px]="skeletonHeight()" class="bg-border-subtle rounded-card"></div>
             }
           </div>
-          @if (actionLabel()) {
-            <bip-button (clicked)="retry.emit()" size="sm" variant="outline">{{ actionLabel() }}</bip-button>
-          }
-        </div>
+        }
+        @default {
+          <div [class]="panelClass()" role="status">
+            <ng-icon name="heroExclamationCircleSolid" aria-hidden="true" [color]="iconClass()" />
+            <div class="min-w-0 flex-1">
+              <p class="text-sm text-ink font-semibold">{{ resolvedTitle() }}</p>
+              <p class="text-sm text-muted mt-1">{{ resolvedMessage() }}</p>
+              @if (error()?.preserved; as preserved) {
+                <p class="text-xs text-muted mt-1.5 italic">{{ preserved }}</p>
+              }
+            </div>
+            @if (actionLabel()) {
+              <bip-button (clicked)="retry.emit()" size="sm" variant="outline">{{ actionLabel() }}</bip-button>
+            }
+          </div>
+        }
       }
     }
   `,
@@ -120,6 +121,6 @@ export class SystemState {
       error: '--color-state-error',
       offline: '--color-muted',
     };
-    return `var(--${tones[this.status()] ?? '--color-muted'})`;
+    return `var(${tones[this.status()] ?? '--color-muted'})`;
   }
 }

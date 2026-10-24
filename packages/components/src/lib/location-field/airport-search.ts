@@ -1,7 +1,7 @@
 // noinspection NonAsciiCharacters
 
 import Fuse, { IFuseOptions } from 'fuse.js';
-import { IAirport } from '@shared/models/place.model';
+import { IAirport } from 'models';
 
 /**
  * Ligatures et lettres barrées que la décomposition NFD ne sépare pas : elles

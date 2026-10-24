@@ -4,7 +4,7 @@
   "projectType": "application",
   "prefix": "bip",
   "sourceRoot": "apps/front/src",
-  "tags": [],
+  "tags": ["type:app"],
   "targets": {
     "build": {
       "executor": "@angular/build:application",
@@ -18,17 +18,23 @@
           {
             "glob": "**/*",
             "input": "apps/front/public"
+          },
+          {
+            "glob": "*.svg",
+            "input": "node_modules/country-flag-icons/3x2",
+            "output": "svg"
           }
         ],
-        "styles": ["apps/front/src/styles.css"]
+        "styles": ["apps/front/src/styles.css"],
+        "allowedCommonJsDependencies": ["@messageformat/core"]
       },
       "configurations": {
         "production": {
           "budgets": [
             {
               "type": "initial",
-              "maximumWarning": "500kb",
-              "maximumError": "1mb"
+              "maximumWarning": "650kB",
+              "maximumError": "900kB"
             },
             {
               "type": "anyComponentStyle",
@@ -59,6 +65,9 @@
         "development": {
           "buildTarget": "front:build:development"
         }
+      },
+      "options": {
+        "proxyConfig": "apps/front/proxy.conf.json"
       }
     },
     "serve-static": {

@@ -1,7 +1,7 @@
 import { Component, computed, input, model, signal } from '@angular/core';
 import { Combobox, ComboboxPopup, ComboboxWidget } from '@angular/aria/combobox';
 import { Listbox, Option } from '@angular/aria/listbox';
-import { ICurrencyOption } from '@shared/models/money.model';
+import { ICurrencyOption } from 'models';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroCheckSolid, heroChevronDownSolid } from '@ng-icons/heroicons/solid';
 import { TranslocoPipe } from '@jsverse/transloco';

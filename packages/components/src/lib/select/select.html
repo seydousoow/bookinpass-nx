@@ -9,7 +9,7 @@
          [preserveContent]="true"
          ngCombobox>
       <span [class.text-muted]="!displayValue()" class="text-sm min-w-0 flex-1 truncate">
-        {{ displayValue() || placeholder() }}
+        {{ displayValue() || (placeholder() | transloco) }}
       </span>
       <ng-icon [class.rotate-180]="open()" class="duration-150 transition-transform" color="var(--color-muted)" name="heroChevronDownSolid"/>
     </div>

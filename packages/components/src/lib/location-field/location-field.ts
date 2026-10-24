@@ -9,7 +9,7 @@ import { heroMapPinSolid, heroXMarkSolid } from '@ng-icons/heroicons/solid';
 import { TranslocoDirective, TranslocoPipe } from '@jsverse/transloco';
 
 import { Spinner } from '../spinner/spinner';
-import { IAirport, ICityGroup, IPlaceSelection } from '../../models/place.model';
+import { IAirport, ICityGroup, IPlaceSelection } from 'models';
 import { createAirportIndex, searchAirports } from './airport-search';
 
 const SEARCH_MIN_LENGTH = 2;

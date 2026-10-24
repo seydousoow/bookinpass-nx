@@ -1,0 +1,9 @@
+{
+  "name": "state",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/state/src",
+  "prefix": "bip",
+  "projectType": "library",
+  "tags": ["test", "lint", "type:state"],
+  "targets": {}
+}

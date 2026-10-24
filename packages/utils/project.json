@@ -1,0 +1,9 @@
+{
+  "name": "utils",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/utils/src",
+  "prefix": "bip",
+  "projectType": "library",
+  "tags": ["test", "lint", "type:util"],
+  "targets": {}
+}

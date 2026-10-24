@@ -4,7 +4,6 @@
     "outDir": "../../dist/out-tsc",
     "declaration": true,
     "declarationMap": true,
-    "inlineSources": true,
     "types": []
   },
   "include": ["src/**/*.ts"],
@@ -13,6 +12,7 @@
     "src/**/*.test.ts",
     "jest.config.ts",
     "jest.config.cts",
-    "src/test-setup.ts"
+    "src/test-setup.ts",
+    "src/testing.ts"
   ]
 }

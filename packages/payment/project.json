@@ -1,0 +1,9 @@
+{
+  "name": "payment",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/payment/src",
+  "prefix": "bip",
+  "projectType": "library",
+  "tags": ["test", "lint", "type:ui"],
+  "targets": {}
+}

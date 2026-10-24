@@ -5,7 +5,8 @@ import { Dropdown } from '../dropdown/dropdown';
 import { Button } from '../button/button';
 import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 
-import { isValidPassengerCount, maximumAdults, maximumChildren, maximumInfants, minimumAdults, IPassengerCount } from './passenger.helper';
+import { IPassengerCount } from 'models';
+import { isValidPassengerCount, maximumAdults, maximumChildren, maximumInfants, minimumAdults } from 'utils';
 import { FormValueControl, ValidationError } from '@angular/forms/signals';
 
 type PassengerType = keyof IPassengerCount;

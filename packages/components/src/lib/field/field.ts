@@ -23,12 +23,15 @@ import { TranslocoPipe } from '@jsverse/transloco';
     <ng-content />
 
     @if (showErrors()) {
-      @for (error of errors(); track error) {
-        <p class="text-xs text-state-error flex items-center gap-1">
-          <ng-icon color="red" name="heroExclamationCircleSolid" />
-          <span>{{ error.message | transloco }}</span>
-        </p>
-      }
+      <!-- Cible de l'aria-describedby des champs (\`<name>-error\`). -->
+      <div [id]="name() + '-error'">
+        @for (error of errors(); track error) {
+          <p class="text-xs text-state-error flex items-center gap-1">
+            <ng-icon color="red" name="heroExclamationCircleSolid" />
+            <span>{{ error.message | transloco }}</span>
+          </p>
+        }
+      </div>
     } @else if (hint()) {
       <p [id]="name() + '-hint'" class="text-xs text-muted">{{ hint() | transloco }}</p>
     }

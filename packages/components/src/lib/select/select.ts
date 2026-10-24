@@ -5,7 +5,7 @@ import { ISelectOption } from 'models';
 import { Field } from '../field/field';
 import { FormValueControl, ValidationError, WithOptionalFieldTree } from '@angular/forms/signals';
 import { CdkConnectedOverlay } from '@angular/cdk/overlay';
-import { translateSignal, TranslocoPipe } from '@jsverse/transloco';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { heroCheckSolid, heroChevronDownSolid } from '@ng-icons/heroicons/solid';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 
@@ -21,7 +21,8 @@ export class Select<T = string> implements FormValueControl<T[]> {
   readonly label = input.required<string>();
   readonly hideLabel = input(false, { transform: booleanAttribute });
 
-  readonly placeholder = input(translateSignal('common.select')());
+  /** Clé de traduction, traduite au rendu : suit le changement de langue. */
+  readonly placeholder = input('common.select');
   readonly hint = input<string>();
   readonly multiple = input(false, { transform: booleanAttribute });
   public open = signal(false);

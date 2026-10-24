@@ -1,7 +1,7 @@
 import { Component, computed, input, model, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { LangDefinition, TranslocoDirective } from '@jsverse/transloco';
-import { ICurrencyOption } from '../../models/money.model';
+import { ICurrencyOption } from 'models';
 import { Button } from '../button/button';
 import { CurrencySelector } from '../currency-selector/currency-selector';
 import { NgIcon, provideIcons } from '@ng-icons/core';
