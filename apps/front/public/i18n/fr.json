@@ -353,6 +353,7 @@
         "loyalty-airline": "Compagnie",
         "loyalty-airline-placeholder": "Sélectionnez une compagnie",
         "loyalty-number": "Numéro de membre",
+        "loyalty-placeholder": "490001001",
         "passport": "Passeport",
         "passport-hint": "La compagnie exige le passeport de chaque voyageur. Il doit être valide jusqu'au dernier vol.",
         "passport-number": "Numéro de passeport",
