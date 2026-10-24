@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "license": "MIT",
   "scripts": {
+    "prepare": "husky",
     "front:start": "nx serve front --no-hmr",
     "front:test": "nx test front --coverage",
     "front:lint": "nx lint front",
@@ -67,12 +68,14 @@
     "angular-eslint": "^22.6.0",
     "eslint": "^10.13.0",
     "eslint-config-prettier": "^10.1.8",
+    "husky": "^9.1.7",
     "jest": "~30.5.2",
     "jest-environment-jsdom": "~30.5.2",
     "jest-environment-node": "~30.5.2",
     "jest-preset-angular": "~17.0.3",
     "jest-util": "~30.5.1",
     "jsonc-eslint-parser": "^3.3.0",
+    "lint-staged": "^17.6.0",
     "nx": "24.0.1",
     "postcss": "^8.5.31",
     "prettier": "^3.9.10",
@@ -102,5 +105,12 @@
     "nx": {
       "undici": "7.30.1"
     }
+  },
+  "lint-staged": {
+    "*.{ts,js,mjs,cjs,cts,mts}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{html,css,scss,json,md,yml,yaml}": "prettier --write"
   }
 }
