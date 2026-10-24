@@ -4,16 +4,8 @@
   "sourceRoot": "packages/components/src",
   "prefix": "bip",
   "projectType": "library",
-  "tags": ["lib"],
+  "tags": ["lib", "lint", "test"],
   "targets": {
-    "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
-      "options": {
-        "jestConfig": "libs/components/jest.config.ts",
-        "tsConfig": "libs/components/tsconfig.spec.json"
-      }
-    },
     "lint": {
       "executor": "@nx/eslint:lint"
     }

@@ -15,7 +15,7 @@
     "libs:publish": "nx release publish",
     "all:test": "npm run libs:test && npm run front:test",
     "all:lint": "npm run libs:lint && npm run front:lint",
-    "prettier": "prettier --write apps libs"
+    "prettier": "prettier --write apps packages"
   },
   "private": true,
   "dependencies": {

@@ -3,7 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/models/src",
   "projectType": "library",
-  "tags": ["lint"],
+  "tags": ["lib", "lint"],
   "targets": {
     "lint": {
       "executor": "@nx/eslint:lint"
