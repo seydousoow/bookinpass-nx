@@ -1,11 +1,13 @@
 {
+  "compileOnSave": false,
   "compilerOptions": {
+    "rootDir": ".",
+    "baseUrl": ".",
     "composite": true,
-    "declarationMap": true,
-    "emitDeclarationOnly": true,
+    "declaration": false,
     "importHelpers": true,
     "isolatedModules": true,
-    "lib": ["es2022"],
+    "lib": ["es2022", "dom"],
     "module": "nodenext",
     "moduleResolution": "nodenext",
     "noEmitOnError": true,
@@ -16,8 +18,12 @@
     "skipLibCheck": true,
     "strict": true,
     "target": "es2022",
-    "customConditions": ["bip"],
     "noUncheckedSideEffectImports": false,
-    "types": ["*"]
-  }
+    "types": ["*"],
+    "paths": {
+      "components": ["./packages/components/src/index.ts"],
+      "models": ["./packages/models/src/index.ts"]
+    }
+  },
+  "exclude": ["node_modules", "tmp"]
 }
