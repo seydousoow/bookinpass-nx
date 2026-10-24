@@ -1,18 +1,11 @@
 import { Component, signal } from '@angular/core';
 import { IDateRangeValue, IsoDate } from 'models';
 import { render } from '../../testing';
-import { DatePickerMode, DatePicker } from './date-picker';
+import { DatePicker, DatePickerMode } from './date-picker';
 
 @Component({
   imports: [DatePicker],
-  template: `<bip-date-picker
-    [(value)]="dates"
-    [mode]="mode()"
-    [minDate]="minDate()"
-    [unavailable]="unavailable()"
-    label="search.dates"
-    name="dates"
-  />`,
+  template: `<bip-date-picker [(value)]="dates" [mode]="mode()" [minDate]="minDate()" [unavailable]="unavailable()" label="search.dates" name="dates" />`,
 })
 class Host {
   readonly dates = signal<IDateRangeValue>({ start: null, end: null });

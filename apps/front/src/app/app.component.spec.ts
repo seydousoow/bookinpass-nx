@@ -19,10 +19,7 @@ describe('AppComponent', () => {
       select: jest.fn(),
     };
     await TestBed.configureTestingModule({
-      imports: [
-        AppComponent,
-        TranslocoTestingModule.forRoot({ langs: { fr: {}, en: {} }, translocoConfig: { availableLangs: ['fr', 'en'], defaultLang: 'fr' } }),
-      ],
+      imports: [AppComponent, TranslocoTestingModule.forRoot({ langs: { fr: {}, en: {} }, translocoConfig: { availableLangs: ['fr', 'en'], defaultLang: 'fr' } })],
       providers: [provideRouter([]), provideNgIconLoader(() => '<svg></svg>'), { provide: CurrencyStore, useValue: currencyStore }],
     }).compileComponents();
     const fixture = TestBed.createComponent(AppComponent);

@@ -4,8 +4,7 @@ import { finalize } from 'rxjs';
 import { TranslocoDirective } from '@jsverse/transloco';
 import { DatePipe } from 'pipes';
 import { IStayReview } from 'models';
-import { Button } from 'components';
-import { Spinner } from 'components';
+import { Button, Spinner } from 'components';
 import { ReviewScore } from '../../ui/review-score';
 import { StayBookingService } from '../stay-booking.service';
 

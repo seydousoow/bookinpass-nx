@@ -9,15 +9,18 @@ import { APP_CONFIG } from 'configs';
 import { TranslocoLocaleService } from '@jsverse/transloco-locale';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroCheck, heroChevronDown, heroInformationCircle, heroUser } from '@ng-icons/heroicons/outline';
-import { Button } from 'components';
-import { Input } from 'components';
-import { Modal } from 'components';
-import { Spinner } from 'components';
-import { isValidPhone, PhoneInput } from 'components';
-import { IFlightOfferDetails, IFlightOfferResponse, IPassengerUpdate, IUpsellOffersResponse } from 'models';
-import { IIntendedService, IOfferSlice } from 'models';
-import { TBaggageType, TPassengerType } from 'models';
-import { ISeatChoice } from 'models';
+import { Button, Input, isValidPhone, Modal, PhoneInput, Spinner } from 'components';
+import {
+  IFlightOfferDetails,
+  IFlightOfferResponse,
+  IIntendedService,
+  IOfferSlice,
+  IPassengerUpdate,
+  ISeatChoice,
+  IUpsellOffersResponse,
+  TBaggageType,
+  TPassengerType,
+} from 'models';
 import { ITravelerInfo, TravelerForm } from './traveler-form/traveler-form';
 import { Router } from '@angular/router';
 import { BipOfferPriceDetails } from './price-details/offer-price-details';
@@ -25,17 +28,14 @@ import { FlightOfferService, IFlightOrder, IOrderPassenger } from './flight-offe
 import { OfferItinerary } from './offer-itinerary/offer-itinerary';
 import { FareOptions } from './fare-options/fare-options';
 import { clearDraft, IContact, loadDraft, saveDraft, STEPS, TStep } from './checkout-draft';
-import { SearchStore } from 'state';
-import { loadContact, saveContact } from 'state';
-import { deadline, inactivity, REVALIDATE_MS } from 'utils';
+import { loadContact, saveContact, SearchStore } from 'state';
+import { deadline, formatMoney, inactivity, REVALIDATE_MS } from 'utils';
 import { FlightDetailsLoader } from './flight-details-loader';
 import { ISeatTraveler, SeatSelectionComponent } from './seat-selection/seat-selection';
 import { extraBagGroups, extraBagLines, IExtraBagGroup, TBagSelection, toOrderServices } from './extra-bags/extra-bags.util';
 import { ExtraBags, IExtrasTraveler } from './extra-bags/extra-bags';
 import { IBagLine, IncludedBags } from './included-bags/included-bags';
-import { IPaymentAuthorisation, PaymentForm } from 'payment';
-import { ICheckoutSession, PaymentService } from 'payment';
-import { formatMoney } from 'utils';
+import { ICheckoutSession, IPaymentAuthorisation, PaymentForm, PaymentService } from 'payment';
 
 interface ITravelerCard {
   readonly id: string;
@@ -57,8 +57,7 @@ interface ITravelerCard {
 const BAGGAGE_TYPES: readonly TBaggageType[] = ['checked', 'carry_on'];
 
 /** Offre retirée ou expirée chez Duffel ; une coupure réseau, elle, ne prouve rien. */
-const isGone = (error: unknown): boolean =>
-  error instanceof HttpErrorResponse && (error.status === HttpStatusCode.NotFound || error.status === HttpStatusCode.UnprocessableEntity);
+const isGone = (error: unknown): boolean => error instanceof HttpErrorResponse && (error.status === HttpStatusCode.NotFound || error.status === HttpStatusCode.UnprocessableEntity);
 
 @Component({
   selector: 'bip-flight-offer',
@@ -190,11 +189,12 @@ export class FlightOffer {
   /** Offre en cours de bascule, et échec éventuel de la dernière. */
   protected readonly pendingFare = signal<string | null>(null);
   protected readonly fareFailed = signal(false);
+  /** Inactivité prolongée : la page se fige derrière une modale qui renvoie à la recherche. */
+  protected readonly idle = signal(false);
+  protected readonly stepIndex = computed(() => this.steps().indexOf(this.activeStep()));
   /** Passage à l'étape suivante refusé faute de saisie ; le message suit ensuite la saisie (il disparaît une fois complète). */
   private readonly attempted = signal(false);
   protected readonly incomplete = computed(() => this.attempted() && !this.infoFilled());
-  /** Inactivité prolongée : la page se fige derrière une modale qui renvoie à la recherche. */
-  protected readonly idle = signal(false);
   private readonly paymentService = inject(PaymentService);
   /** Rang du paiement (voir `ICheckoutDraft.paymentAttempt`). */
   private readonly paymentAttempt = signal(0);
@@ -213,9 +213,7 @@ export class FlightOffer {
       email(path.email, { message: 'flight.offer.contact.email-invalid' });
       // Duffel l'exige pour chaque voyageur, au format international.
       required(path.phone, { message: 'common.required-field' });
-      validate(path.phone, ({ value }) =>
-        !value() || isValidPhone(value()) ? null : { kind: 'phone', message: 'flight.offer.contact.phone-invalid' },
-      );
+      validate(path.phone, ({ value }) => (!value() || isValidPhone(value()) ? null : { kind: 'phone', message: 'flight.offer.contact.phone-invalid' }));
     },
     { name: 'contact' },
   );
@@ -252,7 +250,6 @@ export class FlightOffer {
   private readonly step = signal<TStep>('info');
   /** Étape affichée : « Type de billet » demandée avant la fin du chargement, puis vide, cède la place à la suivante. */
   protected readonly activeStep = computed((): TStep => (this.step() === 'ticket' && this.noUpsell() ? 'extras' : this.step()));
-  protected readonly stepIndex = computed(() => this.steps().indexOf(this.activeStep()));
   private readonly localeService = inject(TranslocoLocaleService);
   private readonly locale = toSignal(this.localeService.localeChanges$, { initialValue: this.localeService.getLocale() });
   /** Montant réellement débité, dans sa devise (pas de conversion d'affichage). */
@@ -581,9 +578,7 @@ export class FlightOffer {
       }),
       catchError((error: unknown) => {
         const code = error instanceof HttpErrorResponse ? (error.error as { code?: string } | null)?.code : undefined;
-        this.checkoutSessionError.set(
-          code === 'payments-unavailable' || code === 'service-unavailable' ? `payment.errors.${code}` : 'payment.errors.intent',
-        );
+        this.checkoutSessionError.set(code === 'payments-unavailable' || code === 'service-unavailable' ? `payment.errors.${code}` : 'payment.errors.intent');
         return EMPTY;
       }),
     );
@@ -599,12 +594,7 @@ export class FlightOffer {
     if (code === 'booking-in-progress') {
       return;
     }
-    if (
-      status === 0 ||
-      status === HttpStatusCode.BadGateway ||
-      status === HttpStatusCode.ServiceUnavailable ||
-      status === HttpStatusCode.GatewayTimeout
-    ) {
+    if (status === 0 || status === HttpStatusCode.BadGateway || status === HttpStatusCode.ServiceUnavailable || status === HttpStatusCode.GatewayTimeout) {
       this.bookingError.set({ key: 'flight.offer.booking.errors.failed', retry: true });
       return;
     }

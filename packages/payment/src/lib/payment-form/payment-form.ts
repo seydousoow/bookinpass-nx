@@ -1,14 +1,7 @@
 import { Component, computed, DestroyRef, effect, ElementRef, inject, input, output, signal, untracked, viewChild } from '@angular/core';
 import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { TranslocoLocaleService } from '@jsverse/transloco-locale';
-import {
-  loadStripe,
-  Stripe,
-  StripeCheckoutForm,
-  StripeCheckoutFormConfirmEvent,
-  StripeCheckoutFormLoadActionsSuccess,
-  StripeCheckoutSession,
-} from '@stripe/stripe-js';
+import { loadStripe, Stripe, StripeCheckoutForm, StripeCheckoutFormConfirmEvent, StripeCheckoutFormLoadActionsSuccess, StripeCheckoutSession } from '@stripe/stripe-js';
 import { Spinner } from 'components';
 import { formatMoney } from 'utils';
 import { ICheckoutSession } from '../payment.service';
@@ -26,15 +19,14 @@ const APPEARANCE = {
   labels: 'floating' as const,
   inputs: 'condensed' as const,
   variables: {
-    borderRadius: '4px',
+    borderRadius: '8px',
     colorBackground: '#ffffff',
     colorDanger: '#df1b41',
     colorPrimary: '#0570de',
     colorSuccess: '#00c853',
     colorText: '#30313d',
-    fontFamily: 'Inter',
     fontSizeBase: '14px',
-    spacingUnit: '4px',
+    spacingUnit: '3px',
   },
 };
 

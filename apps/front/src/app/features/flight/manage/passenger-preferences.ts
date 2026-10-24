@@ -35,9 +35,7 @@ export class PassengerPreferences {
   readonly order = input.required<IBookedOrder>();
 
   protected readonly initials = initials;
-  protected readonly passengers = computed(() =>
-    this.order().passengers.map((passenger) => ({ passenger, ticket: ticketNumber(this.order(), passenger.id) })),
-  );
+  protected readonly passengers = computed(() => this.order().passengers.map((passenger) => ({ passenger, ticket: ticketNumber(this.order(), passenger.id) })));
 
   /** Siège de chaque passager sur chaque segment : attribué par la compagnie ou acheté (service `seat`). */
   protected readonly seats = computed((): ILegRow[] => {

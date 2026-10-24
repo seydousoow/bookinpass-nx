@@ -4,8 +4,7 @@
  */
 export interface ErrorAction {
   readonly label: string;
-  readonly kind:
-    'retry' | 'back' | 'restart-search' | 'contact-support' | 'none';
+  readonly kind: 'retry' | 'back' | 'restart-search' | 'contact-support' | 'none';
 }
 
 export interface AppError {
@@ -17,11 +16,6 @@ export interface AppError {
   readonly action: ErrorAction;
 }
 
-export function appError(
-  code: string,
-  what: string,
-  preserved: string,
-  action: ErrorAction,
-): AppError {
+export function appError(code: string, what: string, preserved: string, action: ErrorAction): AppError {
   return { code, what, preserved, action };
 }

@@ -18,11 +18,7 @@ function makePipe() {
     return null;
   };
   TestBed.configureTestingModule({
-    providers: [
-      MoneyPipe,
-      { provide: CurrencyStore, useValue: { selected, convert } },
-      { provide: TranslocoLocaleService, useValue: { getLocale: () => 'fr-SN' } },
-    ],
+    providers: [MoneyPipe, { provide: CurrencyStore, useValue: { selected, convert } }, { provide: TranslocoLocaleService, useValue: { getLocale: () => 'fr-SN' } }],
   });
   return { pipe: TestBed.inject(MoneyPipe), selected };
 }

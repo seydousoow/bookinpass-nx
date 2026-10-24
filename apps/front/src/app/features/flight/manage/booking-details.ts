@@ -4,11 +4,7 @@ import { Router, RouterLink } from '@angular/router';
 import { TranslocoDirective } from '@jsverse/transloco';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroArrowPath, heroXCircle } from '@ng-icons/heroicons/outline';
-import { Badge, BadgeTone } from 'components';
-import { Button } from 'components';
-import { Card } from 'components';
-import { Modal } from 'components';
-import { Spinner } from 'components';
+import { Badge, BadgeTone, Button, Card, Modal, Spinner } from 'components';
 import { TranslocoLocaleService } from '@jsverse/transloco-locale';
 import { formatMoney } from 'utils';
 import { errorCode, IBookedCondition, IBookingAccess, ICancellationQuote, ManageBookingService, TBookingStatus } from './manage-booking.service';
@@ -35,7 +31,19 @@ const STATUS_TONES: Record<TBookingStatus, BadgeTone> = {
   templateUrl: './booking-details.html',
 })
 export class BookingDetails implements OnInit {
+  /** PNR et nom de famille, lus dans l'URL (`/flight/booking?n=…&l=…`) : la page se recharge et se partage. */
+  readonly n = input<string>();
+  readonly l = input<string>();
   protected readonly loadError = signal<string | null>(null);
+  /** Annulation : devis affiché dans la modale, puis confirmation. */
+  protected readonly quote = signal<ICancellationQuote | null>(null);
+  protected readonly cancelOpened = signal(false);
+  protected readonly cancelBusy = signal(false);
+  protected readonly cancelError = signal<string | null>(null);
+  protected readonly cancelled = signal(false);
+  /** Retour d'un aller-retour ; un multi-destinations n'affiche que son départ. */
+  protected readonly returnDate = computed(() => (this.kind() === 'return' ? (this.view()?.order.slices[1]?.segments[0]?.departing_at ?? null) : null));
+  private readonly bookings = inject(ManageBookingService);
   protected readonly statusTone = computed(() => STATUS_TONES[this.view()?.status ?? 'confirmed']);
   protected readonly cancellable = computed(() => {
     const view = this.view();
@@ -51,10 +59,7 @@ export class BookingDetails implements OnInit {
     return first ? `${cityOf(first.origin)} - ${cityOf(first.destination)}` : '';
   });
   protected readonly departure = computed(() => this.view()?.order.slices[0]?.segments[0]?.departing_at ?? null);
-  /** Retour d'un aller-retour ; un multi-destinations n'affiche que son départ. */
-  protected readonly returnDate = computed(() =>
-    this.kind() === 'return' ? (this.view()?.order.slices[1]?.segments[0]?.departing_at ?? null) : null,
-  );
+  protected readonly view = this.bookings.current;
   protected readonly countdown = computed(() => {
     const view = this.view();
     return view && view.status !== 'cancelled' ? untilDeparture(view.order) : null;
@@ -76,18 +81,7 @@ export class BookingDetails implements OnInit {
       ] as const
     ).filter((entry): entry is readonly ['change' | 'refund', IBookedCondition] => !!entry[1]);
   });
-  /** Annulation : devis affiché dans la modale, puis confirmation. */
-  protected readonly quote = signal<ICancellationQuote | null>(null);
-  protected readonly cancelOpened = signal(false);
-  protected readonly cancelBusy = signal(false);
-  protected readonly cancelError = signal<string | null>(null);
-  protected readonly cancelled = signal(false);
-  private readonly bookings = inject(ManageBookingService);
-  protected readonly view = this.bookings.current;
   private readonly router = inject(Router);
-  /** PNR et nom de famille, lus dans l'URL (`/flight/booking?n=…&l=…`) : la page se recharge et se partage. */
-  readonly n = input<string>();
-  readonly l = input<string>();
   private readonly accessFromUrl = computed((): IBookingAccess | null => {
     const reference = this.n()?.trim().toUpperCase();
     const lastName = this.l()?.trim();

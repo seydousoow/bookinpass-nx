@@ -8,15 +8,9 @@ import { PricePipe } from './price.pipe';
 /** Taux fictif : 1 XOF = 0,002 EUR ; aucune autre devise n'est servie. */
 function makePipe() {
   const selected = signal('XOF');
-  const convertFromContract = jest.fn((amount: number, currency: string) =>
-    currency === 'XOF' ? amount : currency === 'EUR' ? amount * 0.002 : null,
-  );
+  const convertFromContract = jest.fn((amount: number, currency: string) => (currency === 'XOF' ? amount : currency === 'EUR' ? amount * 0.002 : null));
   TestBed.configureTestingModule({
-    providers: [
-      PricePipe,
-      { provide: CurrencyStore, useValue: { selected, convertFromContract } },
-      { provide: TranslocoLocaleService, useValue: { getLocale: () => 'fr-SN' } },
-    ],
+    providers: [PricePipe, { provide: CurrencyStore, useValue: { selected, convertFromContract } }, { provide: TranslocoLocaleService, useValue: { getLocale: () => 'fr-SN' } }],
   });
   return { pipe: TestBed.inject(PricePipe), selected, convertFromContract };
 }

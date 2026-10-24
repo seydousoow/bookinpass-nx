@@ -1,6 +1,4 @@
-import { IFlightOfferDetails } from 'models';
-import { IBaggageServiceMetadata, IService } from 'models';
-import { TBaggageType } from 'models';
+import { IBaggageServiceMetadata, IFlightOfferDetails, IService, TBaggageType } from 'models';
 import { ancillaryPrice } from 'utils';
 
 /** Bagages supplémentaires retenus : identifiant du service Duffel → quantité. */

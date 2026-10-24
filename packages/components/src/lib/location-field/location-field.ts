@@ -42,19 +42,16 @@ export class LocationField implements FormValueControl<string | null> {
 
   readonly touch = output<void>();
   readonly value = model<string | null>(null);
-
+  /** Points de départ / d'arrivée proposés, fournis par la page (`AirportStore`) : le composant ne fait aucun appel. */
+  readonly airports = input<readonly IAirport[]>([]);
+  readonly loading = input(false);
   protected readonly selected = signal<IPlaceSelection | undefined>(undefined);
-
   protected readonly opened = model(false);
   protected query = model('');
-
   protected readonly selectedCodes = computed(() => {
     const selection = this.selected();
     return selection ? [`${selection.kind}:${selection.code}`] : [];
   });
-  /** Points de départ / d'arrivée proposés, fournis par la page (`AirportStore`) : le composant ne fait aucun appel. */
-  readonly airports = input<readonly IAirport[]>([]);
-  readonly loading = input(false);
   /**
    * Fuse index is rebuilt only when the airport dataset changes.
    */
@@ -67,8 +64,7 @@ export class LocationField implements FormValueControl<string | null> {
    */
   protected readonly groups = computed<readonly ICityGroup[]>(() => {
     const query = this.query().trim();
-    const airports =
-      query.length < SEARCH_MIN_LENGTH ? this.airports().slice(0, MAX_RESULTS) : searchAirports(this.airportIndex(), query, MAX_RESULTS);
+    const airports = query.length < SEARCH_MIN_LENGTH ? this.airports().slice(0, MAX_RESULTS) : searchAirports(this.airportIndex(), query, MAX_RESULTS);
     const groups = new Map<string, IAirport[]>();
     for (const airport of airports) {
       const airportsInCity = groups.get(airport.cityCode);

@@ -43,16 +43,10 @@ export function sliceStops(slice: IOfferSlice): number {
 }
 
 function hasBaggage(slice: IOfferSlice, type: 'carry_on' | 'checked'): boolean {
-  return slice.segments.every((segment) =>
-    segment.passengers.some((passenger) => passenger.baggages.some((baggage) => baggage.type === type && baggage.quantity > 0)),
-  );
+  return slice.segments.every((segment) => segment.passengers.some((passenger) => passenger.baggages.some((baggage) => baggage.type === type && baggage.quantity > 0)));
 }
 
-export function applyFlightFilter(
-  offers: readonly IFlightOffer[],
-  filter: IFlightFilter,
-  toDisplay: TPriceInDisplayCurrency = (amount) => amount,
-): IFlightOffer[] {
+export function applyFlightFilter(offers: readonly IFlightOffer[], filter: IFlightFilter, toDisplay: TPriceInDisplayCurrency = (amount) => amount): IFlightOffer[] {
   return offers.filter((offer) => {
     const { maxStops, cabinBag, holdBag, price, airlines } = filter;
     if (offer.slices.some((slice) => sliceStops(slice) > maxStops)) {

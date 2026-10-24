@@ -1,8 +1,7 @@
 import { ICondition } from 'models';
 import { conditionLabel, offerChangeLabel } from './conditions.util';
 
-const condition = (allowed: boolean, penalty_amount: string | null = null, penalty_currency: string | null = null) =>
-  ({ allowed, penalty_amount, penalty_currency }) as ICondition;
+const condition = (allowed: boolean, penalty_amount: string | null = null, penalty_currency: string | null = null) => ({ allowed, penalty_amount, penalty_currency }) as ICondition;
 
 describe('conditionLabel', () => {
   it('suit le guide Duffel : inconnu, refusé, frais inconnus, gratuit, frais', () => {

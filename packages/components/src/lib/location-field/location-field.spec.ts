@@ -14,11 +14,7 @@ const airport = (iata: string, name: string, cityCode: string, cityName: string)
   countryCode: 'SN',
 });
 
-const AIRPORTS = [
-  airport('DSS', 'Blaise Diagne', 'DKR', 'Dakar'),
-  airport('DKR', 'Léopold Sédar Senghor', 'DKR', 'Dakar'),
-  airport('ZIG', 'Ziguinchor', 'ZIG', 'Ziguinchor'),
-];
+const AIRPORTS = [airport('DSS', 'Blaise Diagne', 'DKR', 'Dakar'), airport('DKR', 'Léopold Sédar Senghor', 'DKR', 'Dakar'), airport('ZIG', 'Ziguinchor', 'ZIG', 'Ziguinchor')];
 
 @Component({
   imports: [LocationField],
@@ -31,8 +27,10 @@ class Host {
 
 /** Accès aux membres protégés pilotés par le combobox, que jsdom ne sait pas animer. */
 interface LocationFieldInternals {
-  groups(): readonly { cityCode: string; airports: readonly IAirport[] }[];
   query: { set(value: string): void; (): string };
+
+  groups(): readonly { cityCode: string; airports: readonly IAirport[] }[];
+
   onPick(codes: string[]): void;
 }
 

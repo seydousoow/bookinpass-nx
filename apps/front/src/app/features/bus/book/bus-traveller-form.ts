@@ -3,8 +3,7 @@ import { applyEach, email, form, FormField, maxLength, pattern, required, valida
 import { TranslocoDirective } from '@jsverse/transloco';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroUser } from '@ng-icons/heroicons/outline';
-import { Input } from 'components';
-import { isValidPhone, PhoneInput } from 'components';
+import { Input, isValidPhone, PhoneInput } from 'components';
 import { IBusTravellerDetails } from './bus-draft';
 
 /** Lettres (accents compris), espaces, apostrophes et traits d'union. */
@@ -41,13 +40,7 @@ const NAME_PATTERN = /^[\p{L}' -]+$/u;
       <section>
         <h2 class="text-xl font-bold">{{ t('contact') }}</h2>
         <div class="rounded-card border-border-subtle bg-surface-card mt-4 grid grid-cols-1 gap-4 border p-4 md:grid-cols-2">
-          <bip-input
-            [formField]="travellerForm.email"
-            autocomplete="email"
-            hint="bus.travellers.email-hint"
-            label="bus.travellers.email"
-            type="email"
-          />
+          <bip-input [formField]="travellerForm.email" autocomplete="email" hint="bus.travellers.email-hint" label="bus.travellers.email" type="email" />
           <bip-phone-input [formField]="travellerForm.phone" hint="bus.travellers.phone-hint" label="bus.travellers.phone" />
         </div>
       </section>

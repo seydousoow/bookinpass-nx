@@ -9,16 +9,9 @@ import { RateOption } from '../rate-option/rate-option';
   selector: 'bip-room-card',
   imports: [TranslocoDirective, StayPhoto, RateOption],
   template: `
-    <article
-      *transloco="let t; prefix: 'stay.room'"
-      class="rounded-card border-border-subtle bg-surface-muted grid gap-3 border p-3 shadow-md md:grid-cols-[12rem_1fr]"
-    >
+    <article *transloco="let t; prefix: 'stay.room'" class="rounded-card border-border-subtle bg-surface-muted grid gap-3 border p-3 shadow-md md:grid-cols-[12rem_1fr]">
       <div class="space-y-2">
-        <bip-stay-photo
-          [alt]="room().name"
-          [url]="room().photos?.[0]?.url"
-          class="rounded-card shadow-border-strong aspect-video border border-gray-200 shadow-lg/80"
-        />
+        <bip-stay-photo [alt]="room().name" [url]="room().photos?.[0]?.url" class="rounded-card shadow-border-strong aspect-video border border-gray-200 shadow-lg/80" />
         <h3 class="font-bold">{{ room().name }}</h3>
         @if (room().beds?.length) {
           <ul class="text-muted text-sm">

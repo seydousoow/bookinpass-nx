@@ -7,14 +7,9 @@ import { DatePipe } from 'pipes';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroAdjustmentsHorizontal, heroMagnifyingGlass } from '@ng-icons/heroicons/outline';
 import { APP_CONFIG } from 'configs';
-import { CurrencyStore } from 'state';
-import { StaySearchStore } from 'state';
-import { ISelectOption } from 'models';
-import { IStayDestination, IStayResult, IStaySearchResponse } from 'models';
-import { Button } from 'components';
-import { Modal } from 'components';
-import { Select } from 'components';
-import { Viewport } from 'components';
+import { CurrencyStore, StaySearchStore } from 'state';
+import { ISelectOption, IStayDestination, IStayResult, IStaySearchResponse } from 'models';
+import { Button, Modal, Select, Viewport } from 'components';
 import { StaySearchForm } from '../search-form/stay-search-form';
 import { StayCard } from './stay-card/stay-card';
 import { StayFilter } from './stay-filter/stay-filter';
@@ -63,13 +58,6 @@ export class StaySearch {
     return dates?.start && dates.end ? nightsBetween(dates.start, dates.end) : 0;
   });
   private readonly currencyStore = inject(CurrencyStore);
-  /** Le plafond de prix est dans la devise d'affichage : chaque tarif y est converti avant comparaison. */
-  protected readonly shown = computed(() => {
-    const target = this.currencyStore.selected();
-    const filtered = applyStayFilter(this.results(), this.filter(), (amount, currency) => this.currencyStore.convert(amount, currency, target));
-    return sortStays(filtered, this.sort()[0] ?? 'price');
-  });
-  protected readonly total = computed(() => this.results().length);
   private readonly apiBaseUrl = inject(APP_CONFIG).apiBaseUrl;
   private readonly resource = httpResource<IStaySearchResponse>(() => {
     const search = this.search();
@@ -85,6 +73,13 @@ export class StaySearch {
     return !!error && !isRejected(error);
   });
   protected readonly results = computed((): readonly IStayResult[] => (this.resource.hasValue() ? this.resource.value().data.results : []));
+  /** Le plafond de prix est dans la devise d'affichage : chaque tarif y est converti avant comparaison. */
+  protected readonly shown = computed(() => {
+    const target = this.currencyStore.selected();
+    const filtered = applyStayFilter(this.results(), this.filter(), (amount, currency) => this.currencyStore.convert(amount, currency, target));
+    return sortStays(filtered, this.sort()[0] ?? 'price');
+  });
+  protected readonly total = computed(() => this.results().length);
   private readonly transloco = inject(TranslocoService);
   protected readonly sortOptions = computed((): readonly ISelectOption<TStaySort>[] => {
     const lang = this.transloco.activeLang();

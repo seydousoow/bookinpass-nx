@@ -3,8 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TranslocoTestingModule } from '@jsverse/transloco';
 
 /** Transloco sans traductions : chaque libellé s'affiche sous sa clé, ce que vérifient les specs. */
-export const translocoTesting = () =>
-  TranslocoTestingModule.forRoot({ langs: { fr: {} }, translocoConfig: { availableLangs: ['fr'], defaultLang: 'fr' } });
+export const translocoTesting = () => TranslocoTestingModule.forRoot({ langs: { fr: {} }, translocoConfig: { availableLangs: ['fr'], defaultLang: 'fr' } });
 
 /** Monte un composant hôte de test, rendu et stabilisé (mode zoneless). */
 export async function render<T>(host: Type<T>, providers: (Provider | EnvironmentProviders)[] = []) {

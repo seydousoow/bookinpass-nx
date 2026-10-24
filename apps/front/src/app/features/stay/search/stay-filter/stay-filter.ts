@@ -4,13 +4,7 @@ import { TranslocoDirective } from '@jsverse/transloco';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroXMarkSolid } from '@ng-icons/heroicons/solid';
 import { IStayResult, TStayAmenity } from 'models';
-import { Badge } from 'components';
-import { Button } from 'components';
-import { Checkbox } from 'components';
-import { Overlay } from 'components';
-import { lockScrollWhile } from 'components';
-import { Viewport } from 'components';
-import { PriceRange, Slider } from 'components';
+import { Badge, Button, Checkbox, lockScrollWhile, Overlay, PriceRange, Slider, Viewport } from 'components';
 import { CurrencyStore } from 'state';
 import { isFiltering, IStayFilter, NO_STAY_FILTER, REVIEW_THRESHOLDS } from './stay-filter.util';
 import { staySellingTotal } from 'utils';
@@ -36,17 +30,6 @@ export class StayFilter {
   protected readonly stars = STARS;
   protected readonly reviewThresholds = REVIEW_THRESHOLDS;
   protected readonly filtering = computed(() => isFiltering(this.value()));
-  private readonly currencyStore = inject(CurrencyStore);
-  /** Le budget s'exprime dans la devise choisie par l'utilisateur, comme les prix affichés. */
-  protected readonly currency = this.currencyStore.selected;
-  protected readonly step = computed(() => (this.currencyStore.isContractCurrency() ? 1_000 : 10));
-  protected readonly maxPrice = computed(() => {
-    const prices = this.results()
-      .map((r) => this.currencyStore.convert(staySellingTotal(r.cheapest_rate_total_amount, r.cheapest_rate_currency), r.cheapest_rate_currency))
-      .filter((price): price is number => price !== null);
-    const step = this.step();
-    return prices.length ? Math.ceil(Math.max(...prices) / step) * step : 0;
-  });
   protected readonly budget = computed((): PriceRange => ({ min: 0, max: this.value().maxPrice ?? this.maxPrice() }));
   /** Équipements présents dans les résultats, avec le nombre d'établissements qui les offrent. */
   protected readonly amenities = computed(() => {
@@ -58,7 +41,17 @@ export class StayFilter {
     }
     return [...counts].map(([type, count]) => ({ type, count })).sort((a, b) => b.count - a.count);
   });
-
+  private readonly currencyStore = inject(CurrencyStore);
+  /** Le budget s'exprime dans la devise choisie par l'utilisateur, comme les prix affichés. */
+  protected readonly currency = this.currencyStore.selected;
+  protected readonly step = computed(() => (this.currencyStore.isContractCurrency() ? 1_000 : 10));
+  protected readonly maxPrice = computed(() => {
+    const prices = this.results()
+      .map((r) => this.currencyStore.convert(staySellingTotal(r.cheapest_rate_total_amount, r.cheapest_rate_currency), r.cheapest_rate_currency))
+      .filter((price): price is number => price !== null);
+    const step = this.step();
+    return prices.length ? Math.ceil(Math.max(...prices) / step) * step : 0;
+  });
   private readonly viewport = inject(Viewport);
   protected readonly isSheetActive = computed(() => this.viewport.isMobile() && this.open());
   protected readonly isSheetHidden = computed(() => this.viewport.isMobile() && !this.open());

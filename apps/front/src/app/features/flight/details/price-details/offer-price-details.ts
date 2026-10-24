@@ -1,8 +1,6 @@
 import { Component, computed, input, signal } from '@angular/core';
 import { NgIcon } from '@ng-icons/core';
-import { IFlightOfferDetails } from 'models';
-import { TPassengerType } from 'models';
-import { ISeatChoice } from 'models';
+import { IFlightOfferDetails, ISeatChoice, TPassengerType } from 'models';
 import { TranslocoDirective } from '@jsverse/transloco';
 import { MoneyPipe } from 'pipes';
 import { extraBagsAmount, IExtraBagLine } from '../extra-bags/extra-bags.util';
@@ -28,9 +26,7 @@ export class BipOfferPriceDetails {
       const key = type ?? 'adult';
       counts.set(key, (counts.get(key) ?? 0) + 1);
     }
-    return (['adult', 'child', 'infant_without_seat'] as const)
-      .filter((type) => counts.has(type))
-      .map((type) => ({ type, count: counts.get(type)! }));
+    return (['adult', 'child', 'infant_without_seat'] as const).filter((type) => counts.has(type)).map((type) => ({ type, count: counts.get(type)! }));
   });
 
   protected readonly seatsAmount = computed(() => {
@@ -43,12 +39,7 @@ export class BipOfferPriceDetails {
   /** Prix Duffel des sièges choisis, que l'offre tarifée compte déjà dans son total et son tarif de base. */
   private readonly seatPrices = computed(() => {
     const currency = this.offer().total_currency;
-    return new Map(
-      this.seats().map((s) => [
-        s.serviceId,
-        s.duffelAmount ? Number(s.duffelAmount) : roundMoney(Number(s.amount) / (1 + ANCILLARY_MARKUP), currency),
-      ]),
-    );
+    return new Map(this.seats().map((s) => [s.serviceId, s.duffelAmount ? Number(s.duffelAmount) : roundMoney(Number(s.amount) / (1 + ANCILLARY_MARKUP), currency)]));
   });
   /** Tarif de base du billet seul : Duffel y ajoute les services prévus, affichés (majorés) sur leurs propres lignes. */
   protected readonly baseFare = computed(() => {

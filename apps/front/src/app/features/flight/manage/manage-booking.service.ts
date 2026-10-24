@@ -93,10 +93,10 @@ export interface ICancellationQuote {
  */
 @Injectable({ providedIn: 'root' })
 export class ManageBookingService {
-  private readonly http = inject(HttpClient);
-  private readonly url = `${inject(APP_CONFIG).apiBaseUrl}/flights/bookings`;
   /** Dernière réservation consultée : la page s'affiche sans second appel après le formulaire. */
   readonly current = signal<IBookingView | null>(null);
+  private readonly http = inject(HttpClient);
+  private readonly url = `${inject(APP_CONFIG).apiBaseUrl}/flights/bookings`;
   private readonly _access = signal<IBookingAccess | null>(null);
 
   access(): IBookingAccess | null {
@@ -122,9 +122,7 @@ export class ManageBookingService {
   }
 
   confirmCancellation(access: IBookingAccess, cancellationId: string): Observable<IBookingView> {
-    return this.http
-      .post<IBookingView>(`${this.url}/cancellation/confirm`, { ...access, cancellation_id: cancellationId })
-      .pipe(tap((view) => this.current.set(view)));
+    return this.http.post<IBookingView>(`${this.url}/cancellation/confirm`, { ...access, cancellation_id: cancellationId }).pipe(tap((view) => this.current.set(view)));
   }
 }
 

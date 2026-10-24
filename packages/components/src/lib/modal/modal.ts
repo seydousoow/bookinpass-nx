@@ -44,9 +44,7 @@ export class Modal {
 
   protected panelClass(): string {
     const sizes = { sm: 'max-w-md', md: 'sm:max-w-lg', lg: 'sm:max-w-2xl' } as const;
-    return [
-      'relative z-50 flex max-h-[90vh] w-full flex-col bg-surface-card shadow-panel rounded-panel', sizes[this.size()],
-    ].join(' ');
+    return ['relative z-50 flex max-h-[90vh] w-full flex-col bg-surface-card shadow-panel rounded-panel', sizes[this.size()]].join(' ');
   }
 
   protected onBackdrop(): void {

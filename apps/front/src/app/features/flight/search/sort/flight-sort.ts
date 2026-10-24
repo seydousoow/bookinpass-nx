@@ -23,12 +23,7 @@ interface ISortTab {
   providers: [provideIcons({ heroInformationCircle })],
   host: { class: 'block' },
   template: `
-    <div
-      *transloco="let t"
-      [attr.aria-label]="t('search.sort.label')"
-      class="rounded-card bg-surface-card border-border-subtle flex border"
-      role="tablist"
-    >
+    <div *transloco="let t" [attr.aria-label]="t('search.sort.label')" class="rounded-card bg-surface-card border-border-subtle flex border" role="tablist">
       @for (tab of tabs(); track tab.sort; let last = $last; let first = $first) {
         <button
           (click)="value.set(tab.sort)"
@@ -72,9 +67,7 @@ interface ISortTab {
             }
           </span>
           @if (tab.top; as top) {
-            <span class="truncate text-xs md:text-sm">
-              {{ price(top) | bipMoney: top.total_currency }} • {{ t('search.sort.duration', duration(top)) }}
-            </span>
+            <span class="truncate text-xs md:text-sm"> {{ price(top) | bipMoney: top.total_currency }} • {{ t('search.sort.duration', duration(top)) }} </span>
           }
         </button>
       }

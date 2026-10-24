@@ -26,11 +26,7 @@ export function isFiltering(filter: IStayFilter): boolean {
 /** Montant d'un résultat dans la devise d'affichage ; `null` si le taux manque. */
 export type TPriceInDisplayCurrency = (amount: number, currency: string) => number | null;
 
-export function applyStayFilter(
-  results: readonly IStayResult[],
-  filter: IStayFilter,
-  toDisplay: TPriceInDisplayCurrency = (amount) => amount,
-): IStayResult[] {
+export function applyStayFilter(results: readonly IStayResult[], filter: IStayFilter, toDisplay: TPriceInDisplayCurrency = (amount) => amount): IStayResult[] {
   return results.filter(({ accommodation, cheapest_rate_total_amount, cheapest_rate_currency }) => {
     const price = toDisplay(staySellingTotal(cheapest_rate_total_amount, cheapest_rate_currency), cheapest_rate_currency);
     if (filter.maxPrice !== null && price !== null && price > filter.maxPrice) {

@@ -20,6 +20,8 @@ const MOBILE_QUERY = '(max-width: 767.98px)';
  */
 @Service()
 export class Viewport {
+  /** En dessous de `md:`. */
+  readonly isMobile = this.observe(MOBILE_QUERY);
   private readonly breakpointObserver = inject(BreakpointObserver);
 
   /**
@@ -29,12 +31,6 @@ export class Viewport {
    * constructeur), comme `inject()`.
    */
   observe(query: string | readonly string[]): Signal<boolean> {
-    return toSignal(
-      this.breakpointObserver.observe(query).pipe(map((state) => state.matches)),
-      { initialValue: this.breakpointObserver.isMatched(query) },
-    );
+    return toSignal(this.breakpointObserver.observe(query).pipe(map((state) => state.matches)), { initialValue: this.breakpointObserver.isMatched(query) });
   }
-
-  /** En dessous de `md:`. */
-  readonly isMobile = this.observe(MOBILE_QUERY);
 }

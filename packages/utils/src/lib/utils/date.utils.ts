@@ -72,8 +72,7 @@ export function monthGrid(anchor: Date): DayCell[] {
   return cells;
 }
 
-export const monthLabel = (anchor: Date, locale: string): string =>
-  new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric' }).format(anchor);
+export const monthLabel = (anchor: Date, locale: string): string => new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric' }).format(anchor);
 
 export function formatDisplay(iso: IsoDate | null, locale: string): string {
   if (!iso) {

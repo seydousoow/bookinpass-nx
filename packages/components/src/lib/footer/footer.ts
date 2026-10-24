@@ -33,9 +33,7 @@ export interface FooterColumn {
             <ul class="mt-3 space-y-1">
               @for (link of column.links; track link.labelKey) {
                 <li>
-                  <a
-                    [routerLink]="link.route"
-                    class="text-muted hover:text-brand-primary bip-focusable rounded-button inline-flex min-h-11 items-center text-sm">
+                  <a [routerLink]="link.route" class="text-muted hover:text-brand-primary bip-focusable rounded-button inline-flex min-h-11 items-center text-sm">
                     {{ t(link.labelKey) }}
                   </a>
                 </li>

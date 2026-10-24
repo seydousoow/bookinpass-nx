@@ -3,13 +3,9 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { catchError, of } from 'rxjs';
 import { TranslocoDirective } from '@jsverse/transloco';
-import { Button } from 'components';
-import { DatePicker } from 'components';
-import { Select } from 'components';
+import { Button, DatePicker, Select } from 'components';
 import { IsoDate } from 'utils';
-import { IDateRangeValue } from 'models';
-import { ISelectOption } from 'models';
-import { IBusSearch } from 'models';
+import { IBusSearch, IDateRangeValue, ISelectOption } from 'models';
 import { BusService } from '../bus.service';
 import { BUS_LIMITS, dakarToday, shiftDay, toBusQueryParams } from '../bus-search-params';
 

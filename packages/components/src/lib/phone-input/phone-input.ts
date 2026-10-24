@@ -95,6 +95,13 @@ export class PhoneInput implements FormValueControl<string> {
   protected readonly showErrors = computed(() => this.touched() && this.invalid());
   /** Recherche dans la liste : nom (sans accents ni casse), indicatif (`33`, `+33`) ou code ISO (`FR`). */
   protected readonly query = signal('');
+  private readonly lang = inject(TranslocoService).activeLang;
+  protected readonly countries = computed((): ICountryOption[] => {
+    const names = new Intl.DisplayNames([this.lang()], { type: 'region' });
+    return getCountries()
+      .map((code) => ({ code, name: names.of(code) ?? code, dial: getCountryCallingCode(code) }))
+      .sort((a, b) => a.name.localeCompare(b.name, this.lang()));
+  });
   protected readonly filtered = computed(() => {
     const query = normalize(this.query().trim());
     if (!query) {
@@ -106,13 +113,6 @@ export class PhoneInput implements FormValueControl<string> {
     );
   });
   protected readonly selectedName = computed(() => this.countries().find((c) => c.code === this.selected())?.name ?? this.selected());
-  private readonly lang = inject(TranslocoService).activeLang;
-  protected readonly countries = computed((): ICountryOption[] => {
-    const names = new Intl.DisplayNames([this.lang()], { type: 'region' });
-    return getCountries()
-      .map((code) => ({ code, name: names.of(code) ?? code, dial: getCountryCallingCode(code) }))
-      .sort((a, b) => a.name.localeCompare(b.name, this.lang()));
-  });
   private readonly field = viewChild.required<ElementRef<HTMLInputElement>>('field');
   private readonly listBox = viewChild(Listbox);
   private readonly searchField = viewChild<ElementRef<HTMLInputElement>>('searchField');

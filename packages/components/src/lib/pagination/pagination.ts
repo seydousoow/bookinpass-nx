@@ -39,12 +39,12 @@ export function pageItems(current: number, count: number, siblings = 1): TPageIt
   template: `
     @if (pageCount() > 1) {
       <nav *transloco="let t" [attr.aria-label]="t('common.pagination.label')" class="flex flex-wrap items-center justify-between gap-2">
-        <p aria-live="polite" class="text-muted text-xs">{{ t('common.pagination.summary', {from: from(), to: to(), total: total()}) }}</p>
+        <p aria-live="polite" class="text-muted text-xs">{{ t('common.pagination.summary', { from: from(), to: to(), total: total() }) }}</p>
         <ul class="flex items-center gap-1">
           <li>
             <button (click)="go(page() - 1)" [disabled]="page() === 1" [class]="arrowClass" type="button">
               <span class="sr-only">{{ t('common.pagination.previous') }}</span>
-              <ng-icon aria-hidden="true" name="heroChevronLeft"/>
+              <ng-icon aria-hidden="true" name="heroChevronLeft" />
             </button>
           </li>
           @for (item of items(); track $index) {
@@ -52,11 +52,13 @@ export function pageItems(current: number, count: number, siblings = 1): TPageIt
               @if (item === 'gap') {
                 <span aria-hidden="true" class="text-muted px-1 text-sm">…</span>
               } @else {
-                <button (click)="go(item)"
-                        [attr.aria-current]="item === page() ? 'page' : null"
-                        [attr.aria-label]="t('common.pagination.page', {page: item})"
-                        [class]="pageClass(item === page())"
-                        type="button">
+                <button
+                  (click)="go(item)"
+                  [attr.aria-current]="item === page() ? 'page' : null"
+                  [attr.aria-label]="t('common.pagination.page', { page: item })"
+                  [class]="pageClass(item === page())"
+                  type="button"
+                >
                   {{ item }}
                 </button>
               }
@@ -65,7 +67,7 @@ export function pageItems(current: number, count: number, siblings = 1): TPageIt
           <li>
             <button (click)="go(page() + 1)" [disabled]="page() === pageCount()" [class]="arrowClass" type="button">
               <span class="sr-only">{{ t('common.pagination.next') }}</span>
-              <ng-icon aria-hidden="true" name="heroChevronRight"/>
+              <ng-icon aria-hidden="true" name="heroChevronRight" />
             </button>
           </li>
         </ul>

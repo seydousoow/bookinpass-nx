@@ -1,14 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core';
 import { NgIcon, NgIconStack, provideIcons } from '@ng-icons/core';
-import {
-  heroBriefcaseSolid,
-  heroChevronRightSolid,
-  heroLightBulbSolid,
-  heroQuestionMarkCircleSolid,
-  heroShoppingBagSolid,
-} from '@ng-icons/heroicons/solid';
-import { Button } from 'components';
-import { Viewport } from 'components';
+import { heroBriefcaseSolid, heroChevronRightSolid, heroLightBulbSolid, heroQuestionMarkCircleSolid, heroShoppingBagSolid } from '@ng-icons/heroicons/solid';
+import { Button, Viewport } from 'components';
 import { IFlightOffer, IFlightSegment, IOfferSlice } from 'models';
 import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { MoneyPipe } from 'pipes';
@@ -25,10 +18,9 @@ import { sellingTotal } from 'utils';
 })
 export class FlightOfferCard {
   readonly offer = input.required<IFlightOffer>();
+  readonly selected = output<void>();
   /** Prix de vente : total Duffel + frais de service BIP. */
   protected readonly total = computed(() => sellingTotal(this.offer()));
-  readonly selected = output<void>();
-
   protected readonly outbound = computed(() => this.offer().slices[0]);
 
   protected readonly inbound = computed(() => {
@@ -91,9 +83,7 @@ export class FlightOfferCard {
   }
 
   protected hasCabinBaggage(slice: IOfferSlice): boolean {
-    return slice.segments.some((segment) =>
-      segment.passengers.some((passenger) => passenger.baggages.some((baggage) => baggage.type === 'carry_on')),
-    );
+    return slice.segments.some((segment) => segment.passengers.some((passenger) => passenger.baggages.some((baggage) => baggage.type === 'carry_on')));
   }
 
   protected isChangeable(): boolean {

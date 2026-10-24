@@ -3,8 +3,7 @@ import { TranslocoDirective } from '@jsverse/transloco';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroMinus, heroPlus, heroUser } from '@ng-icons/heroicons/outline';
 import { MoneyPipe } from 'pipes';
-import { IService } from 'models';
-import { TPassengerType } from 'models';
+import { IService, TPassengerType } from 'models';
 import { IBagLine, IncludedBags } from '../included-bags/included-bags';
 import { IExtraBagGroup, TBagSelection } from './extra-bags.util';
 

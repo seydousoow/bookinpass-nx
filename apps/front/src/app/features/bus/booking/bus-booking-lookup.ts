@@ -3,9 +3,7 @@ import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { TranslocoDirective } from '@jsverse/transloco';
-import { Button } from 'components';
-import { Input } from 'components';
-import { Spinner } from 'components';
+import { Button, Input, Spinner } from 'components';
 import { BusService } from '../bus.service';
 import { BusTickets } from './bus-tickets';
 
@@ -29,11 +27,7 @@ import { BusTickets } from './bus-tickets';
         }
       }
       @if (!result.hasValue()) {
-        <form
-          (submit)="open($event)"
-          class="rounded-card border-border-subtle bg-surface-card grid gap-4 border p-4 sm:grid-cols-[1fr_1fr_auto] sm:items-end"
-          novalidate
-        >
+        <form (submit)="open($event)" class="rounded-card border-border-subtle bg-surface-card grid gap-4 border p-4 sm:grid-cols-[1fr_1fr_auto] sm:items-end" novalidate>
           <bip-input [(value)]="reference" autocomplete="off" label="bus.lookup.reference" name="reference" />
           <bip-input [(value)]="lastName" autocomplete="family-name" label="bus.lookup.last-name" name="last-name" />
           <button [disabled]="!reference()?.trim() || !lastName()?.trim()" bipButton type="submit" variant="primary">{{ t('submit') }}</button>
@@ -50,17 +44,16 @@ export class BusBookingLookup {
   protected readonly reference = signal<string | null>(null);
   protected readonly lastName = signal<string | null>(null);
   protected readonly lookup = computed(() => (this.n() && this.l() ? { reference: this.n()!, lastName: this.l()! } : null));
-
-  private readonly api = inject(BusService);
-  private readonly router = inject(Router);
-  protected readonly result = rxResource({
-    params: () => this.lookup() ?? undefined,
-    stream: ({ params }) => this.api.booking(params.reference, params.lastName),
-  });
   protected readonly notFound = computed(() => {
     const error = this.result.error();
     return error instanceof HttpErrorResponse && error.status === HttpStatusCode.NotFound;
   });
+  private readonly api = inject(BusService);
+  protected readonly result = rxResource({
+    params: () => this.lookup() ?? undefined,
+    stream: ({ params }) => this.api.booking(params.reference, params.lastName),
+  });
+  private readonly router = inject(Router);
 
   protected open(event: Event): void {
     event.preventDefault();

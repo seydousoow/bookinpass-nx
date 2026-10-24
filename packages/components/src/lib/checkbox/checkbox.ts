@@ -29,10 +29,7 @@ export class Checkbox implements FormCheckboxControl {
   readonly touch = output<void>();
 
   readonly controlClass = computed(() => {
-    const base = [
-      'h-4 w-4 shrink-0 rounded-lg border-2 bip-focusable accent-brand-primary',
-      this.touched() && this.invalid() ? 'border-state-error' : 'border-border-strong',
-    ];
+    const base = ['h-4 w-4 shrink-0 rounded-lg border-2 bip-focusable accent-brand-primary', this.touched() && this.invalid() ? 'border-state-error' : 'border-border-strong'];
     if (this.disabled()) {
       base.push('cursor-not-allowed pointer-events-none opacity-50');
     } else {
