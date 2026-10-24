@@ -19,6 +19,7 @@
     "types": ["*"],
     "paths": {
       "components": ["./packages/components/src/index.ts"],
+      "components/*": ["./packages/components/src/lib/*"],
       "models": ["./packages/models/src/index.ts"],
       "configs": ["./packages/configurations/src/index.ts"],
       "utils": ["./packages/utils/src/index.ts"],
