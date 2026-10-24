@@ -17,3 +17,8 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    groups:
+      # Toutes les étapes de github/codeql-action doivent avoir la même version.
+      codeql-action:
+        patterns:
+          - github/codeql-action*
