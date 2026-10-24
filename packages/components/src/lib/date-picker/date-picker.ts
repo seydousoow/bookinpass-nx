@@ -9,7 +9,7 @@ import { TranslocoDirective, TranslocoPipe, TranslocoService } from '@jsverse/tr
 import { Button } from '../button/button';
 import { Dropdown } from '../dropdown/dropdown';
 import { addMonths, DayCell, formatDisplay, fromIso, isBetween, IsoDate, isSameDay, monthGrid, monthLabel, todayIso } from './date-utils';
-import { IDateRangeValue } from '@shared/models/search.model';
+import { IDateRangeValue } from 'models';
 
 export type DatePickerMode = 'single' | 'range';
 

@@ -1,5 +1,5 @@
-import { IsoDate } from '@shared/ui/date-picker/date-utils';
-import { IPassengerCount } from '@shared/ui/people-selector/passenger.helper';
+import { IsoDate } from './date.model';
+import { IPassengerCount } from './passenger.model';
 import { IFlightLocation, IFlightOffer, ILoyaltyProgrammeAccount } from './flight.model';
 
 export const CABIN_CLASSES = ['economy', 'premium_economy', 'business', 'first'] as const;

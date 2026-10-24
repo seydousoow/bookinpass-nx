@@ -1,8 +1,6 @@
-export interface IPassengerCount {
-  readonly adults: number;
-  readonly children: number;
-  readonly infants: number;
-}
+import { IPassengerCount } from 'models';
+
+export type { IPassengerCount };
 
 /**
  * Passenger composition rules:

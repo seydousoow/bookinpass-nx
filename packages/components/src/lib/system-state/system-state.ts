@@ -1,8 +1,8 @@
 // noinspection ES6PreferShortImport
 
 import { Component, computed, input, output } from '@angular/core';
-import { AppError } from '../../models/app-error';
-import { SystemStatus } from '../../models/system-state';
+import { AppError } from 'models';
+import { SystemStatus } from 'models';
 import { Button } from '../button/button';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroExclamationCircleSolid } from '@ng-icons/heroicons/solid';

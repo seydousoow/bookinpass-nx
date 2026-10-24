@@ -4,10 +4,5 @@
   "sourceRoot": "packages/components/src",
   "prefix": "bip",
   "projectType": "library",
-  "tags": ["lib", "lint", "test"],
-  "targets": {
-    "lint": {
-      "executor": "@nx/eslint:lint"
-    }
-  }
+  "tags": ["lib", "lint", "test"]
 }

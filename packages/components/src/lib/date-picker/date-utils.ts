@@ -3,11 +3,9 @@
  * une date de voyage est un jour civil, pas un instant. Le format d'échange est
  * `YYYY-MM-DD', directement plaçable dans l'URL (plan §5.2).
  */
-declare const isoDateBrand: unique symbol;
+import { IsoDate } from 'models';
 
-export type IsoDate = string & {
-  readonly [isoDateBrand]: true;
-};
+export type { IsoDate };
 
 export function toIso(date: Date): IsoDate {
   const y = date.getFullYear();

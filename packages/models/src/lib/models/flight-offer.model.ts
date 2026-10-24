@@ -10,7 +10,7 @@ import {
   IService,
   ITaxBreakdown,
   TIntendedPaymentMethod,
-} from '@shared/models/flight.model';
+} from './flight.model';
 
 export interface IFlightOfferResponse {
   data: IFlightOfferDetails;

@@ -1,6 +1,6 @@
 import { booleanAttribute, Component, computed, effect, input, model, output } from '@angular/core';
 // noinspection ES6PreferShortImport
-import { ISelectOption } from '../../models/select.model';
+import { ISelectOption } from 'models';
 import { FormValueControl, ValidationError, WithOptionalFieldTree } from '@angular/forms/signals';
 import { translate, TranslocoDirective } from '@jsverse/transloco';
 import { NgIcon, provideIcons } from '@ng-icons/core';
