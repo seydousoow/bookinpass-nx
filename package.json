@@ -96,5 +96,11 @@
   },
   "nx": {
     "includedScripts": []
+  },
+  "overrides": {
+    "vite": "8.3.5",
+    "nx": {
+      "undici": "7.30.1"
+    }
   }
 }
