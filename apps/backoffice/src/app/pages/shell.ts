@@ -56,13 +56,13 @@ const SECTIONS: readonly Section[] = [
 })
 export class Shell {
   protected readonly session = inject(Session);
-  private readonly router = inject(Router);
-  private readonly transloco = inject(TranslocoService);
   protected readonly languages: BackofficeLang[] = ['fr', 'en'];
   protected readonly entries = computed<readonly NavEntry[]>(() =>
     SECTIONS.filter((section) => !section.roles || this.session.has(...section.roles)).map((section) => ({ labelKey: `nav.${section.key}`, route: section.route })),
   );
   protected readonly leaving = signal(false);
+  private readonly router = inject(Router);
+  private readonly transloco = inject(TranslocoService);
   protected readonly lang = signal(this.transloco.getActiveLang());
 
   /** Langue choisie dans l'en-tête : appliquée et retenue sur l'appareil. */

@@ -1,6 +1,6 @@
 import { of } from 'rxjs';
 import { TicketCheck } from '../core/models';
-import { button, renderPage, staffApiMock, type, get } from '../../testing';
+import { button, get, renderPage, staffApiMock, type } from '../../testing';
 import { ScanPage, TICKET_CODE } from './scan';
 
 const check = (status: TicketCheck['status']): TicketCheck => ({

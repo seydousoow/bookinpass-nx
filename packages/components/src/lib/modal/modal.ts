@@ -1,5 +1,3 @@
-// noinspection ES6PreferShortImport
-
 import { booleanAttribute, Component, input, model, output } from '@angular/core';
 import { CdkTrapFocus } from '@angular/cdk/a11y';
 import { Overlay } from '../overlay/overlay';
@@ -8,6 +6,9 @@ import { lockScrollWhile } from '../scroll-lock/scroll-lock';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroXMarkSolid } from '@ng-icons/heroicons/solid';
 import { TranslocoPipe } from '@jsverse/transloco';
+import { clsx } from 'clsx';
+
+const SIZES = { sm: 'max-w-md', md: 'sm:max-w-lg', lg: 'sm:max-w-2xl' };
 
 @Component({
   selector: 'bip-modal',
@@ -43,8 +44,7 @@ export class Modal {
   }
 
   protected panelClass(): string {
-    const sizes = { sm: 'max-w-md', md: 'sm:max-w-lg', lg: 'sm:max-w-2xl' } as const;
-    return ['relative z-50 flex max-h-[90vh] w-full flex-col bg-surface-card shadow-panel rounded-panel', sizes[this.size()]].join(' ');
+    return clsx('relative z-50 flex max-h-[90vh] w-full flex-col rounded-panel bg-surface-card shadow-panel', SIZES[this.size()]);
   }
 
   protected onBackdrop(): void {

@@ -5,3 +5,5 @@ export * from './lib/utils/duration.utils';
 export * from './lib/utils/booking-timers';
 export * from './lib/utils/passenger.utils';
 export * from './lib/utils/api-error.utils';
+export * from './lib/utils/pagination.utils';
+export * from './lib/utils/phone-number.utils';

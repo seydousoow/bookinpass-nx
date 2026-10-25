@@ -1,0 +1,156 @@
+<section *transloco="let t" class="space-y-4">
+  <a class="bip-focusable rounded-button text-sm font-semibold text-brand-primary" routerLink="/">← {{ t('departure.back') }}</a>
+  @if (detail.isLoading() && !detail.hasValue()) {
+    <bip-spinner class="py-8" label="common.loading" showLabel />
+  } @else if (detail.error()) {
+    <bip-system-state (retry)="detail.reload()" message="errors.departure-not-found" status="error" />
+  } @else if (detail.value(); as v) {
+    @let d = v.departure;
+    <div class="bo-card flex flex-wrap items-start justify-between gap-4">
+      <div>
+        <h1 class="text-xl font-bold">{{ d.origin.place }} → {{ d.destination.place }}</h1>
+        <p>
+          {{ dateTime(d.departs_at) }}
+          @if (d.last_departure_at) {
+            <span class="text-sm text-muted">({{ t('departures.until', { time: time(d.last_departure_at) }) }})</span>
+          }
+        </p>
+        <p class="text-sm text-muted">{{ d.origin.name }} → {{ d.destination.name }}</p>
+        <p class="mt-2 text-sm">
+          {{ t('departures.passengers', { scanned: d.scanned, total: d.passengers }) }} ·
+          {{ d.capacity === null ? t('departures.continuous') : t('departures.seats', { sold: d.sold, held: d.held, capacity: d.capacity }) }}
+        </p>
+        @if (d.departed_at) {
+          <p class="text-sm">{{ t('departure.departed-at', { time: dateTime(d.departed_at) }) }}</p>
+        }
+        @if (d.arrived_at) {
+          <p class="text-sm">{{ t('departure.arrived-at', { time: dateTime(d.arrived_at) }) }}</p>
+        }
+      </div>
+      <div class="flex flex-wrap items-end gap-2">
+        @if (session.chief() && !d.departed_at) {
+          <button (clicked)="act(api.markDeparted(d.id))" [loading]="action.busy()" bipButton>{{ t('departure.mark-departed') }}</button>
+        }
+        @if (session.chief() && d.departed_at && !d.arrived_at) {
+          <button (clicked)="act(api.markArrived(d.id))" [loading]="action.busy()" bipButton>{{ t('departure.mark-arrived') }}</button>
+        }
+        @if (session.manager() && d.capacity !== null) {
+          <bip-input (valueChange)="capacity.set($event)" [min]="1" [step]="1" [value]="capacity()" class="w-28" label="departure.capacity" name="capacity" type="number" />
+          <button (clicked)="resize(d.id)" [disabled]="(capacity() ?? 0) < 1" [loading]="action.busy()" bipButton variant="outline">{{ t('common.save') }}</button>
+        }
+      </div>
+    </div>
+    @if (action.error(); as code) {
+      <p class="text-state-error" role="alert">{{ t('errors.' + code) }}</p>
+    }
+
+    <section class="bo-card">
+      <h2 class="mb-2 font-bold">{{ t('departure.passengers', { count: v.passengers.length }) }}</h2>
+      @if (!v.passengers.length) {
+        <p class="text-sm text-muted">{{ t('departure.no-passengers') }}</p>
+      } @else {
+        <div class="overflow-x-auto">
+          <!-- Cellules espacées et sur une ligne : sur téléphone, le tableau défile plutôt que de coller les colonnes. -->
+          <table class="w-full text-left text-sm whitespace-nowrap [&_td]:py-2 [&_td]:pr-4 [&_th]:py-2 [&_th]:pr-4">
+            <thead class="text-xs text-muted">
+              <tr>
+                <th class="py-2" scope="col">{{ t('departure.name') }}</th>
+                <th scope="col">{{ t('departure.ticket') }}</th>
+                <th scope="col">{{ t('departure.booking') }}</th>
+                <th scope="col">{{ t('departure.phone') }}</th>
+                <th scope="col">{{ t('departure.check') }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (p of v.passengers; track p.code) {
+                <tr class="border-t border-border-subtle">
+                  <td class="py-2 font-semibold">{{ p.family_name }} {{ p.given_name }}</td>
+                  <td class="font-mono">{{ p.code }}</td>
+                  <td class="font-mono">{{ p.reference }}</td>
+                  <td>
+                    <a [href]="'tel:' + p.phone" class="underline">{{ p.phone }}</a>
+                  </td>
+                  <td>
+                    @if (p.scanned_at) {
+                      <span class="font-semibold text-state-success">✓ {{ time(p.scanned_at) }}</span>
+                      <span class="text-xs text-muted"> {{ p.scanned_by }}</span>
+                    } @else {
+                      <span class="text-muted">—</span>
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </section>
+
+    @if (session.chief()) {
+      <section class="bo-card space-y-3">
+        <h2 class="font-bold">{{ t('departure.luggage', { count: v.luggage.length }) }}</h2>
+        @for (l of v.luggage; track l.code) {
+          <div class="flex flex-wrap items-center justify-between gap-2 border-t border-border-subtle pt-2 text-sm">
+            <span
+              ><span class="font-mono font-bold">{{ l.code }}</span> · {{ l.weight_kg }} kg · {{ l.price }} {{ l.currency }}</span
+            >
+            <span>{{ l.sender_name }} → {{ l.receiver_name }} ({{ l.receiver_phone }})</span>
+            <bip-badge [tone]="l.status === 'delivered' ? 'success' : 'neutral'" size="sm">{{ t('luggage.status.' + l.status) }}</bip-badge>
+          </div>
+        }
+        @if (!d.departed_at) {
+          <form [formRoot]="luggageForm" class="grid gap-3 border-t border-border-subtle pt-3 sm:grid-cols-2 lg:grid-cols-4" novalidate>
+            <bip-input [formField]="luggageForm.sender_name" label="luggage.sender" />
+            <bip-phone-input [formField]="luggageForm.sender_phone" label="luggage.sender-phone" />
+            <bip-input [formField]="luggageForm.sender_id_number" label="luggage.sender-id" />
+            <bip-input [formField]="luggageForm.description" label="luggage.description" />
+            <bip-input [formField]="luggageForm.receiver_name" label="luggage.receiver" />
+            <bip-phone-input [formField]="luggageForm.receiver_phone" label="luggage.receiver-phone" />
+            <bip-input [formField]="luggageForm.weight_kg" [step]="0.1" label="luggage.weight" suffix="kg" type="number" />
+            <bip-input [formField]="luggageForm.price" [step]="1" label="luggage.price" suffix="F CFA" type="number" />
+            <div class="flex flex-wrap items-center gap-3 sm:col-span-2 lg:col-span-4">
+              <button [loading]="action.busy()" bipButton type="submit">{{ t('luggage.register') }}</button>
+              @if (lastLuggage(); as code) {
+                <span class="text-sm" role="status"
+                  >{{ t('luggage.label-code') }} <span class="font-mono text-lg font-bold">{{ code }}</span></span
+                >
+              }
+            </div>
+          </form>
+        }
+      </section>
+    }
+
+    <section class="bo-card space-y-3">
+      <h2 class="font-bold">{{ t('departure.incidents', { count: v.incidents.length }) }}</h2>
+      @for (i of v.incidents; track i.id) {
+        <div class="border-t border-border-subtle pt-2 text-sm">
+          <p>
+            <span class="font-semibold">{{ t('incidents.types.' + i.type) }}</span> · {{ dateTime(i.reported_at) }} · {{ i.reported_by }}
+          </p>
+          <p>{{ i.description }}</p>
+          @if (i.resolved_at) {
+            <p class="text-state-success">✓ {{ i.resolution }}</p>
+          }
+        </div>
+      }
+      <form (submit)="$event.preventDefault(); report(d.id)" class="flex flex-wrap items-end gap-3 border-t border-border-subtle pt-3">
+        <bip-select
+          (valueChange)="incidentType.set($event[0] ?? 'delay')"
+          [options]="incidentTypes()"
+          [value]="[incidentType()]"
+          class="w-56"
+          label="incidents.type"
+          name="incident-type" />
+        <bip-input
+          (valueChange)="incidentText.set($event)"
+          [maxLength]="1000"
+          [value]="incidentText()"
+          class="min-w-64 flex-1"
+          label="incidents.description"
+          name="incident-text" />
+        <button [disabled]="!incidentText()?.trim()" [loading]="action.busy()" bipButton type="submit" variant="outline">{{ t('incidents.report') }}</button>
+      </form>
+    </section>
+  }
+</section>

@@ -1,5 +1,3 @@
-// noinspection ES6PreferShortImport
-
 import {
   afterNextRender,
   afterRenderEffect,
@@ -25,33 +23,10 @@ import { FormValueControl, ValidationError, WithOptionalFieldTree } from '@angul
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroCheckSolid, heroChevronDownSolid } from '@ng-icons/heroicons/solid';
-import { AsYouType, CountryCode, getCountries, getCountryCallingCode, isValidPhoneNumber, parsePhoneNumberFromString } from 'libphonenumber-js/min';
+import { AsYouType, CountryCode, getCountries, getCountryCallingCode, parsePhoneNumberFromString } from 'libphonenumber-js/min';
 import { Field } from '../field/field';
-
-/** Numéro E.164 valide (`+221771234567`) : à utiliser dans le schéma du formulaire, avec `validate`. */
-export function isValidPhone(e164: string | null | undefined): boolean {
-  return !!e164 && isValidPhoneNumber(e164);
-}
-
-interface ICountryOption {
-  readonly code: CountryCode;
-  readonly name: string;
-  /** Indicatif, sans le `+`. */
-  readonly dial: string;
-}
-
-const digits = (text: string): string => text.replace(/\D/g, '');
-const normalize = (text: string): string =>
-  text
-    .normalize('NFD')
-    .replace(/\p{Diacritic}/gu, '')
-    .toLowerCase();
-
-/** Numéro national affichable : forme officielle s'il est complet (`06 12 34 56 78`), sinon mise en forme partielle. */
-function formatNational(national: string, country: CountryCode): string {
-  const parsed = national ? parsePhoneNumberFromString(national, country) : undefined;
-  return parsed?.isPossible() ? parsed.formatNational() : new AsYouType(country).input(national);
-}
+import { clsx } from 'clsx';
+import { formatNational, ICountryOption, normalizePhoneNumber, removeNonDigitsCharacters } from 'utils';
 
 /**
  * Téléphone international : indicatif (drapeau + `+221`) à gauche, numéro mis en forme à la frappe à droite
@@ -95,6 +70,17 @@ export class PhoneInput implements FormValueControl<string> {
   protected readonly showErrors = computed(() => this.touched() && this.invalid());
   /** Recherche dans la liste : nom (sans accents ni casse), indicatif (`33`, `+33`) ou code ISO (`FR`). */
   protected readonly query = signal('');
+  protected readonly filtered = computed(() => {
+    const query = normalizePhoneNumber(this.query().trim());
+    if (!query) {
+      return this.countries();
+    }
+    const dial = removeNonDigitsCharacters(query);
+    return this.countries().filter(
+      (c) => normalizePhoneNumber(c.name).includes(query) || c.code.toLowerCase() === query || (!!dial && dial === query.replace('+', '') && c.dial.startsWith(dial)),
+    );
+  });
+  protected readonly selectedName = computed(() => this.countries().find((c) => c.code === this.selected())?.name ?? this.selected());
   private readonly lang = inject(TranslocoService).activeLang;
   protected readonly countries = computed((): ICountryOption[] => {
     const names = new Intl.DisplayNames([this.lang()], { type: 'region' });
@@ -102,17 +88,6 @@ export class PhoneInput implements FormValueControl<string> {
       .map((code) => ({ code, name: names.of(code) ?? code, dial: getCountryCallingCode(code) }))
       .sort((a, b) => a.name.localeCompare(b.name, this.lang()));
   });
-  protected readonly filtered = computed(() => {
-    const query = normalize(this.query().trim());
-    if (!query) {
-      return this.countries();
-    }
-    const dial = digits(query);
-    return this.countries().filter(
-      (c) => normalize(c.name).includes(query) || c.code.toLowerCase() === query || (!!dial && dial === query.replace('+', '') && c.dial.startsWith(dial)),
-    );
-  });
-  protected readonly selectedName = computed(() => this.countries().find((c) => c.code === this.selected())?.name ?? this.selected());
   private readonly field = viewChild.required<ElementRef<HTMLInputElement>>('field');
   private readonly listBox = viewChild(Listbox);
   private readonly searchField = viewChild<ElementRef<HTMLInputElement>>('searchField');
@@ -170,7 +145,7 @@ export class PhoneInput implements FormValueControl<string> {
       return;
     }
     this.country.set(code);
-    this.national.set(formatNational(digits(this.national()), code));
+    this.national.set(formatNational(removeNonDigitsCharacters(this.national()), code));
     this.emit();
   }
 
@@ -205,7 +180,7 @@ export class PhoneInput implements FormValueControl<string> {
     const atEnd = element.selectionStart === text.length;
     const deleting = (event as InputEvent).inputType?.startsWith('delete');
     if (atEnd && !deleting) {
-      this.setDisplay(element, new AsYouType(this.selected()).input(digits(text)));
+      this.setDisplay(element, new AsYouType(this.selected()).input(removeNonDigitsCharacters(text)));
     } else {
       this.national.set(text);
     }
@@ -218,25 +193,20 @@ export class PhoneInput implements FormValueControl<string> {
     if (this.destroyRef.destroyed) {
       return;
     }
-    this.national.set(formatNational(digits(this.national()), this.selected()));
+    this.national.set(formatNational(removeNonDigitsCharacters(this.national()), this.selected()));
     this.touch.emit();
   }
 
   protected controlClass(): string {
-    const base = ['relative flex min-h-11 w-full items-stretch rounded-field border bg-surface-card transition-colors focus-within:ring-2 focus-within:ring-brand-primary/40'];
-    if (this.showErrors()) {
-      base.push('border-state-error');
-    } else {
-      base.push('border-border-strong hover:border-brand-primary/60');
-    }
-    if (this.disabled()) {
-      base.push('bg-surface-muted cursor-not-allowed opacity-60');
-    }
-    return base.join(' ');
+    return clsx('relative flex min-h-11 w-full items-stretch rounded-field border bg-surface-card transition-colors focus-within:ring-2 focus-within:ring-brand-primary/40', {
+      'border-state-error': this.showErrors(),
+      'border-border-strong hover:border-brand-primary/60': !this.showErrors(),
+      'cursor-not-allowed bg-surface-muted opacity-60': this.disabled(),
+    });
   }
 
   protected optionClass(active: boolean): string {
-    return ['flex items-center gap-2 p-2 text-xs', active ? 'bg-brand-soft text-brand-dark' : 'hover:bg-brand-soft/60'].join(' ');
+    return clsx('flex items-center gap-2 p-2 text-xs', active ? 'bg-brand-soft text-brand-dark' : 'hover:bg-brand-soft/60');
   }
 
   private setDisplay(element: HTMLInputElement, formatted: string): void {
@@ -245,7 +215,7 @@ export class PhoneInput implements FormValueControl<string> {
   }
 
   private emit(): void {
-    const national = digits(this.national());
+    const national = removeNonDigitsCharacters(this.national());
     const parsed = national ? parsePhoneNumberFromString(national, this.selected()) : undefined;
     // Numéro incomplet : on émet tout de même indicatif + chiffres, pour que la validation le signale.
     this.emitted = national ? (parsed?.number ?? `+${this.dial()}${national}`) : '';
@@ -259,7 +229,7 @@ export class PhoneInput implements FormValueControl<string> {
       this.country.set(parsed.country);
       this.national.set(formatNational(parsed.nationalNumber, parsed.country));
     } else {
-      this.national.set(value.startsWith('+') ? value : formatNational(digits(value), this.selected()));
+      this.national.set(value.startsWith('+') ? value : formatNational(removeNonDigitsCharacters(value), this.selected()));
     }
   }
 }

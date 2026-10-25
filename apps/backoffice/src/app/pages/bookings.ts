@@ -80,7 +80,6 @@ const MIN_QUERY = 2;
 })
 export class BookingsPage {
   protected readonly session = inject(Session);
-  private readonly api = inject(StaffApi);
   protected readonly action = createAction();
   protected readonly minQuery = MIN_QUERY;
   protected readonly query = signal<string | null>('');
@@ -88,6 +87,7 @@ export class BookingsPage {
   protected readonly notice = signal<string | null>(null);
   protected readonly dateTime = dakarDateTime;
   protected readonly time = dakarTime;
+  private readonly api = inject(StaffApi);
 
   protected trimmed(): string {
     return (this.query() ?? '').trim();

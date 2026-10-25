@@ -11,5 +11,6 @@
       }
     }
   ],
-  "tailwindStylesheet": "./apps/front/src/styles.css"
+  "tailwindStylesheet": "./apps/front/src/styles.css",
+  "tailwindFunctions": ["clsx"]
 }

@@ -1,6 +1,6 @@
 import { of } from 'rxjs';
-import { DepartureDetail, Luggage } from '../core/models';
-import { button, departure, pick, renderPage, staffApiMock, staffUser, type, get } from '../../testing';
+import { DepartureDetail, Luggage } from '../../core/models';
+import { button, departure, get, pick, renderPage, staffApiMock, staffUser, type } from '../../../testing';
 import { DeparturePage } from './departure';
 
 const detail = (over: Partial<DepartureDetail['departure']> = {}): DepartureDetail => ({

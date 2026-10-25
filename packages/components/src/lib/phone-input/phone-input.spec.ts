@@ -2,7 +2,9 @@ import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { TranslocoTestingModule } from '@jsverse/transloco';
-import { isValidPhone, PhoneInput } from './phone-input';
+// noinspection ES6PreferShortImport
+import { PhoneInput } from './phone-input';
+import { isValidPhone } from 'utils';
 
 @Component({
   imports: [PhoneInput],

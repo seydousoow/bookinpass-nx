@@ -1,6 +1,6 @@
 import { of } from 'rxjs';
 import { Incident, Route } from '../core/models';
-import { button, pick, renderPage, staffApiMock, STATIONS, staffUser, type, get } from '../../testing';
+import { button, get, pick, renderPage, staffApiMock, staffUser, STATIONS, type } from '../../testing';
 import { IncidentsPage } from './incidents';
 
 const INCIDENT: Incident = {

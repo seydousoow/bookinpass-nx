@@ -49,7 +49,7 @@ function apiOrigin(url) {
 
 /** Sources de `connect-src` déclarées dans les en-têtes d'un vercel.json. */
 function connectSources(file) {
-  const config = JSON.parse(readFileSync(file, 'utf8'));
+  const config = JSON.parse(readFileSync(file, { encoding: 'utf8' }));
   const policy = (config.headers ?? []).flatMap((rule) => rule.headers ?? []).find((header) => header.key.toLowerCase() === 'content-security-policy')?.value;
   if (!policy) {
     throw new Error(`${file} : aucune Content-Security-Policy`);

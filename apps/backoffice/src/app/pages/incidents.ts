@@ -98,21 +98,10 @@ import { injectStations, stationOptions } from '../core/stations';
 })
 export class IncidentsPage {
   protected readonly session = inject(Session);
-  private readonly api = inject(StaffApi);
   protected readonly action = createAction();
   protected readonly openOnly = signal(true);
   protected readonly station = signal<number | null>(null);
   protected readonly stations = stationOptions(injectStations(), { all: true });
-  private readonly routes = toSignal(this.session.manager() ? this.api.routes().pipe(catchError(() => of([] as Route[]))) : of([] as Route[]), {
-    initialValue: [] as Route[],
-  });
-  protected readonly routeOptions = computed<readonly ISelectOption<number>[]>(() =>
-    this.routes().map((route) => ({ value: route.id, label: `${route.origin.place} → ${route.destination.place} (${route.origin.name})` })),
-  );
-  protected readonly list = rxResource({
-    params: () => ({ open: this.openOnly(), station: this.station() }),
-    stream: ({ params }) => this.api.incidents(params.open, params.station),
-  });
   protected readonly types = translatedOptions(INCIDENT_TYPES, 'incidents.types.');
   protected readonly routeId = signal<number | null>(null);
   protected readonly type = signal<IncidentType>('delay');
@@ -120,6 +109,17 @@ export class IncidentsPage {
   /** Résolution en cours de saisie, par incident. */
   protected readonly resolutions = signal<Readonly<Record<number, string>>>({});
   protected readonly dateTime = dakarDateTime;
+  private readonly api = inject(StaffApi);
+  protected readonly list = rxResource({
+    params: () => ({ open: this.openOnly(), station: this.station() }),
+    stream: ({ params }) => this.api.incidents(params.open, params.station),
+  });
+  private readonly routes = toSignal(this.session.manager() ? this.api.routes().pipe(catchError(() => of([] as Route[]))) : of([] as Route[]), {
+    initialValue: [] as Route[],
+  });
+  protected readonly routeOptions = computed<readonly ISelectOption<number>[]>(() =>
+    this.routes().map((route) => ({ value: route.id, label: `${route.origin.place} → ${route.destination.place} (${route.origin.name})` })),
+  );
 
   protected setResolution(id: number, text: string | null): void {
     this.resolutions.update((all) => ({ ...all, [id]: text ?? '' }));

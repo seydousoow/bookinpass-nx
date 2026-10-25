@@ -1,6 +1,6 @@
 import { of } from 'rxjs';
 import { Refund } from '../core/models';
-import { button, renderPage, staffApiMock, type, get } from '../../testing';
+import { button, get, renderPage, staffApiMock, type } from '../../testing';
 import { RefundsPage } from './refunds';
 
 const REFUND: Refund = {

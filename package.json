@@ -38,6 +38,7 @@
     "@stripe/stripe-js": "^10.1.0",
     "@tailwindcss/postcss": "^4.3.3",
     "@vercel/speed-insights": "^2.0.0",
+    "clsx": "^2.1.1",
     "country-flag-icons": "^1.6.20",
     "fuse.js": "^7.5.0",
     "jsqr": "1.4.0",

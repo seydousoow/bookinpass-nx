@@ -8,14 +8,14 @@ import { StaffRole, StaffUser } from './models';
 /** Membre du personnel connecté ; `undefined` tant que la session n'a pas été lue. */
 @Injectable({ providedIn: 'root' })
 export class Session {
-  private readonly api = inject(StaffApi);
-  private readonly current = signal<StaffUser | null | undefined>(undefined);
-  readonly user = this.current.asReadonly();
-  readonly role = computed(() => this.current()?.role ?? null);
   /** Admin et manager : toutes les gares, réseau et personnel. */
   readonly manager = computed(() => this.role() === 'admin' || this.role() === 'manager');
   /** Chef de gare ou responsable : départs, bagages, incidents. */
   readonly chief = computed(() => this.manager() || this.role() === 'station_chief');
+  private readonly api = inject(StaffApi);
+  private readonly current = signal<StaffUser | null | undefined>(undefined);
+  readonly user = this.current.asReadonly();
+  readonly role = computed(() => this.current()?.role ?? null);
 
   /** Lit la session une fois (cookie HttpOnly : seul le serveur sait si elle est valable). */
   load(): Promise<StaffUser | null> {

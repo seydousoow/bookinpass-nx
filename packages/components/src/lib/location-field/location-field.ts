@@ -1,5 +1,3 @@
-// noinspection ES6PreferShortImport
-
 import { booleanAttribute, Component, computed, effect, input, model, output, signal } from '@angular/core';
 import { FormValueControl, ValidationError, WithOptionalFieldTree } from '@angular/forms/signals';
 import { Combobox, ComboboxPopup, ComboboxWidget } from '@angular/aria/combobox';
@@ -11,6 +9,7 @@ import { TranslocoDirective, TranslocoPipe } from '@jsverse/transloco';
 import { Spinner } from '../spinner/spinner';
 import { IAirport, ICityGroup, IPlaceSelection } from 'models';
 import { createAirportIndex, searchAirports } from './airport-search';
+import { clsx } from 'clsx';
 
 const SEARCH_MIN_LENGTH = 2;
 const MAX_RESULTS = 180;
@@ -105,27 +104,19 @@ export class LocationField implements FormValueControl<string | null> {
   }
 
   protected wrapperClass(): string {
-    const classes = [
+    return clsx(
       'flex min-h-11 items-center gap-2 rounded-field border bg-surface-card px-3 py-2 transition-colors focus-within:ring-2 focus-within:ring-brand-primary focus-within:ring-offset-2',
-    ];
-
-    if (this.touched() && this.invalid()) {
-      classes.push('border-state-error');
-    } else if (this.opened()) {
-      classes.push('border-brand-primary');
-    } else {
-      classes.push('border-border-strong', 'hover:border-brand-primary/60');
-    }
-
-    if (this.disabled()) {
-      classes.push('cursor-not-allowed', 'bg-surface-muted', 'opacity-60');
-    }
-
-    return classes.join(' ');
+      {
+        'border-state-error': this.touched() && this.invalid(),
+        'border-brand-primary': !(this.touched() && this.invalid()) && this.opened(),
+        'border-border-strong hover:border-brand-primary/60': !(this.touched() && this.invalid()) && !this.opened(),
+        'cursor-not-allowed bg-surface-muted opacity-60': this.disabled(),
+      },
+    );
   }
 
   protected rowClass(active: boolean): string {
-    return ['flex min-h-11 w-full items-center justify-between gap-2 px-3 py-2', active ? 'bg-brand-soft' : 'hover:bg-brand-soft/60'].join(' ');
+    return clsx('flex min-h-11 w-full items-center justify-between gap-2 px-3 py-2', { 'bg-brand-soft': active, 'hover:bg-brand-soft/60': !active });
   }
 
   /**

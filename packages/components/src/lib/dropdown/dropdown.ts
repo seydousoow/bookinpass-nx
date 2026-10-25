@@ -1,5 +1,4 @@
 import { booleanAttribute, Component, input, model } from '@angular/core';
-// noinspection ES6PreferShortImport
 import { OutsideClickDirective } from '../../directives/outside-click.directive';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroChevronDownSolid } from '@ng-icons/heroicons/solid';

@@ -3,18 +3,8 @@
     <bip-radio-group [formField]="searchForm.tripType" [options]="tripTypes" appearance="segmented" hideLabel label />
 
     <div class="grid gap-2 md:grid-cols-2 xl:grid-cols-4">
-      <bip-location-field
-        [airports]="airports.airports()"
-        [formField]="searchForm.origin"
-        [loading]="airports.loading()"
-        label="search.location.origin"
-        placeholder />
-      <bip-location-field
-        [airports]="airports.airports()"
-        [formField]="searchForm.destination"
-        [loading]="airports.loading()"
-        label="search.location.destination"
-        placeholder />
+      <bip-location-field [airports]="airports.airports()" [formField]="searchForm.origin" [loading]="airports.loading()" label="search.location.origin" placeholder />
+      <bip-location-field [airports]="airports.airports()" [formField]="searchForm.destination" [loading]="airports.loading()" label="search.location.destination" placeholder />
       <bip-date-picker
         [formField]="searchForm.dates"
         [label]="pickerLabel"
@@ -28,14 +18,7 @@
 
     <div class="flex flex-wrap items-end gap-3">
       <bip-select [formField]="searchForm.cabin" [options]="cabins()" class="w-full sm:w-56" label="search.cabin.title" />
-      <button
-        [disabled]="searchForm().invalid()"
-        [loading]="searchForm().pending()"
-        bipButton
-        class="ml-auto w-full sm:w-auto"
-        size="lg"
-        type="submit"
-        variant="accent">
+      <button [disabled]="searchForm().invalid()" [loading]="searchForm().pending()" bipButton class="ml-auto w-full sm:w-auto" type="submit" variant="accent">
         {{ t('search.submit') }}
       </button>
     </div>

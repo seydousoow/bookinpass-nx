@@ -15,8 +15,8 @@ export const appRoutes: Route[] = [
     canActivate: [signedInGuard],
     loadComponent: () => import('./pages/shell').then((m) => m.Shell),
     children: [
-      { path: '', pathMatch: 'full', loadComponent: () => import('./pages/departures').then((m) => m.DeparturesPage) },
-      { path: 'departures/:id', loadComponent: () => import('./pages/departure').then((m) => m.DeparturePage) },
+      { path: '', pathMatch: 'full', loadComponent: () => import('./pages/departures/departures').then((m) => m.DeparturesPage) },
+      { path: 'departures/:id', loadComponent: () => import('./pages/departure/departure').then((m) => m.DeparturePage) },
       { path: 'scan', loadComponent: () => import('./pages/scan').then((m) => m.ScanPage) },
       { path: 'luggage', canActivate: [roleGuard], data: { roles: CHIEFS }, loadComponent: () => import('./pages/luggage').then((m) => m.LuggagePage) },
       { path: 'incidents', loadComponent: () => import('./pages/incidents').then((m) => m.IncidentsPage) },

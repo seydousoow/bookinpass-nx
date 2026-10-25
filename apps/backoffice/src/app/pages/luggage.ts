@@ -89,19 +89,19 @@ const LUGGAGE_CODE_LENGTH = 8;
 })
 export class LuggagePage {
   protected readonly session = inject(Session);
-  private readonly api = inject(StaffApi);
   protected readonly action = createAction();
   protected readonly codeLength = LUGGAGE_CODE_LENGTH;
   protected readonly date = signal<string | null>(dakarToday());
   protected readonly station = signal<number | null>(null);
   protected readonly stations = stationOptions(injectStations(), { all: true });
+  protected readonly found = signal<Luggage | null>(null);
+  protected readonly code = signal<string | null>('');
+  protected readonly dateTime = dakarDateTime;
+  private readonly api = inject(StaffApi);
   protected readonly list = rxResource({
     params: () => ({ date: this.date() || dakarToday(), station: this.station() }),
     stream: ({ params }) => this.api.luggage(params.date, params.station),
   });
-  protected readonly found = signal<Luggage | null>(null);
-  protected readonly code = signal<string | null>('');
-  protected readonly dateTime = dakarDateTime;
 
   protected searchCode(): string {
     return (this.code() ?? '').trim().toUpperCase();

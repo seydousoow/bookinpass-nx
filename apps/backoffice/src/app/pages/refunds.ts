@@ -83,16 +83,16 @@ import { dakarDateTime } from '../core/dakar';
   `,
 })
 export class RefundsPage {
-  private readonly api = inject(StaffApi);
   protected readonly action = createAction();
   protected readonly all = signal(false);
+  /** Note de remboursement en cours de saisie, par paiement. */
+  protected readonly notes = signal<Readonly<Record<number, string>>>({});
+  protected readonly dateTime = dakarDateTime;
+  private readonly api = inject(StaffApi);
   protected readonly list = rxResource({
     params: () => this.all(),
     stream: ({ params }) => this.api.refunds(params),
   });
-  /** Note de remboursement en cours de saisie, par paiement. */
-  protected readonly notes = signal<Readonly<Record<number, string>>>({});
-  protected readonly dateTime = dakarDateTime;
 
   protected setNote(id: number, text: string | null): void {
     this.notes.update((all) => ({ ...all, [id]: text ?? '' }));

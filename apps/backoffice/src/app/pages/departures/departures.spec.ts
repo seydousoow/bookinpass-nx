@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { of, throwError } from 'rxjs';
-import { departure, optionsOf, pick, renderPage, staffApiMock, STATIONS, staffUser, type, get } from '../../testing';
+import { departure, get, optionsOf, pick, renderPage, staffApiMock, staffUser, STATIONS, type } from '../../../testing';
 import { DeparturesPage } from './departures';
 
 describe('DeparturesPage', () => {

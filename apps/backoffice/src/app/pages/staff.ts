@@ -137,11 +137,9 @@ function userDraft(user: StaffUser): UserDraft {
 })
 export class StaffPage {
   protected readonly session = inject(Session);
-  private readonly api = inject(StaffApi);
   protected readonly action = createAction();
   protected readonly needsStation = needsStation;
   protected readonly stations = stationOptions(injectStations());
-  protected readonly list = rxResource({ stream: () => this.api.users() });
   /** Rôles proposés : un manager ne donne que ceux d'une gare. */
   protected readonly roleOptions = translatedOptions(
     ROLES,
@@ -151,9 +149,10 @@ export class StaffPage {
   /** Dernier mot de passe provisoire donné : affiché une seule fois, à transmettre à la personne. */
   protected readonly issued = signal<{ username: string; password: string } | null>(null);
   protected readonly dateTime = dakarDateTime;
-
   protected readonly newRole = signal<StaffRole>('inspector');
   protected readonly newStation = signal<number | null>(null);
+  private readonly api = inject(StaffApi);
+  protected readonly list = rxResource({ stream: () => this.api.users() });
   private readonly newUser = signal({ username: '', full_name: '', phone: '' });
   protected readonly createForm = form(
     this.newUser,

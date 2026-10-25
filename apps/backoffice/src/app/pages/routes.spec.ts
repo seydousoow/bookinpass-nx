@@ -1,6 +1,6 @@
 import { of } from 'rxjs';
 import { Route } from '../core/models';
-import { button, optionsOf, pick, renderPage, staffApiMock, STATIONS, type, get } from '../../testing';
+import { button, get, optionsOf, pick, renderPage, staffApiMock, STATIONS, type } from '../../testing';
 import { RoutesPage } from './routes';
 
 const ROUTE: Route = {

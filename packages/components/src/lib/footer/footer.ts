@@ -18,22 +18,22 @@ export interface FooterColumn {
   imports: [RouterLink, TranslocoDirective, NgOptimizedImage],
   host: { class: 'block z-20' },
   template: `
-    <footer *transloco="let t" class="border-border-subtle bg-surface-card border-t">
+    <footer *transloco="let t" class="border-t border-border-subtle bg-surface-card">
       <div class="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:grid-cols-2 lg:grid-cols-4">
         <div class="w-64">
           <div class="relative h-18 w-full">
             <img alt="Book In Pass" fill ngSrc="/images/bip-transparent-logo.png" priority />
           </div>
-          <p class="text-muted mt-3 text-sm">{{ t('footer.tagline') }}</p>
+          <p class="mt-3 text-sm text-muted">{{ t('footer.tagline') }}</p>
         </div>
 
         @for (column of columns(); track column.titleKey) {
           <nav [attr.aria-label]="t(column.titleKey)">
-            <h2 class="text-ink text-sm font-semibold">{{ t(column.titleKey) }}</h2>
+            <h2 class="text-sm font-semibold text-ink">{{ t(column.titleKey) }}</h2>
             <ul class="mt-3 space-y-1">
               @for (link of column.links; track link.labelKey) {
                 <li>
-                  <a [routerLink]="link.route" class="text-muted hover:text-brand-primary bip-focusable rounded-button inline-flex min-h-11 items-center text-sm">
+                  <a [routerLink]="link.route" class="bip-focusable inline-flex min-h-11 items-center rounded-button text-sm text-muted hover:text-brand-primary">
                     {{ t(link.labelKey) }}
                   </a>
                 </li>
@@ -43,8 +43,8 @@ export interface FooterColumn {
         }
       </div>
 
-      <div class="border-border-subtle border-t">
-        <p class="text-muted mx-auto max-w-7xl px-4 py-4 text-xs">© {{ year }} Book In Pass · {{ t('footer.legal') }}</p>
+      <div class="border-t border-border-subtle">
+        <p class="mx-auto max-w-7xl px-4 py-4 text-xs text-muted">© {{ year }} Book In Pass · {{ t('footer.legal') }}</p>
       </div>
     </footer>
   `,

@@ -8,6 +8,7 @@ import { Button } from '../button/button';
 import { Dropdown } from '../dropdown/dropdown';
 import { addMonths, DayCell, formatDisplay, fromIso, isBetween, IsoDate, isSameDay, monthGrid, monthLabel, todayIso } from 'utils';
 import { IDateRangeValue } from 'models';
+import { clsx } from 'clsx';
 
 export type DatePickerMode = 'single' | 'range';
 
@@ -81,14 +82,7 @@ export class DatePicker implements FormValueControl<IDateRangeValue> {
   /**
    * The month that should actually be displayed.
    *
-   * It is clamped between:
-   *
-   *   minDate month
-   *
-   * and
-   *
-   *   maxDate month - visibleMonths + 1
-   *
+   * It is clamped between: minDate month and maxDate month - visibleMonths + 1
    * This prevents rendering months completely outside the allowed range.
    */
   protected readonly displayAnchor = computed(() => {
@@ -107,13 +101,6 @@ export class DatePicker implements FormValueControl<IDateRangeValue> {
     }
 
     // Don't display months after maxDate.
-    //
-    // Example:
-    // visibleMonths = 2
-    // maxDate = March
-    //
-    // Last valid anchor = February
-    // => February | March
     if (max) {
       const maxMonth = this.monthStart(fromIso(max));
       const lastValidAnchor = addMonths(maxMonth, -(visible - 1));
@@ -200,21 +187,12 @@ export class DatePicker implements FormValueControl<IDateRangeValue> {
     const { start, end } = this.value();
     const preview = this.mode() === 'range' && !!start && !end ? this.hovered() : null;
     const inRange = isBetween(cell.iso, start, end) || (!!preview && isBetween(cell.iso, start, preview));
-    const base = ['min-h-9 min-w-9 rounded-button text-sm', 'transition-colors bip-focusable', 'disabled:cursor-not-allowed', 'disabled:opacity-30', 'disabled:line-through'];
-
-    if (this.isEdge(cell.iso)) {
-      base.push('bg-brand-primary', 'text-onbrand', 'font-semibold');
-    } else if (inRange) {
-      base.push('bg-brand-soft', 'text-brand-dark');
-    } else {
-      base.push('text-ink', 'hover:bg-brand-soft');
-    }
-
-    if (cell.iso === todayIso() && !this.isEdge(cell.iso)) {
-      base.push('ring-1 ring-brand-primary/40');
-    }
-
-    return base.join(' ');
+    return clsx('bip-focusable min-h-9 min-w-9 rounded-button text-sm transition-colors disabled:cursor-not-allowed disabled:line-through disabled:opacity-30', {
+      'bg-brand-primary font-semibold text-onbrand': this.isEdge(cell.iso),
+      'bg-brand-soft text-brand-dark': !this.isEdge(cell.iso) && inRange,
+      'text-ink hover:bg-brand-soft': !this.isEdge(cell.iso) && !inRange,
+      'ring-1 ring-brand-primary/40': cell.iso === todayIso() && !this.isEdge(cell.iso),
+    });
   }
 
   protected pick(iso: IsoDate): void {

@@ -1,6 +1,6 @@
 import { of } from 'rxjs';
 import { StaffUser } from '../core/models';
-import { button, optionsOf, pick, renderPage, staffApiMock, STATIONS, staffUser, type, get } from '../../testing';
+import { button, get, optionsOf, pick, renderPage, staffApiMock, staffUser, STATIONS, type } from '../../testing';
 import { needsStation, StaffPage } from './staff';
 
 const COLLEAGUE: StaffUser = { ...staffUser('inspector'), id: 2, username: 'moussa', full_name: 'Moussa Fall' };

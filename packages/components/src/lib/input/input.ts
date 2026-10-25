@@ -3,6 +3,7 @@ import { booleanAttribute, Component, computed, inject, input, model, output } f
 import { Field } from '../field/field';
 import { FormValueControl, ValidationError, WithOptionalFieldTree } from '@angular/forms/signals';
 import { TranslocoService } from '@jsverse/transloco';
+import { clsx } from 'clsx';
 
 export type InputSize = 'sm' | 'md' | 'lg';
 
@@ -97,26 +98,16 @@ export class Input<T = string> implements FormValueControl<T | null> {
   });
 
   protected readonly controlClass = computed(() => {
-    const base = ['w-full rounded-field border bg-surface-card text-ink placeholder:text-muted/70 transition-colors bip-focusable', sizesStyling[this.size()]];
-    if (this.prefix()) {
-      base.push('pl-9');
-    }
-    if (this.suffix()) {
-      base.push('pr-9');
-    }
-    if (this.touched() && this.invalid()) {
-      base.push('border-state-error focus-visible:ring-state-error');
-    } else {
-      base.push('border-border-strong hover:border-brand-primary/60');
-    }
-    if (this.disabled()) {
-      base.push('bg-surface-muted cursor-not-allowed opacity-60');
-    }
-    if (this.readonly()) {
-      base.push('bg-surface-muted');
-    }
-    return base.join(' ');
+    return clsx('bip-focusable w-full rounded-field border bg-surface-card text-ink transition-colors placeholder:text-muted/70', sizesStyling[this.size()], {
+      'pl-9': this.prefix(),
+      'pr-9': this.suffix(),
+      'border-state-error focus-visible:ring-state-error': this.touched() && this.invalid(),
+      'border-border-strong hover:border-brand-primary/60': !(this.touched() && this.invalid()),
+      'cursor-not-allowed bg-surface-muted opacity-60': this.disabled(),
+      'bg-surface-muted': this.readonly(),
+    });
   });
+
   private readonly transloco = inject(TranslocoService);
   readonly _placeholder = computed(() => {
     const value = this.placeholder();
