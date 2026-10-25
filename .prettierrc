@@ -1,4 +1,17 @@
 {
   "singleQuote": true,
-  "printWidth": 180
+  "printWidth": 180,
+  "bracketSameLine": true,
+  "plugins": [
+    "prettier-plugin-tailwindcss"
+  ],
+  "overrides": [
+    {
+      "files": "*.html",
+      "options": {
+        "parser": "angular"
+      }
+    }
+  ],
+  "tailwindStylesheet": "./apps/front/src/styles.css"
 }
