@@ -5,7 +5,7 @@
     <p class="text-state-error" role="alert">{{ t('errors.' + code) }}</p>
   }
 
-  <form (submit)="$event.preventDefault(); create()" class="bo-card grid gap-3 sm:grid-cols-2 lg:grid-cols-6 lg:items-end">
+  <form (submit)="$event.preventDefault(); create()" class="grid gap-3 bo-card sm:grid-cols-2 lg:grid-cols-6 lg:items-end">
     <h2 class="font-bold sm:col-span-2 lg:col-span-6">{{ t('routes.new') }}</h2>
     <bip-select
       (valueChange)="origin.set($event[0] ?? null)"
@@ -35,7 +35,7 @@
   @for (r of list.value() ?? []; track r.id) {
     @let draft = edit(r);
     @let next = schedule(r);
-    <article [class.opacity-60]="!r.active" class="bo-card space-y-3">
+    <article [class.opacity-60]="!r.active" class="space-y-3 bo-card">
       <div class="flex flex-wrap items-end gap-3">
         <div class="mr-auto">
           <h2 class="font-bold">{{ r.origin.place }} → {{ r.destination.place }}</h2>

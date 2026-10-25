@@ -1,6 +1,6 @@
 <section *transloco="let t" class="space-y-4">
   <h1 class="text-xl font-bold">{{ t('bookings.title') }}</h1>
-  <form (submit)="$event.preventDefault(); search()" class="bo-card flex flex-wrap items-end gap-2">
+  <form (submit)="$event.preventDefault(); search()" class="flex flex-wrap items-end gap-2 bo-card">
     <bip-input [(value)]="query" [maxLength]="50" autocomplete="off" class="min-w-64 flex-1" label="bookings.query" name="q" type="search" />
     <button [disabled]="trimmed().length < minQuery" [loading]="action.busy()" bipButton type="submit">{{ t('bookings.search') }}</button>
   </form>
@@ -16,7 +16,7 @@
     }
     <ul class="grid gap-2">
       @for (b of list; track b.reference) {
-        <li class="bo-card space-y-2 text-sm">
+        <li class="space-y-2 bo-card text-sm">
           <div class="flex flex-wrap items-start justify-between gap-2">
             <div>
               <p>

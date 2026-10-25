@@ -7,7 +7,7 @@
     }
   </div>
 
-  <form (submit)="$event.preventDefault(); find()" class="bo-card flex flex-wrap items-end gap-2">
+  <form (submit)="$event.preventDefault(); find()" class="flex flex-wrap items-end gap-2 bo-card">
     <bip-input [(value)]="code" [maxLength]="8" autocapitalize="characters" class="flex-1" label="luggage.search" name="code" />
     <button [disabled]="searchCode().length !== codeLength" [loading]="action.busy()" bipButton type="submit" variant="outline">{{ t('luggage.find') }}</button>
   </form>

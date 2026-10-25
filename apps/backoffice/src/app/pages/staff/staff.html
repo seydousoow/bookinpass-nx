@@ -9,7 +9,7 @@
     </p>
   }
 
-  <form [formRoot]="createForm" class="bo-card grid gap-3 sm:grid-cols-2 lg:grid-cols-3" novalidate>
+  <form [formRoot]="createForm" class="grid gap-3 bo-card sm:grid-cols-2 lg:grid-cols-3" novalidate>
     <h2 class="font-bold sm:col-span-2 lg:col-span-3">{{ t('staff.new') }}</h2>
     <bip-input [formField]="createForm.username" autocapitalize="none" autocomplete="off" label="staff.username" />
     <bip-input [formField]="createForm.full_name" label="staff.full-name" />
@@ -35,7 +35,7 @@
   }
   <ul class="grid gap-2">
     @for (u of list.value() ?? []; track u.id) {
-      <li [class.opacity-60]="!u.active" class="bo-card space-y-3">
+      <li [class.opacity-60]="!u.active" class="space-y-3 bo-card">
         <p class="flex flex-wrap items-center justify-between gap-2 text-sm">
           <span class="flex flex-wrap items-center gap-2">
             <span class="font-semibold">{{ u.full_name }}</span> · <span class="font-mono">{{ u.username }}</span>

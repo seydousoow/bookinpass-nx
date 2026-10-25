@@ -18,7 +18,7 @@
     <ul class="grid gap-2">
       @for (d of departures.value(); track d.id) {
         <li>
-          <a [routerLink]="['/departures', d.id]" class="bo-card bip-focusable flex flex-wrap items-center gap-x-6 gap-y-2 transition-colors hover:border-brand-primary">
+          <a [routerLink]="['/departures', d.id]" class="bip-focusable flex flex-wrap items-center gap-x-6 gap-y-2 bo-card transition-colors hover:border-brand-primary">
             <span class="w-28 text-2xl font-bold">
               {{ time(d.departs_at) }}
               @if (d.last_departure_at) {

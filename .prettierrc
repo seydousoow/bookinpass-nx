@@ -9,6 +9,12 @@
       "options": {
         "parser": "angular"
       }
+    },
+    {
+      "files": "apps/backoffice/**",
+      "options": {
+        "tailwindStylesheet": "./apps/backoffice/src/styles.css"
+      }
     }
   ],
   "tailwindStylesheet": "./apps/front/src/styles.css",

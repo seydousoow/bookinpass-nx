@@ -11,7 +11,7 @@
   }
 
   @if (session.manager()) {
-    <form (submit)="$event.preventDefault(); report()" class="bo-card flex flex-wrap items-end gap-3">
+    <form (submit)="$event.preventDefault(); report()" class="flex flex-wrap items-end gap-3 bo-card">
       <bip-select
         (valueChange)="routeId.set($event[0] ?? null)"
         [options]="routeOptions()"
@@ -36,7 +36,7 @@
   } @else {
     <ul class="grid gap-2">
       @for (i of list.value(); track i.id) {
-        <li class="bo-card space-y-1 text-sm">
+        <li class="space-y-1 bo-card text-sm">
           <p class="flex flex-wrap justify-between gap-2">
             <span class="font-semibold">{{ t('incidents.types.' + i.type) }} · {{ i.origin }} → {{ i.destination }}</span>
             <span class="text-muted">{{ dateTime(i.reported_at) }} · {{ i.reported_by }}</span>
