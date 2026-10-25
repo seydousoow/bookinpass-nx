@@ -12,7 +12,12 @@ if [ -z "$previous" ] || ! git cat-file -e "$previous^{commit}" 2>/dev/null; the
   exit 1
 fi
 
-if npx nx show projects --affected --base="$previous" --head=HEAD | grep -qx "$project"; then
+# Liste des projets touchés en JSON : un format stable, quelle que soit la sortie (terminal ou non).
+affected="$(npx nx show projects --affected --json --base="$previous" --head=HEAD)" || {
+  echo "vercel-ignore : projets touchés inconnus, construction de $project"
+  exit 1
+}
+if printf '%s' "$affected" | node -e 'let s="";process.stdin.on("data",(d)=>(s+=d)).on("end",()=>process.exit(JSON.parse(s).includes(process.argv[1])?0:1))' "$project"; then
   echo "vercel-ignore : $project touché depuis $previous, construction"
   exit 1
 fi
