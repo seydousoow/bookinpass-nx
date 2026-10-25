@@ -3,7 +3,8 @@ import { applyEach, email, form, FormField, maxLength, pattern, required, valida
 import { TranslocoDirective } from '@jsverse/transloco';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroUser } from '@ng-icons/heroicons/outline';
-import { Input, isValidPhone, PhoneInput } from 'components';
+import { Input, PhoneInput } from 'components';
+import { isValidPhone } from 'utils/phone-number.utils';
 import { IBusTravellerDetails } from './bus-draft';
 
 /** Lettres (accents compris), espaces, apostrophes et traits d'union. */
@@ -22,14 +23,14 @@ const NAME_PATTERN = /^[\p{L}' -]+$/u;
     <form *transloco="let t; prefix: 'bus.travellers'" class="space-y-6" novalidate>
       <section>
         <h2 class="text-xl font-bold">{{ t('title') }}</h2>
-        <p class="text-muted mt-1 text-xs">{{ t('subtitle') }}</p>
+        <p class="mt-1 text-xs text-muted">{{ t('subtitle') }}</p>
         <div class="mt-4 grid gap-4">
           @for (passenger of value().passengers; track $index; let i = $index) {
             <section [attr.aria-labelledby]="'bus-passenger-' + i">
               <h3 [id]="'bus-passenger-' + i" class="mb-2 flex items-center gap-2 font-bold">
                 <ng-icon aria-hidden="true" name="heroUser" size="1.25rem" /> {{ t('passenger', { index: i + 1 }) }}
               </h3>
-              <div class="rounded-card border-border-subtle bg-surface-card grid grid-cols-1 gap-4 border p-4 md:grid-cols-2">
+              <div class="grid grid-cols-1 gap-4 rounded-card border border-border-subtle bg-surface-card p-4 md:grid-cols-2">
                 <bip-input [formField]="travellerForm.passengers[i].given_name" autocomplete="given-name" label="bus.travellers.given-name" />
                 <bip-input [formField]="travellerForm.passengers[i].family_name" autocomplete="family-name" label="bus.travellers.family-name" />
               </div>
@@ -39,7 +40,7 @@ const NAME_PATTERN = /^[\p{L}' -]+$/u;
       </section>
       <section>
         <h2 class="text-xl font-bold">{{ t('contact') }}</h2>
-        <div class="rounded-card border-border-subtle bg-surface-card mt-4 grid grid-cols-1 gap-4 border p-4 md:grid-cols-2">
+        <div class="mt-4 grid grid-cols-1 gap-4 rounded-card border border-border-subtle bg-surface-card p-4 md:grid-cols-2">
           <bip-input [formField]="travellerForm.email" autocomplete="email" hint="bus.travellers.email-hint" label="bus.travellers.email" type="email" />
           <bip-phone-input [formField]="travellerForm.phone" hint="bus.travellers.phone-hint" label="bus.travellers.phone" />
         </div>

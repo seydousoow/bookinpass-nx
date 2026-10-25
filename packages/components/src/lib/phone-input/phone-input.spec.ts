@@ -4,7 +4,7 @@ import { By } from '@angular/platform-browser';
 import { TranslocoTestingModule } from '@jsverse/transloco';
 // noinspection ES6PreferShortImport
 import { PhoneInput } from './phone-input';
-import { isValidPhone } from 'utils';
+import { isValidPhone } from 'utils/phone-number.utils';
 
 @Component({
   imports: [PhoneInput],

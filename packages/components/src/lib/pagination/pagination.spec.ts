@@ -1,13 +1,24 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Pagination } from './pagination';
 import { TranslocoTestingModule } from '@jsverse/transloco';
+import { TPageItem } from 'utils';
+
+interface PaginationInternals {
+  pageCount(): number;
+  items(): TPageItem[];
+  from(): number;
+  to(): number;
+  readonly arrowClass: string;
+  pageClass(current: boolean): string;
+  navigate(page: number): void;
+}
 
 describe('Pagination', () => {
   let fixture: ComponentFixture<Pagination>;
   let component: Pagination;
 
-  // Access protected members for focused unit tests.
-  let instance: any;
+  // Membres protégés exercés directement par ces tests unitaires.
+  let instance: PaginationInternals;
 
   const setTotal = (total: number): void => {
     fixture.componentRef.setInput('total', total);
@@ -21,7 +32,7 @@ describe('Pagination', () => {
 
     fixture = TestBed.createComponent(Pagination);
     component = fixture.componentInstance;
-    instance = component;
+    instance = component as unknown as PaginationInternals;
 
     setTotal(100);
   });

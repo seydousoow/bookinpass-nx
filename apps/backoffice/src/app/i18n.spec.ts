@@ -19,11 +19,11 @@ const available = (lang: string) => new Set([...leaves(shared(lang)), ...leaves(
 function sources(dir: string): string[] {
   return readdirSync(dir).flatMap((name) => {
     const path = join(dir, name);
-    return statSync(path).isDirectory() ? sources(path) : name.endsWith('.ts') && !name.endsWith('.spec.ts') ? [readFileSync(path, 'utf8')] : [];
+    return statSync(path).isDirectory() ? sources(path) : /\.(ts|html)$/.test(name) && !name.endsWith('.spec.ts') ? [readFileSync(path, 'utf8')] : [];
   });
 }
 
-/** Clés écrites en toutes lettres : t('…'), attributs traduits des composants, messages des validateurs. */
+/** Clés écrites en toutes lettres (code et gabarits HTML) : t('…'), attributs traduits des composants, messages des validateurs. */
 function literalKeys(): string[] {
   const code = sources(__dirname).join('\n');
   const patterns = [

@@ -9,7 +9,9 @@ import { APP_CONFIG } from 'configs';
 import { TranslocoLocaleService } from '@jsverse/transloco-locale';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroCheck, heroChevronDown, heroInformationCircle, heroUser } from '@ng-icons/heroicons/outline';
-import { Button, Input, isValidPhone, Modal, PhoneInput, Spinner } from 'components';
+import { Button, Input, Modal, PhoneInput, Spinner } from 'components';
+import { deadline, formatMoney, inactivity, REVALIDATE_MS } from 'utils';
+import { isValidPhone } from 'utils/phone-number.utils';
 import {
   IFlightOfferDetails,
   IFlightOfferResponse,
@@ -29,7 +31,6 @@ import { OfferItinerary } from './offer-itinerary/offer-itinerary';
 import { FareOptions } from './fare-options/fare-options';
 import { clearDraft, IContact, loadDraft, saveDraft, STEPS, TStep } from './checkout-draft';
 import { loadContact, saveContact, SearchStore } from 'state';
-import { deadline, formatMoney, inactivity, REVALIDATE_MS } from 'utils';
 import { FlightDetailsLoader } from './flight-details-loader';
 import { ISeatTraveler, SeatSelectionComponent } from './seat-selection/seat-selection';
 import { extraBagGroups, extraBagLines, IExtraBagGroup, TBagSelection, toOrderServices } from './extra-bags/extra-bags.util';

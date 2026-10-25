@@ -11,7 +11,7 @@ import { Session } from '../../core/session';
 import { dakarDateTime, dakarTime } from '../../core/dakar';
 import { DepartureDetail, INCIDENT_TYPES, IncidentType } from '../../core/models';
 import { translatedOptions } from '../../core/options';
-import { isValidPhone } from 'utils';
+import { isValidPhone } from 'utils/phone-number.utils';
 
 interface LuggageDraft {
   sender_name: string;

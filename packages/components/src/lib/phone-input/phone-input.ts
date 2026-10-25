@@ -26,7 +26,7 @@ import { heroCheckSolid, heroChevronDownSolid } from '@ng-icons/heroicons/solid'
 import { AsYouType, CountryCode, getCountries, getCountryCallingCode, parsePhoneNumberFromString } from 'libphonenumber-js/min';
 import { Field } from '../field/field';
 import { clsx } from 'clsx';
-import { formatNational, ICountryOption, normalizePhoneNumber, removeNonDigitsCharacters } from 'utils';
+import { formatNational, ICountryOption, normalizePhoneNumber, removeNonDigitsCharacters } from 'utils/phone-number.utils';
 
 /**
  * Téléphone international : indicatif (drapeau + `+221`) à gauche, numéro mis en forme à la frappe à droite

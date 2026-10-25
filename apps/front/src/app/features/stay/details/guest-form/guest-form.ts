@@ -3,7 +3,8 @@ import { applyEach, email, form, FormField, maxLength, pattern, required, valida
 import { TranslocoDirective } from '@jsverse/transloco';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroUser } from '@ng-icons/heroicons/outline';
-import { Input, isValidPhone, PhoneInput, Textarea } from 'components';
+import { Input, PhoneInput, Textarea } from 'components';
+import { isValidPhone } from 'utils/phone-number.utils';
 import { IGuestName, IStayGuestDetails } from '../stay-draft';
 
 /** Libellé d'un voyageur : « Adulte n° 1 », « Enfant n° 1 · 7 ans ». */

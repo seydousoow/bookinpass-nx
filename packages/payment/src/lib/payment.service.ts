@@ -28,7 +28,7 @@ export class PaymentService {
    * Billet + services choisis (bagages, un par siège), au prix de vente recalculé par le serveur.
    *
    * @param offerId   the ID of the selected offer
-   * @param services  this ids of selected services
+   * @param services  the ids of the selected services
    * @param returnPath page où revenir après un moyen à redirection (chemin du site, ex. `/flight/b2Zm…`)
    * @param attempt    rang du paiement : le même rouvre la même session, un nouveau en ouvre une autre
    */

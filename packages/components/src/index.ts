@@ -14,7 +14,7 @@ export { Modal } from './lib/modal/modal';
 export { Overlay } from './lib/overlay/overlay';
 export { Pagination } from './lib/pagination/pagination';
 export { PassengerSelector } from './lib/passenger-selector/passenger-selector';
-export { isValidPhone, PhoneInput } from './lib/phone-input/phone-input';
+export { PhoneInput } from './lib/phone-input/phone-input';
 export { RadioGroup } from './lib/radio-group/radio-group';
 export { lockScrollWhile, ScrollLock } from './lib/scroll-lock/scroll-lock';
 export { Select } from './lib/select/select';
