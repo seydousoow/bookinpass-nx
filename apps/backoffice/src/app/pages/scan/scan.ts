@@ -3,10 +3,10 @@ import { TranslocoDirective } from '@jsverse/transloco';
 import { Button } from 'components/button/button';
 import { Input } from 'components/input/input';
 import { Spinner } from 'components/spinner/spinner';
-import { createAction } from '../core/action';
-import { StaffApi } from '../core/api';
-import { dakarDateTime, dakarTime } from '../core/dakar';
-import { TicketCheck } from '../core/models';
+import { createAction } from '../../core/action';
+import { StaffApi } from '../../core/api';
+import { dakarDateTime, dakarTime } from '../../core/dakar';
+import { TicketCheck } from '../../core/models';
 
 type Camera = 'off' | 'starting' | 'on' | 'denied' | 'unsupported';
 type Decoder = (data: Uint8ClampedArray, width: number, height: number, options?: { inversionAttempts?: string }) => { data: string } | null;
@@ -25,66 +25,7 @@ const FRAME_MS = 200;
 @Component({
   selector: 'bo-scan',
   imports: [TranslocoDirective, Button, Input, Spinner],
-  template: `
-    <section *transloco="let t" class="mx-auto max-w-lg space-y-4">
-      <h1 class="text-xl font-bold">{{ t('scan.title') }}</h1>
-
-      <div class="bo-card space-y-3">
-        <div [class.hidden]="camera() !== 'on'" class="relative overflow-hidden rounded-card bg-black">
-          <video #video aria-hidden="true" class="aspect-square w-full object-cover" muted playsinline></video>
-          <div class="pointer-events-none absolute inset-[15%] rounded-card border-4 border-white/80"></div>
-        </div>
-        @switch (camera()) {
-          @case ('on') {
-            <button (clicked)="stop()" bipButton block variant="outline">{{ t('scan.stop-camera') }}</button>
-          }
-          @case ('starting') {
-            <bip-spinner label="scan.starting" showLabel />
-          }
-          @default {
-            <button (clicked)="start()" bipButton block>{{ t('scan.start-camera') }}</button>
-            @if (camera() === 'denied') {
-              <p class="text-sm text-state-error" role="alert">{{ t('scan.denied') }}</p>
-            } @else if (camera() === 'unsupported') {
-              <p class="text-sm text-state-error" role="alert">{{ t('scan.unsupported') }}</p>
-            }
-          }
-        }
-        <form (submit)="$event.preventDefault(); submitManual()" class="flex items-end gap-2">
-          <bip-input
-            [(value)]="manual"
-            [maxLength]="10"
-            autocapitalize="characters"
-            autocomplete="off"
-            class="flex-1"
-            hideLabel
-            label="scan.code"
-            name="code"
-            placeholder="scan.code" />
-          <button [disabled]="!validManual()" [loading]="action.busy()" bipButton type="submit">{{ t('scan.check') }}</button>
-        </form>
-      </div>
-
-      @if (action.error(); as code) {
-        <p class="text-state-error" role="alert">{{ t('errors.' + code) }}</p>
-      }
-      @if (result(); as r) {
-        <div [class]="tone(r)" aria-live="assertive" class="rounded-card p-5" role="status">
-          <p class="text-2xl font-bold">{{ t('scan.status.' + r.status) }}</p>
-          <p class="font-mono">{{ r.code }}</p>
-          @if (r.family_name) {
-            <p class="mt-2 text-lg font-semibold">{{ r.given_name }} {{ r.family_name }}</p>
-          }
-          @if (r.origin) {
-            <p>{{ r.origin }} → {{ r.destination }} · {{ dateTime(r.departs_at) }}</p>
-          }
-          @if (r.status === 'already_scanned') {
-            <p class="mt-2 font-semibold">{{ t('scan.scanned-by', { time: time(r.scanned_at), name: r.scanned_by }) }}</p>
-          }
-        </div>
-      }
-    </section>
-  `,
+  templateUrl: './scan.html',
 })
 export class ScanPage {
   protected readonly camera = signal<Camera>('off');

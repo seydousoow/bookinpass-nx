@@ -1,6 +1,6 @@
 import { of } from 'rxjs';
-import { Luggage } from '../core/models';
-import { button, get, renderPage, staffApiMock, staffUser, type } from '../../testing';
+import { Luggage } from '../../core/models';
+import { button, get, renderPage, staffApiMock, staffUser, type } from '../../../testing';
 import { LuggagePage } from './luggage';
 
 const BAG: Luggage = {

@@ -1,8 +1,8 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { of, throwError } from 'rxjs';
-import { Session } from '../core/session';
+import { Session } from '../../core/session';
 import { TestBed } from '@angular/core/testing';
-import { button, renderPage, staffApiMock, staffUser, type } from '../../testing';
+import { button, renderPage, staffApiMock, staffUser, type } from '../../../testing';
 import { LoginPage } from './login';
 
 describe('LoginPage', () => {

@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { TranslocoService } from '@jsverse/transloco';
-import { button, renderPage, staffUser } from '../../testing';
+import { button, renderPage, staffUser } from '../../../testing';
 import { Shell } from './shell';
 
 describe('Shell', () => {

@@ -1,5 +1,5 @@
 import { of } from 'rxjs';
-import { button, renderPage, staffApiMock, staffUser, type } from '../../testing';
+import { button, renderPage, staffApiMock, staffUser, type } from '../../../testing';
 import { PasswordPage } from './password';
 
 describe('PasswordPage', () => {

@@ -1,6 +1,6 @@
 import { of } from 'rxjs';
-import { DeskBooking } from '../core/models';
-import { button, get, renderPage, staffApiMock, staffUser, type } from '../../testing';
+import { DeskBooking } from '../../core/models';
+import { button, get, renderPage, staffApiMock, staffUser, type } from '../../../testing';
 import { BookingsPage } from './bookings';
 
 const BOOKING: DeskBooking = {

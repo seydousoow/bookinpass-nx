@@ -3,10 +3,10 @@ import { Router, RouterOutlet } from '@angular/router';
 import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { Header, NavEntry } from 'components/header/header';
 import { Button } from 'components/button/button';
-import { Session } from '../core/session';
-import { StaffRole } from '../core/models';
-import { BackofficeLang, saveLang } from '../core/lang';
-import { CHIEFS, MANAGERS } from '../app.routes';
+import { Session } from '../../core/session';
+import { StaffRole } from '../../core/models';
+import { BackofficeLang, saveLang } from '../../core/lang';
+import { CHIEFS, MANAGERS } from '../../app.routes';
 
 interface Section {
   readonly key: string;
@@ -30,29 +30,7 @@ const SECTIONS: readonly Section[] = [
 @Component({
   selector: 'bo-shell',
   imports: [RouterOutlet, TranslocoDirective, Header, Button],
-  template: `
-    <ng-container *transloco="let t">
-      <bip-header (currentLangChange)="changeLang($event)" [currentLang]="lang()" [entries]="entries()" [languages]="languages">
-        <div class="flex items-center gap-3" headerActions>
-          @if (session.user(); as user) {
-            <p class="hidden text-right text-xs leading-tight md:block">
-              <span class="block font-semibold text-ink">{{ user.full_name }}</span>
-              <span class="text-muted">
-                {{ t('roles.' + user.role) }}
-                @if (user.station; as station) {
-                  · {{ station.name }}
-                }
-              </span>
-            </p>
-          }
-          <button (clicked)="logout()" [loading]="leaving()" bipButton loadingLabel="app.logout" size="sm" variant="outline">{{ t('app.logout') }}</button>
-        </div>
-      </bip-header>
-      <main class="mx-auto max-w-6xl px-4 py-4">
-        <router-outlet />
-      </main>
-    </ng-container>
-  `,
+  templateUrl: './shell.html',
 })
 export class Shell {
   protected readonly session = inject(Session);
