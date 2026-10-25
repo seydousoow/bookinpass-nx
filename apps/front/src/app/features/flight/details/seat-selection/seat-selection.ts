@@ -1,13 +1,9 @@
 import { Component, computed, effect, inject, input, linkedSignal, model, untracked } from '@angular/core';
 import { httpResource } from '@angular/common/http';
 import { TranslocoDirective } from '@jsverse/transloco';
-import { IFlightOfferDetails } from 'models';
-import { IFlightSegment } from 'models';
-import { TPassengerType } from 'models';
-import { ISeatChoice, ISeatElement, ISeatMap, ISeatMapCabin, ISeatMapsResponse, ISeatService, TSeatMapElement } from 'models';
+import { IFlightOfferDetails, IFlightSegment, ISeatChoice, ISeatElement, ISeatMap, ISeatMapCabin, ISeatMapsResponse, ISeatService, TPassengerType, TSeatMapElement } from 'models';
 import { APP_CONFIG } from 'configs';
-import { Button } from 'components';
-import { Spinner } from 'components';
+import { Button, Spinner } from 'components';
 import { MoneyPipe } from 'pipes';
 import { ancillaryPrice } from 'utils';
 
@@ -71,21 +67,17 @@ export class SeatSelectionComponent {
     }
     return [...byCurrency].map(([currency, amount]) => ({ currency, amount }));
   });
-  protected readonly cabins = computed((): readonly ICabinView[] =>
-    (this.currentMap()?.cabins ?? []).map((cabin) => ({ cabin, sectionWidths: this.sectionWidths(cabin) })),
-  );
   private readonly apiBaseUrl = inject(APP_CONFIG).apiBaseUrl;
-  private readonly seatMaps = httpResource<ISeatMapsResponse>(
-    () => `${this.apiBaseUrl}/flights/offers/${encodeURIComponent(this.offer().id)}/seat-maps`,
-  );
+  protected readonly cabins = computed((): readonly ICabinView[] => (this.currentMap()?.cabins ?? []).map((cabin) => ({ cabin, sectionWidths: this.sectionWidths(cabin) })));
   protected readonly loading = this.seatMaps.isLoading;
-  private readonly maps = computed((): readonly ISeatMap[] => (this.seatMaps.hasValue() ? this.seatMaps.value().data : []));
   /** Panne (fournisseur, réseau) : distincte d'une compagnie sans choix de siège, qui rend une liste vide. */
   protected readonly failed = computed(() => !!this.seatMaps.error());
+  private readonly seatMaps = httpResource<ISeatMapsResponse>(() => `${this.apiBaseUrl}/flights/offers/${encodeURIComponent(this.offer().id)}/seat-maps`);
   /** Aucun plan : la compagnie ne propose pas de choix de siège. */
   protected readonly unavailable = computed(() => !this.loading() && !this.maps().length);
   private readonly mapBySegment = computed(() => new Map(this.maps().map((map) => [map.segment_id, map])));
   protected readonly currentMap = computed(() => this.mapBySegment().get(this.currentSegment() ?? ''));
+  private readonly maps = computed((): readonly ISeatMap[] => (this.seatMaps.hasValue() ? this.seatMaps.value().data : []));
 
   constructor() {
     // Plans reçus : on écarte les choix devenus impossibles (tarif changé, siège parti, brouillon périmé).

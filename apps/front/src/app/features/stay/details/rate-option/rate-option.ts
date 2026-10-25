@@ -1,11 +1,10 @@
 import { Component, computed, input, output, signal } from '@angular/core';
 import { TranslocoDirective } from '@jsverse/transloco';
-import { DatePipe } from 'pipes';
+import { DatePipe, MoneyPipe } from 'pipes';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroCheck, heroChevronDown } from '@ng-icons/heroicons/outline';
 import { IStayRate } from 'models';
 import { cancellationPolicy } from '../rate.util';
-import { MoneyPipe } from 'pipes';
 import { staySellingTotal } from 'utils';
 
 /** Stock affiché à partir de ce seuil : « Plus que 2 chambres ». */

@@ -5,15 +5,12 @@ import { heroCheckCircle, heroHeart, heroPencilSquare, heroShare, heroXMark } fr
 
 import { TranslocoDirective } from '@jsverse/transloco';
 
-import { Button } from 'components';
-import { Overlay } from 'components';
-import { lockScrollWhile } from 'components';
-import { formatDuration } from 'utils';
+import { Button, lockScrollWhile, Overlay } from 'components';
+import { formatDuration, sellingTotal } from 'utils';
 import { IFlightOffer, IOfferSlice } from 'models';
 import { FlightSegmentComponent } from './flight-segment';
 import { CabinAmenities } from './cabin-amenities/cabin-amenities';
 import { MoneyPipe } from 'pipes';
-import { sellingTotal } from 'utils';
 
 interface TBaggageSummary {
   outbound: { checked: number; carryOn: number };

@@ -9,9 +9,7 @@ export function tripKind(order: IBookedOrder): TTripKind {
     return 'one-way';
   }
   const [first, second] = slices;
-  return slices.length === 2 && first.origin.iata_code === second.destination.iata_code && first.destination.iata_code === second.origin.iata_code
-    ? 'return'
-    : 'multi';
+  return slices.length === 2 && first.origin.iata_code === second.destination.iata_code && first.destination.iata_code === second.origin.iata_code ? 'return' : 'multi';
 }
 
 export function cityOf(place: { readonly iata_code: string; readonly city_name?: string | null; readonly name?: string | null }): string {

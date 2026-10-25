@@ -30,10 +30,7 @@ export function conditionLabel(kind: 'refund' | 'change', condition: ICondition 
  * Modification du billet entier. Si elle est refusée mais qu'un vol, lui, est modifiable (aller seul d'un
  * aller-retour…), on le dit plutôt qu'un « non modifiable » qui contredirait le détail par vol.
  */
-export function offerChangeLabel(
-  condition: ICondition | null | undefined,
-  sliceConditions: readonly (ICondition | null | undefined)[],
-): IConditionLabel {
+export function offerChangeLabel(condition: ICondition | null | undefined, sliceConditions: readonly (ICondition | null | undefined)[]): IConditionLabel {
   const label = conditionLabel('change', condition);
   return label.key === 'change-no' && sliceConditions.some((c) => c?.allowed) ? { key: 'change-partial' } : label;
 }

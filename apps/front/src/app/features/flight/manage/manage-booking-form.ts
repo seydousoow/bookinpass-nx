@@ -2,8 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { form, FormField, FormRoot, maxLength, pattern, required } from '@angular/forms/signals';
 import { TranslocoDirective } from '@jsverse/transloco';
-import { Button } from 'components';
-import { Input } from 'components';
+import { Button, Input } from 'components';
 import { errorCode, ManageBookingService } from './manage-booking.service';
 
 /** Onglet « Gérer mon vol » de l'accueil : PNR + nom de famille, puis la page de la réservation. */
@@ -13,12 +12,11 @@ import { errorCode, ManageBookingService } from './manage-booking.service';
   templateUrl: './manage-booking-form.html',
 })
 export class ManageBookingForm {
-  private readonly bookings = inject(ManageBookingService);
-  private readonly router = inject(Router);
-
   protected readonly loading = signal(false);
   /** Clé de traduction de l'erreur du dernier essai. */
   protected readonly error = signal<string | null>(null);
+  private readonly bookings = inject(ManageBookingService);
+  private readonly router = inject(Router);
   private readonly value = signal({
     booking_reference: this.bookings.access()?.booking_reference ?? '',
     last_name: this.bookings.access()?.last_name ?? '',

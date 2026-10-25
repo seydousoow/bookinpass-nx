@@ -1,10 +1,9 @@
 import { Component, computed, input } from '@angular/core';
 import { TranslocoDirective } from '@jsverse/transloco';
-import { DatePipe } from 'pipes';
+import { DatePipe, MoneyPipe } from 'pipes';
 import { IStayQuote, IStayResult } from 'models';
 import { nightsBetween } from '../../search/stay-search-params';
 import { IRateChoice } from '../rate.util';
-import { MoneyPipe } from 'pipes';
 import { staySellingTotal, stayServiceFee } from 'utils';
 
 interface IPriceLine {

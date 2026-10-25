@@ -25,11 +25,7 @@ import { AmenityList } from '../../ui/amenity-list';
               <div>
                 <dt class="font-semibold">{{ t('check-in') }}</dt>
                 <dd>
-                  {{
-                    info.check_in_before_time
-                      ? t('between', { from: info.check_in_after_time, to: info.check_in_before_time })
-                      : t('from', { time: info.check_in_after_time })
-                  }}
+                  {{ info.check_in_before_time ? t('between', { from: info.check_in_after_time, to: info.check_in_before_time }) : t('from', { time: info.check_in_after_time }) }}
                 </dd>
               </div>
             </div>

@@ -44,35 +44,6 @@ export class DatePicker implements FormValueControl<IDateRangeValue> {
 
   protected readonly opened = signal(false);
   protected readonly hovered = signal<IsoDate | null>(null);
-  /**
-   * Previous button is disabled when the first visible month
-   * is already the minDate month.
-   */
-  protected readonly canGoBack = computed(() => {
-    const min = this.minDate();
-    if (!min) {
-      return true;
-    }
-
-    const firstMonth = this.monthStart(this.displayAnchor());
-    const minMonth = this.monthStart(fromIso(min));
-    return firstMonth > minMonth;
-  });
-  /**
-   * Next button is disabled when the last visible month
-   * is already the maxDate month.
-   */
-  protected readonly canGoForward = computed(() => {
-    const max = this.maxDate();
-    if (!max) {
-      return true;
-    }
-
-    const visible = Math.max(1, this.visibleMonths());
-    const lastVisibleMonth = addMonths(this.displayAnchor(), visible - 1);
-    const maxMonth = this.monthStart(fromIso(max));
-    return lastVisibleMonth < maxMonth;
-  });
   private readonly transloco = inject(TranslocoService);
   protected readonly helperText = computed(() => {
     if (this.mode() === 'single') {
@@ -99,21 +70,6 @@ export class DatePicker implements FormValueControl<IDateRangeValue> {
       return formatDisplay(start, locale);
     }
     return !end ? `${formatDisplay(start, locale)} → …` : `${formatDisplay(start, locale)} → ${formatDisplay(end, locale)}`;
-  });
-  protected readonly months = computed(() => {
-    const locale = this.transloco.activeLang();
-    const count = Math.max(1, this.visibleMonths());
-    const anchor = this.displayAnchor();
-
-    return Array.from({ length: count }, (_, index) => {
-      const date = addMonths(anchor, index);
-      const cells = monthGrid(date);
-      const weeks: DayCell[][] = [];
-      for (let week = 0; week < 6; week++) {
-        weeks.push(cells.slice(week * 7, week * 7 + 7));
-      }
-      return { key: `${date.getFullYear()}-${date.getMonth()}`, label: monthLabel(date, locale), weeks };
-    });
   });
   /**
    * First month displayed by the calendar.
@@ -168,6 +124,50 @@ export class DatePicker implements FormValueControl<IDateRangeValue> {
 
     return result;
   });
+  /**
+   * Previous button is disabled when the first visible month
+   * is already the minDate month.
+   */
+  protected readonly canGoBack = computed(() => {
+    const min = this.minDate();
+    if (!min) {
+      return true;
+    }
+
+    const firstMonth = this.monthStart(this.displayAnchor());
+    const minMonth = this.monthStart(fromIso(min));
+    return firstMonth > minMonth;
+  });
+  /**
+   * Next button is disabled when the last visible month
+   * is already the maxDate month.
+   */
+  protected readonly canGoForward = computed(() => {
+    const max = this.maxDate();
+    if (!max) {
+      return true;
+    }
+
+    const visible = Math.max(1, this.visibleMonths());
+    const lastVisibleMonth = addMonths(this.displayAnchor(), visible - 1);
+    const maxMonth = this.monthStart(fromIso(max));
+    return lastVisibleMonth < maxMonth;
+  });
+  protected readonly months = computed(() => {
+    const locale = this.transloco.activeLang();
+    const count = Math.max(1, this.visibleMonths());
+    const anchor = this.displayAnchor();
+
+    return Array.from({ length: count }, (_, index) => {
+      const date = addMonths(anchor, index);
+      const cells = monthGrid(date);
+      const weeks: DayCell[][] = [];
+      for (let week = 0; week < 6; week++) {
+        weeks.push(cells.slice(week * 7, week * 7 + 7));
+      }
+      return { key: `${date.getFullYear()}-${date.getMonth()}`, label: monthLabel(date, locale), weeks };
+    });
+  });
 
   clear(): void {
     this.value.set({ start: null, end: null });
@@ -199,13 +199,7 @@ export class DatePicker implements FormValueControl<IDateRangeValue> {
     const { start, end } = this.value();
     const preview = this.mode() === 'range' && !!start && !end ? this.hovered() : null;
     const inRange = isBetween(cell.iso, start, end) || (!!preview && isBetween(cell.iso, start, preview));
-    const base = [
-      'min-h-9 min-w-9 rounded-button text-sm',
-      'transition-colors bip-focusable',
-      'disabled:cursor-not-allowed',
-      'disabled:opacity-30',
-      'disabled:line-through',
-    ];
+    const base = ['min-h-9 min-w-9 rounded-button text-sm', 'transition-colors bip-focusable', 'disabled:cursor-not-allowed', 'disabled:opacity-30', 'disabled:line-through'];
 
     if (this.isEdge(cell.iso)) {
       base.push('bg-brand-primary', 'text-onbrand', 'font-semibold');

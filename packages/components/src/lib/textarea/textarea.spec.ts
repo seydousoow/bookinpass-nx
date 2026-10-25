@@ -4,14 +4,7 @@ import { Textarea } from './textarea';
 
 @Component({
   imports: [Textarea],
-  template: `<bip-textarea
-    [(value)]="text"
-    (touch)="touches.set(touches() + 1)"
-    [hint]="hint()"
-    [maxLength]="maxLength()"
-    label="stay.request"
-    name="request"
-  />`,
+  template: `<bip-textarea [(value)]="text" (touch)="touches.set(touches() + 1)" [hint]="hint()" [maxLength]="maxLength()" label="stay.request" name="request" />`,
 })
 class Host {
   readonly text = signal('');

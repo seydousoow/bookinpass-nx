@@ -5,13 +5,7 @@ import { Modal } from './modal';
 @Component({
   imports: [Modal],
   template: `
-    <bip-modal
-      [(opened)]="opened"
-      (closed)="closes.set(closes() + 1)"
-      [dismissible]="dismissible()"
-      [backdropDismissible]="backdropDismissible()"
-      title="Confirmer"
-    >
+    <bip-modal [(opened)]="opened" (closed)="closes.set(closes() + 1)" [dismissible]="dismissible()" [backdropDismissible]="backdropDismissible()" title="Confirmer">
       <p>Corps</p>
       <button modalFooter>OK</button>
     </bip-modal>

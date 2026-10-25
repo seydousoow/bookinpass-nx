@@ -55,9 +55,7 @@ export class Select<T = string> implements FormValueControl<T[]> {
   }
 
   protected triggerClass(): string {
-    const base = [
-      'flex min-h-11 w-full items-center gap-2 rounded-field border bg-surface-card px-3 py-2 text-left transition-colors bip-focusable',
-    ];
+    const base = ['flex min-h-11 w-full items-center gap-2 rounded-field border bg-surface-card px-3 py-2 text-left transition-colors bip-focusable'];
     if (this.touched() && this.invalid()) {
       base.push('border-state-error');
     } else {

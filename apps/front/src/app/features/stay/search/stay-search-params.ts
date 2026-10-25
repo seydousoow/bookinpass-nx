@@ -106,5 +106,4 @@ export function toStayQueryParams({ location, dates, guests }: IStaySearch): Rec
 }
 
 /** Une URL de recherche invalide renvoie à l'accueil des hébergements, sans appel à l'API. */
-export const staySearchParamsGuard: CanActivateFn = (route) =>
-  parseStaySearchParams(route.queryParams) ? true : inject(Router).createUrlTree(['/stays']);
+export const staySearchParamsGuard: CanActivateFn = (route) => (parseStaySearchParams(route.queryParams) ? true : inject(Router).createUrlTree(['/stays']));

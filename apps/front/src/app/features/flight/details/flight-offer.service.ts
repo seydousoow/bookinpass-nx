@@ -2,8 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
 import { APP_CONFIG } from 'configs';
-import { IFlightOfferDetails, IFlightOfferResponse, IPassengerUpdate } from 'models';
-import { IIntendedService } from 'models';
+import { IFlightOfferDetails, IFlightOfferResponse, IIntendedService, IPassengerUpdate } from 'models';
 import { IIdentityDocument } from './traveler-form/traveler-form';
 
 /** Voyageur tel que Duffel le réserve (`POST /flights/orders`). */
@@ -56,9 +55,7 @@ export class FlightOfferService {
    * prévus (bagages, sièges) et d'éventuels suppléments. Elle remplace l'offre courante.
    */
   price(offerId: string, services: readonly IIntendedService[]): Observable<IFlightOfferDetails> {
-    return this.http
-      .post<IFlightOfferResponse>(`${this.offersUrl}/${encodeURIComponent(offerId)}/price`, { intended_services: services })
-      .pipe(map((r) => r.data));
+    return this.http.post<IFlightOfferResponse>(`${this.offersUrl}/${encodeURIComponent(offerId)}/price`, { intended_services: services }).pipe(map((r) => r.data));
   }
 
   /** Le backend relit l'offre après la mise à jour (le prix peut changer) : c'est elle qui est rendue. */

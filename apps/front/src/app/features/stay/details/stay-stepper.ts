@@ -17,13 +17,7 @@ import { TStayStep } from './stay-draft';
             class="text-ink flex shrink-0 items-center gap-2 text-sm font-semibold"
           >
             <span
-              [class]="
-                i === active()
-                  ? 'bg-brand-primary border-brand-primary text-onbrand'
-                  : i < active()
-                    ? 'border-brand-primary text-brand-primary'
-                    : 'border-ink'
-              "
+              [class]="i === active() ? 'bg-brand-primary border-brand-primary text-onbrand' : i < active() ? 'border-brand-primary text-brand-primary' : 'border-ink'"
               class="flex size-6 items-center justify-center rounded-full border-2 text-xs"
               >{{ i + 1 }}</span
             >

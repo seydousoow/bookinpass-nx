@@ -1,18 +1,9 @@
 import { Component, computed, effect, inject, input, model, signal, untracked } from '@angular/core';
-import { IAirlineFilter } from 'models';
-import { ISelectOption } from 'models';
+import { IAirlineFilter, IFlightOffer, ISelectOption } from 'models';
 import { CdkTrapFocus } from '@angular/cdk/a11y';
-import { Badge } from 'components';
-import { Button } from 'components';
-import { Checkbox } from 'components';
-import { Overlay } from 'components';
-import { RadioGroup } from 'components';
-import { lockScrollWhile } from 'components';
-import { Viewport } from 'components';
+import { Badge, Button, Checkbox, lockScrollWhile, Overlay, PriceRange, RadioGroup, Slider, Viewport } from 'components';
 import { TranslocoDirective } from '@jsverse/transloco';
-import { IFlightOffer } from 'models';
 import { CurrencyStore } from 'state';
-import { PriceRange, Slider } from 'components';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroFunnelSolid, heroXMarkSolid } from '@ng-icons/heroicons/solid';
 import { IFlightFilter, isFlightFiltering, NO_FLIGHT_FILTER, resetFlightFilter, STOP_OPTIONS, toggleAirline } from './flight-filter.util';
@@ -62,6 +53,8 @@ export class FlightSearchFilter {
     }
     return [...airlines.values()].sort((a, b) => a.name.localeCompare(b.name));
   });
+  /** Sans plafond choisi, le curseur couvre toute la fourchette des offres. */
+  protected readonly budget = computed((): PriceRange => this.value().price ?? { min: 0, max: this.maxPrice() });
   private readonly viewport = inject(Viewport);
   /**
    * Vrai en dessous du point de rupture `md:`. Piloté en JS (et non en CSS
@@ -72,7 +65,6 @@ export class FlightSearchFilter {
    */
   protected readonly isSheetActive = computed(() => this.viewport.isMobile() && this.open());
   protected readonly isSheetHidden = computed(() => this.viewport.isMobile() && !this.open());
-
   private readonly currencyStore = inject(CurrencyStore);
   /** Le budget s'exprime dans la devise choisie par l'utilisateur, comme les prix affichés. */
   protected readonly currency = this.currencyStore.selected;
@@ -85,8 +77,6 @@ export class FlightSearchFilter {
     const step = this.step();
     return prices.length === 0 ? 0 : Math.ceil(Math.max(...prices) / step) * step;
   });
-  /** Sans plafond choisi, le curseur couvre toute la fourchette des offres. */
-  protected readonly budget = computed((): PriceRange => this.value().price ?? { min: 0, max: this.maxPrice() });
 
   constructor() {
     effect(() => {

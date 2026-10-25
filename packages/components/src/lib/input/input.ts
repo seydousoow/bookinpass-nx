@@ -22,22 +22,24 @@ const sizesStyling = {
         @if (prefix()) {
           <span class="text-muted pointer-events-none absolute left-3 flex items-center text-sm">{{ prefix() }}</span>
         }
-        <input (blur)="touch.emit()"
-               (input)="onInput($event)"
-               [attr.aria-describedby]="describedBy()"
-               [attr.aria-invalid]="touched() && invalid()"
-               [attr.autocomplete]="autocomplete()"
-               [attr.max]="dateMax()"
-               [attr.maxlength]="maxLength()"
-               [class]="controlClass()"
-               [disabled]="disabled()"
-               [id]="name()"
-               [name]="name()"
-               [placeholder]="_placeholder()"
-               [readOnly]="readonly()"
-               [required]="required()"
-               [type]="type()"
-               [value]="value() ?? ''" />
+        <input
+          (blur)="touch.emit()"
+          (input)="onInput($event)"
+          [attr.aria-describedby]="describedBy()"
+          [attr.aria-invalid]="touched() && invalid()"
+          [attr.autocomplete]="autocomplete()"
+          [attr.max]="dateMax()"
+          [attr.maxlength]="maxLength()"
+          [class]="controlClass()"
+          [disabled]="disabled()"
+          [id]="name()"
+          [name]="name()"
+          [placeholder]="_placeholder()"
+          [readOnly]="readonly()"
+          [required]="required()"
+          [type]="type()"
+          [value]="value() ?? ''"
+        />
         @if (suffix()) {
           <span class="text-muted pointer-events-none absolute right-3 flex items-center text-sm">{{ suffix() }}</span>
         }
@@ -80,10 +82,7 @@ export class Input<T = string> implements FormValueControl<T | null> {
   });
 
   protected readonly controlClass = computed(() => {
-    const base = [
-      'w-full rounded-field border bg-surface-card text-ink placeholder:text-muted/70 transition-colors bip-focusable',
-      sizesStyling[this.size()],
-    ];
+    const base = ['w-full rounded-field border bg-surface-card text-ink placeholder:text-muted/70 transition-colors bip-focusable', sizesStyling[this.size()]];
     if (this.prefix()) {
       base.push('pl-9');
     }
@@ -103,14 +102,13 @@ export class Input<T = string> implements FormValueControl<T | null> {
     }
     return base.join(' ');
   });
-
-  protected onInput(event: Event): void {
-    this.value.set((event.target as HTMLInputElement).value as T);
-  }
-
   private readonly transloco = inject(TranslocoService);
   readonly _placeholder = computed(() => {
     const value = this.placeholder();
     return value && value.length > 0 ? this.transloco.translate(value) : '';
   });
+
+  protected onInput(event: Event): void {
+    this.value.set((event.target as HTMLInputElement).value as T);
+  }
 }

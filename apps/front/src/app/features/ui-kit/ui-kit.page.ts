@@ -1,17 +1,10 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { AirportStore } from 'state';
-import { appError } from 'models';
-import { CurrencyStore } from 'state';
+import { AirportStore, CurrencyStore } from 'state';
+import { appError, IDateRangeValue, IPassengerCount, IPlaceSelection, ISelectOption, SystemStatus } from 'models';
 import { formatXof } from 'utils';
-import { SystemStatus } from 'models';
-import { ISelectOption } from 'models';
-import { IPlaceSelection } from 'models';
-import { BadgeTone } from 'components';
-import { ButtonSize, ButtonVariant } from 'components';
-import { IPassengerCount } from 'models';
+import { BadgeTone, ButtonSize, ButtonVariant } from 'components';
 import { disabled, form, minLength, required } from '@angular/forms/signals';
-import { IDateRangeValue } from 'models';
 
 interface formModel {
   cabin: string[];
@@ -54,17 +47,7 @@ export class UiKitPage {
     { name: 'panel 18', class: 'rounded-panel' },
     { name: 'pill', class: 'rounded-pill' },
   ];
-  protected readonly buttonVariants: readonly ButtonVariant[] = [
-    'primary',
-    'secondary',
-    'outline',
-    'ghost',
-    'accent',
-    'success',
-    'danger',
-    'warning',
-    'link',
-  ];
+  protected readonly buttonVariants: readonly ButtonVariant[] = ['primary', 'secondary', 'outline', 'ghost', 'accent', 'success', 'danger', 'warning', 'link'];
   protected readonly buttonSizes: readonly ButtonSize[] = ['sm', 'md', 'lg'];
   protected readonly buttonStates = ['normal', 'chargement', 'désactivé'] as const;
   protected readonly badgeTones: readonly BadgeTone[] = ['neutral', 'brand', 'accent', 'success', 'warning', 'error', 'info'];
@@ -92,12 +75,10 @@ export class UiKitPage {
     { label: 'Départ le plus tôt', value: 'departure' },
   ];
   protected readonly allStates: readonly SystemStatus[] = ['idle', 'loading', 'success', 'empty', 'expired', 'partial', 'error', 'offline'];
-  protected readonly sampleError = appError(
-    'PAYMENT_DECLINED',
-    'Le paiement a été refusé par votre banque.',
-    'Votre commande et vos voyageurs sont enregistrés.',
-    { label: 'Réessayer', kind: 'retry' },
-  );
+  protected readonly sampleError = appError('PAYMENT_DECLINED', 'Le paiement a été refusé par votre banque.', 'Votre commande et vos voyageurs sont enregistrés.', {
+    label: 'Réessayer',
+    kind: 'retry',
+  });
   protected readonly sampleOffers = [
     { id: 1, carrier: 'HC', route: 'DSS → CDG', detail: 'Direct · 5 h 45', price: formatXof(385000) },
     { id: 2, carrier: 'AT', route: 'DSS → CDG', detail: '1 escale · 9 h 10', price: formatXof(298000) },

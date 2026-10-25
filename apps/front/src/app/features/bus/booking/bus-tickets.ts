@@ -2,8 +2,7 @@ import { Component, input } from '@angular/core';
 import { TranslocoDirective } from '@jsverse/transloco';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroArrowRight, heroCheckCircle } from '@ng-icons/heroicons/outline';
-import { DatePipe } from 'pipes';
-import { MoneyPipe } from 'pipes';
+import { DatePipe, MoneyPipe } from 'pipes';
 import { IBusBooking } from 'models';
 
 /** Réservation de car et ses billets : trajet, départ (heure de Dakar), gare d'embarquement, un code par passager. */

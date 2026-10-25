@@ -2,8 +2,7 @@ import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { CABIN_CLASSES, IFlightSearch, TCabinClass } from 'models';
 // Par leur chemin : ce garde est chargé au démarrage (routes), le barrel `@shared/ui` y ajouterait tout le kit.
-import { fromIso, IsoDate, todayIso, toIso } from 'utils';
-import { isValidPassengerCount } from 'utils';
+import { fromIso, IsoDate, isValidPassengerCount, todayIso, toIso } from 'utils';
 
 /** Paramètres de l'URL de recherche, tels que le routeur les donne (chaînes, ou absents). */
 export interface ISearchParams {
@@ -72,5 +71,4 @@ export function parseSearchParams(params: ISearchParams): IFlightSearch | null {
 }
 
 /** Une URL de recherche invalide renvoie directement à l'accueil, sans appel à l'API. */
-export const flightSearchParamsGuard: CanActivateFn = (route) =>
-  parseSearchParams(route.queryParams) ? true : inject(Router).createUrlTree(['/flight']);
+export const flightSearchParamsGuard: CanActivateFn = (route) => (parseSearchParams(route.queryParams) ? true : inject(Router).createUrlTree(['/flight']));

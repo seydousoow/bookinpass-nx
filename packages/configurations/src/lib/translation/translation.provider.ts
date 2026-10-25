@@ -42,9 +42,7 @@ const getLangFn = ({ cachedLang, browserLang, defaultLang }: GetLangParams): str
   return browser && AVAILABLE_LANGS.includes(browser) ? browser : defaultLang;
 };
 
-export const LOCALE_TO_CURRENCY: Record<string, string> = Object.fromEntries(
-  Object.values(LANG_TO_LOCALE).map((locale) => [locale, CONTRACT_CURRENCY]),
-);
+export const LOCALE_TO_CURRENCY: Record<string, string> = Object.fromEntries(Object.values(LANG_TO_LOCALE).map((locale) => [locale, CONTRACT_CURRENCY]));
 
 const localeConfig: TranslocoLocaleConfig = {
   defaultLocale: DEFAULT_LOCALE,

@@ -4,9 +4,7 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroArrowRight, heroArrowsRightLeft } from '@ng-icons/heroicons/outline';
 import { DatePipe } from 'pipes';
 import { IFlightSearch } from 'models';
-import { Button } from 'components';
-import { Modal } from 'components';
-import { Viewport } from 'components';
+import { Button, Modal, Viewport } from 'components';
 import { AirportStore } from 'state';
 import { FlightSearchForm } from '../../search-form/flight-search-form';
 

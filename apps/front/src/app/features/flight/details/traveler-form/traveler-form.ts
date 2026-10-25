@@ -3,15 +3,9 @@ import { form, FormField, FormRoot, maxLength, metadata, pattern, REQUIRED, requ
 import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroXMark } from '@ng-icons/heroicons/outline';
-import { Button } from 'components';
+import { Button, Input, Modal, Select } from 'components';
 import { todayIso } from 'utils';
-import { Input } from 'components';
-import { Modal } from 'components';
-import { Select } from 'components';
-import { COUNTRY_CODES } from 'models';
-import { ILoyaltyProgrammeAccount } from 'models';
-import { TPassengerType } from 'models';
-import { ISelectOption } from 'models';
+import { COUNTRY_CODES, ILoyaltyProgrammeAccount, ISelectOption, TPassengerType } from 'models';
 import { AirlineStore } from 'state';
 
 export type TPassengerTitle = 'mr' | 'ms' | 'miss';
@@ -61,8 +55,7 @@ interface ITravelerFormModel {
  * Règle Duffel : espaces, apostrophes, traits d'union et lettres ASCII, Latin-1 et Latin étendu A,
  * sauf Æ æ Ĳ ĳ Œ œ Þ ð. Le backend applique la même.
  */
-const NAME_PATTERN =
-  /^[A-Za-z\u00C0-\u00C5\u00C7-\u00D6\u00D8-\u00DD\u00DF-\u00E5\u00E7-\u00EF\u00F1-\u00F6\u00F8-\u00FF\u0100-\u0131\u0134-\u0151\u0154-\u017F' -]+$/;
+const NAME_PATTERN = /^[A-Za-z\u00C0-\u00C5\u00C7-\u00D6\u00D8-\u00DD\u00DF-\u00E5\u00E7-\u00EF\u00F1-\u00F6\u00F8-\u00FF\u0100-\u0131\u0134-\u0151\u0154-\u017F' -]+$/;
 /** Duffel : 20 caractères au plus pour le prénom comme pour le nom. */
 const NAME_MAX_LENGTH = 20;
 const LOYALTY_NUMBER_PATTERN = /^[A-Za-z0-9-]{1,40}$/;
@@ -180,9 +173,7 @@ export class TravelerForm {
         }
         return PASSPORT_NUMBER_PATTERN.test(number) ? null : { kind: 'pattern', message: 'flight.offer.traveler-form.errors.passport-number' };
       });
-      validate(path.passport.country, ({ value }) =>
-        this.documentsRequired() && !value().length ? { kind: 'required', message: 'common.required-field' } : null,
-      );
+      validate(path.passport.country, ({ value }) => (this.documentsRequired() && !value().length ? { kind: 'required', message: 'common.required-field' } : null));
       validate(path.passport.expiry, ({ value }) => {
         if (!this.documentsRequired()) {
           return null;
@@ -195,9 +186,7 @@ export class TravelerForm {
         if (!expiresOn) {
           return { kind: 'invalid-date', message: 'flight.offer.traveler-form.errors.invalid-date' };
         }
-        return expiresOn < this.lastFlightDate().slice(0, 10)
-          ? { kind: 'expired', message: 'flight.offer.traveler-form.errors.passport-expired' }
-          : null;
+        return expiresOn < this.lastFlightDate().slice(0, 10) ? { kind: 'expired', message: 'flight.offer.traveler-form.errors.passport-expired' } : null;
       });
 
       // Fidélité facultative, mais compagnie et numéro vont ensemble.
@@ -249,8 +238,7 @@ export class TravelerForm {
       given_name: given_name.trim(),
       family_name: family_name.trim(),
       born_on: toIsoDate(birth.day, birth.month[0], birth.year) ?? '',
-      loyalty_programme_accounts:
-        loyalty.airline.length && loyalty.number.trim() ? [{ airline_iata_code: loyalty.airline[0], account_number: loyalty.number.trim() }] : [],
+      loyalty_programme_accounts: loyalty.airline.length && loyalty.number.trim() ? [{ airline_iata_code: loyalty.airline[0], account_number: loyalty.number.trim() }] : [],
     };
   }
 }

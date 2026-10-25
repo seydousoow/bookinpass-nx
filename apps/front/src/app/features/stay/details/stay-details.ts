@@ -6,13 +6,10 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { catchError, EMPTY, exhaustMap, filter, finalize, interval, Observable, tap } from 'rxjs';
 import { TranslocoDirective } from '@jsverse/transloco';
 import { APP_CONFIG } from 'configs';
-import { StaySearchStore } from 'state';
-import { deadline, inactivity, REVALIDATE_MS } from 'utils';
-import { loadContact, saveContact } from 'state';
+import { loadContact, saveContact, StaySearchStore } from 'state';
+import { deadline, formatMoney, inactivity, REVALIDATE_MS } from 'utils';
 import { IStayQuote, IStayRate, IStayResult, IStayResultResponse } from 'models';
-import { Button } from 'components';
-import { Modal } from 'components';
-import { Spinner } from 'components';
+import { Button, Modal, Spinner } from 'components';
 import { toStayQueryParams } from '../search/stay-search-params';
 import { StayBookingService } from './stay-booking.service';
 import { clearStayDraft, IStayGuestDetails, loadStayDraft, saveStayDraft, STAY_STEPS, TStayStep } from './stay-draft';
@@ -25,14 +22,11 @@ import { StayOverview } from './stay-overview/stay-overview';
 import { RoomCard } from './room-card/room-card';
 import { StayReviews } from './stay-reviews/stay-reviews';
 import { StayPriceSummary } from './price-summary/stay-price-summary';
-import { IPaymentAuthorisation, PaymentForm } from 'payment';
-import { ICheckoutSession, PaymentService } from 'payment';
-import { formatMoney } from 'utils';
+import { ICheckoutSession, IPaymentAuthorisation, PaymentForm, PaymentService } from 'payment';
 import { TranslocoLocaleService } from '@jsverse/transloco-locale';
 
 /** Résultat ou tarif retiré chez Duffel (404, 422) ; une coupure réseau, elle, ne prouve rien. */
-const isGone = (error: unknown): boolean =>
-  error instanceof HttpErrorResponse && (error.status === HttpStatusCode.NotFound || error.status === HttpStatusCode.UnprocessableEntity);
+const isGone = (error: unknown): boolean => error instanceof HttpErrorResponse && (error.status === HttpStatusCode.NotFound || error.status === HttpStatusCode.UnprocessableEntity);
 
 const EMPTY_DETAILS: IStayGuestDetails = { guests: [], email: '', phone: '', requests: '' };
 
@@ -48,25 +42,10 @@ const EMPTY_DETAILS: IStayGuestDetails = { guests: [], email: '', phone: '', req
   selector: 'bip-stay-details',
   templateUrl: './stay-details.html',
   host: { class: 'container mx-auto block w-full max-w-6xl p-2' },
-  imports: [
-    TranslocoDirective,
-    Button,
-    Modal,
-    Spinner,
-    StayStepper,
-    StayHeader,
-    StayGallery,
-    StayOverview,
-    RoomCard,
-    StayReviews,
-    GuestForm,
-    StayPriceSummary,
-    PaymentForm,
-  ],
+  imports: [TranslocoDirective, Button, Modal, Spinner, StayStepper, StayHeader, StayGallery, StayOverview, RoomCard, StayReviews, GuestForm, StayPriceSummary, PaymentForm],
 })
 export class StayDetails {
   readonly resultId = input<string>('');
-  protected readonly rooms = computed(() => roomsByPrice(this.result()?.accommodation.rooms ?? []));
   protected readonly steps = STAY_STEPS;
   /** Devis du tarif choisi : prix définitif. Remis à zéro à chaque changement de tarif. */
   protected readonly quote = signal<IStayQuote | null>(null);
@@ -77,17 +56,16 @@ export class StayDetails {
   protected readonly rateLost = signal(false);
   /** « Continuer » sans tarif choisi, ou voyageurs incomplets. */
   protected readonly missingRate = signal(false);
-  /** « Continuer » refusé faute de saisie ; le message disparaît dès que les voyageurs et coordonnées sont complets. */
-  private readonly attempted = signal(false);
-  protected readonly incomplete = computed(() => this.attempted() && this.guestForm()?.valid() !== true);
   protected readonly details = signal<IStayGuestDetails>(EMPTY_DETAILS);
-  /** Un formulaire par voyageur de la recherche : adultes puis enfants, avec leur âge. */
-  protected readonly slots = computed((): IGuestSlot[] => {
-    const seen = { adult: 0, child: 0 };
-    return (this.result()?.guests ?? []).map(({ type, age }) => ({ type, index: ++seen[type], age: type === 'child' ? (age ?? null) : null }));
-  });
   /** Inactivité prolongée : la page se fige derrière une modale qui renvoie à la recherche. */
   protected readonly idle = signal(false);
+  /** Session Stripe de l'étape « Vérifiez et payez », au montant recalculé par le serveur (devis + frais BIP). */
+  protected readonly checkoutSession = signal<ICheckoutSession | null>(null);
+  /** Clé de traduction de l'échec de préparation du paiement. */
+  protected readonly checkoutError = signal<string | null>(null);
+  /** Paiement autorisé (rien n'est débité) ; la réservation Duffel Stays viendra le confirmer puis l'encaisser. */
+  protected readonly authorisation = signal<IPaymentAuthorisation | null>(null);
+  protected readonly rooms = computed(() => roomsByPrice(this.result()?.accommodation.rooms ?? []));
   private readonly apiBaseUrl = inject(APP_CONFIG).apiBaseUrl;
   private readonly api = inject(StayBookingService);
   private readonly _result = httpResource<IStayResultResponse>(() =>
@@ -95,6 +73,13 @@ export class StayDetails {
   );
   protected readonly loading = computed(() => this._result.isLoading() && !this._result.hasValue());
   protected readonly result = computed((): IStayResult | undefined => (this._result.hasValue() ? this._result.value().data : undefined));
+  /** Un formulaire par voyageur de la recherche : adultes puis enfants, avec leur âge. */
+  protected readonly slots = computed((): IGuestSlot[] => {
+    const seen = { adult: 0, child: 0 };
+    return (this.result()?.guests ?? []).map(({ type, age }) => ({ type, index: ++seen[type], age: type === 'child' ? (age ?? null) : null }));
+  });
+  /** « Continuer » refusé faute de saisie ; le message disparaît dès que les voyageurs et coordonnées sont complets. */
+  private readonly attempted = signal(false);
   /** Panne passagère au chargement : on propose de réessayer. */
   protected readonly failed = computed(() => this._result.status() === 'error' && !isGone(this._result.error()));
   /** Résultat expiré : au chargement, à la revalidation ou à son échéance. */
@@ -107,18 +92,12 @@ export class StayDetails {
   protected readonly selectedRateId = this.rateId.asReadonly();
   protected readonly choice = computed(() => findRate(this.result(), this.rateId()));
   private readonly guestForm = viewChild(GuestForm);
+  protected readonly incomplete = computed(() => this.attempted() && this.guestForm()?.valid() !== true);
   /** Brouillon relu (ou absent) : avant, rien n'est enregistré, pour ne pas écraser celui d'avant le rechargement. */
   private readonly restored = signal(false);
-
   private readonly payments = inject(PaymentService);
   private readonly document = inject(DOCUMENT);
   private readonly localeService = inject(TranslocoLocaleService);
-  /** Session Stripe de l'étape « Vérifiez et payez », au montant recalculé par le serveur (devis + frais BIP). */
-  protected readonly checkoutSession = signal<ICheckoutSession | null>(null);
-  /** Clé de traduction de l'échec de préparation du paiement. */
-  protected readonly checkoutError = signal<string | null>(null);
-  /** Paiement autorisé (rien n'est débité) ; la réservation Duffel Stays viendra le confirmer puis l'encaisser. */
-  protected readonly authorisation = signal<IPaymentAuthorisation | null>(null);
   protected readonly authorisedAmount = computed(() => {
     const session = this.checkoutSession();
     return session ? formatMoney(Number(session.amount), session.currency, this.localeService.getLocale()) : '';
@@ -254,6 +233,12 @@ export class StayDetails {
     void (search ? this.router.navigate(['/stays', 'search'], { queryParams: toStayQueryParams(search) }) : this.router.navigate(['/stays']));
   }
 
+  /** Paiement autorisé : le brouillon est effacé, il n'y a plus rien à reprendre. */
+  protected onAuthorised(authorisation: IPaymentAuthorisation): void {
+    this.authorisation.set(authorisation);
+    clearStayDraft(this.resultId());
+  }
+
   /** Devis Duffel du tarif choisi, puis passage à `then`. Tarif disparu : retour au choix, tarifs relus. */
   private verifyRate(then: TStayStep): void {
     const rateId = this.rateId();
@@ -309,12 +294,6 @@ export class StayDetails {
     this.quote.set(null);
     this.rateLost.set(true);
     this.goTo('room');
-  }
-
-  /** Paiement autorisé : le brouillon est effacé, il n'y a plus rien à reprendre. */
-  protected onAuthorised(authorisation: IPaymentAuthorisation): void {
-    this.authorisation.set(authorisation);
-    clearStayDraft(this.resultId());
   }
 
   private expireSession(): void {

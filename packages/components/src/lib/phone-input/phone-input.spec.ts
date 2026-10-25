@@ -1,11 +1,12 @@
 import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { TranslocoTestingModule } from '@jsverse/transloco';
 import { isValidPhone, PhoneInput } from './phone-input';
 
 @Component({
   imports: [PhoneInput],
-  template: `<bip-phone-input [(value)]="phone" label="phone"/>`,
+  template: `<bip-phone-input [(value)]="phone" label="phone" />`,
 })
 class Host {
   readonly phone = signal('');
@@ -66,5 +67,43 @@ describe('PhoneInput', () => {
 
     await type('');
     expect(host.phone()).toBe('');
+  });
+
+  it('n’émet plus rien une fois détruit (blur d’un champ retiré du DOM avec le focus)', async () => {
+    const { fixture } = await setup();
+    const phone = fixture.debugElement.query(By.directive(PhoneInput)).componentInstance as unknown as { onBlur(): void };
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+    fixture.destroy();
+    phone.onBlur();
+    // Angular signale une émission après destruction par un avertissement NG0953, pas par une exception.
+    expect(warn).not.toHaveBeenCalledWith(expect.stringContaining('NG0953'));
+    warn.mockRestore();
+  });
+
+  it('referme la liste des pays après un choix sans émission tardive d’@angular/aria', async () => {
+    // jsdom n'implémente pas scrollIntoView, appelé par la liste pour l'option active.
+    Element.prototype.scrollIntoView = () => undefined;
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+    const { fixture, element, host } = await setup();
+    // Dans le document : le focus et le focusout doivent réellement se produire.
+    document.body.appendChild(element);
+    const pause = () => new Promise((resolve) => setTimeout(resolve, 20));
+
+    element.querySelector<HTMLButtonElement>('button')!.click();
+    await fixture.whenStable();
+    await pause();
+    document.querySelector<HTMLInputElement>('input[ngCombobox]')!.focus();
+    const france = [...document.querySelectorAll<HTMLElement>('[ngOption]')].find((o) => o.textContent?.includes('+33'))!;
+    france.click();
+    // commit() referme la liste au tour suivant, puis le setTimeout de focusout du combobox s'exécute.
+    await pause();
+    await fixture.whenStable();
+
+    expect(document.querySelector('[ngOption]')).toBeNull();
+    expect(element.textContent).toContain('+33');
+    expect(host.phone()).toBe('');
+    expect(warn).not.toHaveBeenCalledWith(expect.stringContaining('NG0953'));
+    warn.mockRestore();
+    element.remove();
   });
 });

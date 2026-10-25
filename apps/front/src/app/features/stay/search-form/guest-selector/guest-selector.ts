@@ -1,8 +1,7 @@
 import { Component, computed, inject, input, model, output, signal } from '@angular/core';
 import { FormValueControl, ValidationError } from '@angular/forms/signals';
 import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
-import { Button } from 'components';
-import { Dropdown } from 'components';
+import { Button, Dropdown } from 'components';
 import { IStayGuests } from 'models';
 import { isValidStayGuests, STAY_LIMITS } from '../../search/stay-search-params';
 

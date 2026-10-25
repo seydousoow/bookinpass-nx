@@ -29,9 +29,7 @@ function fakeStripe(options: { status?: TStatus; loadError?: boolean } = {}) {
   const confirm = jest.fn();
   const checkout = {
     loadActions: jest.fn(async () =>
-      options.loadError
-        ? { type: 'error' }
-        : { type: 'success', actions: { getSession: () => ({ status: { type: options.status ?? 'open' } }), confirm } },
+      options.loadError ? { type: 'error' } : { type: 'success', actions: { getSession: () => ({ status: { type: options.status ?? 'open' } }), confirm } },
     ),
     createForm: jest.fn(() => form),
   };

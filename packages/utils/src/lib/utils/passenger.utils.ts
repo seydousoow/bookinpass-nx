@@ -16,9 +16,7 @@ export function isValidPassengerCount(count: IPassengerCount, maxTotal: number =
   const adults = Number(count.adults);
   const children = Number(count.children ?? 0);
   const infants = Number(count.infants ?? 0);
-  return (
-    adults >= 1 && children >= 0 && infants >= 0 && infants <= adults && children + infants <= adults * 2 && adults + children + infants <= maxTotal
-  );
+  return adults >= 1 && children >= 0 && infants >= 0 && infants <= adults && children + infants <= adults * 2 && adults + children + infants <= maxTotal;
 }
 
 /**

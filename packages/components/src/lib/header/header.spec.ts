@@ -6,9 +6,7 @@ import { Header, NavEntry } from './header';
 
 @Component({
   imports: [Header],
-  template: `
-    <bip-header [(currentLang)]="lang" [(currentCurrency)]="currency" [languages]="languages" [currencies]="currencies()" [entries]="entries" />
-  `,
+  template: ` <bip-header [(currentLang)]="lang" [(currentCurrency)]="currency" [languages]="languages" [currencies]="currencies()" [entries]="entries" /> `,
 })
 class Host {
   readonly lang = signal('fr');

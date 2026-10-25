@@ -5,10 +5,8 @@ import { catchError, of } from 'rxjs';
 import { TranslocoDirective } from '@jsverse/transloco';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroArrowRight, heroChevronLeft, heroChevronRight, heroMagnifyingGlass } from '@ng-icons/heroicons/outline';
-import { DatePipe } from 'pipes';
-import { MoneyPipe } from 'pipes';
-import { Button } from 'components';
-import { Spinner } from 'components';
+import { DatePipe, MoneyPipe } from 'pipes';
+import { Button, Spinner } from 'components';
 import { IBusDeparture } from 'models';
 import { BusService } from '../bus.service';
 import { BUS_LIMITS, dakarToday, parseBusSearch, shiftDay, toBusQueryParams } from '../bus-search-params';
@@ -35,7 +33,8 @@ export class BusSearch {
   /** Heure de Dakar : GMT, quel que soit le fuseau du navigateur. */
   protected readonly time: Intl.DateTimeFormatOptions = { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' };
   protected readonly day: Intl.DateTimeFormatOptions = { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'UTC' };
-
+  protected readonly canGoBack = computed(() => !!this.search() && this.search()!.date > dakarToday());
+  protected readonly canGoForward = computed(() => !!this.search() && this.search()!.date < shiftDay(dakarToday(), BUS_LIMITS.daysAhead));
   private readonly api = inject(BusService);
   private readonly router = inject(Router);
   private readonly places = toSignal(this.api.places().pipe(catchError(() => of([]))), { initialValue: [] });
@@ -44,7 +43,6 @@ export class BusSearch {
     const name = (id: string) => this.places().find((place) => place.id === id)?.name ?? '';
     return search ? { from: name(search.from), to: name(search.to) } : null;
   });
-
   private readonly results = rxResource({
     params: () => this.search() ?? undefined,
     stream: ({ params }) => this.api.departures(params),
@@ -52,8 +50,6 @@ export class BusSearch {
   protected readonly loading = this.results.isLoading;
   protected readonly failed = computed(() => this.results.status() === 'error');
   protected readonly departures = computed((): IBusDeparture[] => (this.results.hasValue() ? this.results.value() : []));
-  protected readonly canGoBack = computed(() => !!this.search() && this.search()!.date > dakarToday());
-  protected readonly canGoForward = computed(() => !!this.search() && this.search()!.date < shiftDay(dakarToday(), BUS_LIMITS.daysAhead));
 
   protected changeDay(days: number): void {
     const search = this.search();

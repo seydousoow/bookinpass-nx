@@ -7,8 +7,7 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroDocumentText } from '@ng-icons/heroicons/outline';
 import { Button } from 'components';
 import { formatDuration } from 'utils';
-import { IFlightOfferDetails } from 'models';
-import { IFlightSegment } from 'models';
+import { IFlightOfferDetails, IFlightSegment } from 'models';
 import { OfferConditions } from '../offer-conditions/offer-conditions';
 
 /** Résumé du vol : compagnie vendeuse, chaque segment avec son appareil, et accès aux conditions du billet. */

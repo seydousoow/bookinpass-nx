@@ -7,12 +7,10 @@ import { catchError, finalize, of } from 'rxjs';
 import { TranslocoDirective } from '@jsverse/transloco';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroArrowRight } from '@ng-icons/heroicons/outline';
-import { DatePipe } from 'pipes';
-import { MoneyPipe } from 'pipes';
+import { DatePipe, MoneyPipe } from 'pipes';
 import { loadContact, saveContact } from 'state';
 import { IPaymentAuthorisation, PaymentForm } from 'payment';
-import { Button } from 'components';
-import { Spinner } from 'components';
+import { Button, Spinner } from 'components';
 import { IBusBooking, IBusDeparture } from 'models';
 import { BusService, IBusHold } from '../bus.service';
 import { BUS_LIMITS, toBusQueryParams } from '../bus-search-params';
@@ -21,8 +19,7 @@ import { BUS_STEPS, clearBusDraft, fitPassengers, IBusDraft, IBusTravellerDetail
 import { BusTravellerForm } from './bus-traveller-form';
 
 /** Code d'erreur stable renvoyé par le serveur (`sold-out`, `hold-expired`…). */
-const codeOf = (error: unknown): string | undefined =>
-  error instanceof HttpErrorResponse ? (error.error as { code?: string } | null)?.code : undefined;
+const codeOf = (error: unknown): string | undefined => (error instanceof HttpErrorResponse ? (error.error as { code?: string } | null)?.code : undefined);
 
 /**
  * Réservation d'un départ de car, en trois étapes : passagers, paiement, billets.
@@ -53,7 +50,17 @@ export class BusBooking {
   protected readonly stepIndex = computed(() => BUS_STEPS.indexOf(this.step()));
   protected readonly time: Intl.DateTimeFormatOptions = { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' };
   protected readonly day: Intl.DateTimeFormatOptions = { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'UTC' };
-
+  protected readonly details = signal<IBusTravellerDetails>({ passengers: [], email: '', phone: '' });
+  protected readonly incomplete = signal(false);
+  protected readonly hold = signal<IBusHold | null>(null);
+  protected readonly holding = signal(false);
+  /** Clé de traduction (sous `bus`) de l'échec du blocage des places. */
+  protected readonly holdError = signal<string | null>(null);
+  protected readonly confirming = signal(false);
+  protected readonly confirmError = signal<string | null>(null);
+  protected readonly booking = signal<IBusBooking | null>(null);
+  /** Paiement mobile : redirection vers PayDunya, puis vérification au retour (en attente de validation sur le téléphone). */
+  protected readonly mobileState = signal<'idle' | 'redirecting' | 'checking' | 'pending' | 'cancelled' | 'failed'>('idle');
   /** Départ choisi : celui de l'URL, sinon celui du brouillon (retour de Stripe). */
   private readonly draft = signal<IBusDraft | null>(null);
   protected readonly choice = computed(() => {
@@ -68,8 +75,11 @@ export class BusBooking {
     }
     return { route, departs, from, to, passengers: count };
   });
-
   private readonly api = inject(BusService);
+  /** Moyens de paiement du serveur : Wave / Orange Money seulement si PayDunya est configuré. */
+  protected readonly methods = toSignal(this.api.paymentMethods().pipe(catchError(() => of({ card: true, mobile_money: false }))), {
+    initialValue: { card: true, mobile_money: false },
+  });
   /** Le départ relu à l'ouverture : prix, gares, places encore disponibles. */
   private readonly lookup = rxResource({
     params: () => {
@@ -84,24 +94,7 @@ export class BusBooking {
   });
   protected readonly loading = this.lookup.isLoading;
   protected readonly failed = computed(() => this.lookup.status() === 'error');
-
-  protected readonly details = signal<IBusTravellerDetails>({ passengers: [], email: '', phone: '' });
   private readonly travellerForm = viewChild(BusTravellerForm);
-  protected readonly incomplete = signal(false);
-
-  protected readonly hold = signal<IBusHold | null>(null);
-  protected readonly holding = signal(false);
-  /** Clé de traduction (sous `bus`) de l'échec du blocage des places. */
-  protected readonly holdError = signal<string | null>(null);
-  protected readonly confirming = signal(false);
-  protected readonly confirmError = signal<string | null>(null);
-  protected readonly booking = signal<IBusBooking | null>(null);
-  /** Moyens de paiement du serveur : Wave / Orange Money seulement si PayDunya est configuré. */
-  protected readonly methods = toSignal(this.api.paymentMethods().pipe(catchError(() => of({ card: true, mobile_money: false }))), {
-    initialValue: { card: true, mobile_money: false },
-  });
-  /** Paiement mobile : redirection vers PayDunya, puis vérification au retour (en attente de validation sur le téléphone). */
-  protected readonly mobileState = signal<'idle' | 'redirecting' | 'checking' | 'pending' | 'cancelled' | 'failed'>('idle');
   private readonly mobileReference = signal<string | null>(null);
   /** Réservation en cours : celle des places bloquées, ou celle payée sur PayDunya. */
   private readonly reference = computed(() => this.hold()?.reference ?? this.mobileReference());

@@ -1,17 +1,9 @@
-import { AirportStore } from 'state';
+import { AirportStore, SearchStore } from 'state';
 import { Component, computed, effect, inject, input, signal, untracked } from '@angular/core';
 import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
-import { ISelectOption } from 'models';
-import { CABIN_CLASSES, IFlightSearch, TCabinClass, TTripType } from 'models';
-import { SearchStore } from 'state';
-import { Button } from 'components';
-import { DatePicker, DatePickerMode } from 'components';
-import { fromIso, isAfterDay, isBeforeDay, todayIso, toIso } from 'utils';
-import { LocationField } from 'components';
-import { PassengerSelector } from 'components';
-import { isValidPassengerCount } from 'utils';
-import { RadioGroup } from 'components';
-import { Select } from 'components';
+import { CABIN_CLASSES, IFlightSearch, ISelectOption, TCabinClass, TTripType } from 'models';
+import { Button, DatePicker, DatePickerMode, LocationField, PassengerSelector, RadioGroup, Select } from 'components';
+import { fromIso, isAfterDay, isBeforeDay, isValidPassengerCount, todayIso, toIso } from 'utils';
 import { form, FormField, FormRoot, required, validate } from '@angular/forms/signals';
 import { Router } from '@angular/router';
 
@@ -30,6 +22,7 @@ export class FlightSearchForm {
     { label: 'search.round-trip', value: 'round' },
     { label: 'search.one-way', value: 'oneway' },
   ];
+  protected readonly airports = inject(AirportStore);
   private readonly search = signal<IFlightSearch>({
     tripType: 'round',
     origin: '',
@@ -115,7 +108,6 @@ export class FlightSearchForm {
   });
   private readonly router = inject(Router);
   private readonly searchStore = inject(SearchStore);
-  protected readonly airports = inject(AirportStore);
   private readonly restoredFromStorage = signal(false);
 
   constructor() {
@@ -156,14 +148,7 @@ export class FlightSearchForm {
     return this.search().tripType === 'round' ? 2 : 1;
   }
 
-  private submitForm({
-    cabin,
-    dates: { end, start },
-    destination: d,
-    origin: o,
-    passengers: { adults, children, infants },
-    tripType: t,
-  }: IFlightSearch) {
+  private submitForm({ cabin, dates: { end, start }, destination: d, origin: o, passengers: { adults, children, infants }, tripType: t }: IFlightSearch) {
     const queryParams: Record<string, string | number> = { t, o, d, from: String(start) };
     if (end) {
       queryParams['to'] = String(end);

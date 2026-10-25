@@ -1,8 +1,7 @@
 // noinspection ES6PreferShortImport
 
 import { Component, computed, input, output } from '@angular/core';
-import { AppError } from 'models';
-import { SystemStatus } from 'models';
+import { AppError, SystemStatus } from 'models';
 import { Button } from '../button/button';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroExclamationCircleSolid } from '@ng-icons/heroicons/solid';
@@ -100,9 +99,7 @@ export class SystemState {
     return defaults[this.status()] ?? '';
   });
 
-  protected readonly actionLabel = computed(
-    () => this.error()?.action.label ?? (this.status() === 'error' || this.status() === 'expired' ? 'Réessayer' : null),
-  );
+  protected readonly actionLabel = computed(() => this.error()?.action.label ?? (this.status() === 'error' || this.status() === 'expired' ? 'Réessayer' : null));
 
   protected panelClass(): string {
     const tones: Record<string, string> = {

@@ -30,12 +30,7 @@ export class PaymentService {
    * @param returnPath page où revenir après un moyen à redirection (chemin du site, ex. `/flight/b2Zm…`)
    * @param attempt    rang du paiement : le même rouvre la même session, un nouveau en ouvre une autre
    */
-  flightCheckout(
-    offerId: string,
-    services: readonly { id: string; quantity: number }[],
-    returnPath: string,
-    attempt: number,
-  ): Observable<ICheckoutSession> {
+  flightCheckout(offerId: string, services: readonly { id: string; quantity: number }[], returnPath: string, attempt: number): Observable<ICheckoutSession> {
     return this.http.post<ICheckoutSession>(`${this.url}/flights/${encodeURIComponent(offerId)}/checkout-session`, {
       services,
       return_path: returnPath,

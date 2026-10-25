@@ -1,27 +1,23 @@
 /* eslint-disable @angular-eslint/no-input-rename */
 import { Component, computed, effect, ElementRef, inject, input, signal, viewChild } from '@angular/core';
 import { ViewportScroller } from '@angular/common';
-import { HttpErrorResponse, HttpStatusCode, httpResource } from '@angular/common/http';
+import { HttpErrorResponse, httpResource, HttpStatusCode } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { TranslocoDirective } from '@jsverse/transloco';
-import { Button } from 'components';
-import { Pagination } from 'components';
-import { Spinner } from 'components';
+import { Button, Pagination, Spinner } from 'components';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { debounceTime, EMPTY, map, switchMap, timer } from 'rxjs';
-import { IFlightSearchResult, TTripType } from 'models';
+import { IFlightOffer, IFlightSearchResult, TTripType } from 'models';
 import { SearchSkeleton } from './skeleton/search-skeleton';
 import { SearchSummary } from './summary/search-summary';
 import { FlightSearchFilter } from './filter/flight-search-filter';
 import { FlightOfferCard } from './offer-card/offer-card';
-import { IFlightOffer } from 'models';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroFunnel, heroMagnifyingGlass } from '@ng-icons/heroicons/outline';
 import { FlightOfferDetails } from './offer-summary/offer-summary';
 import { APP_CONFIG } from 'configs';
-import { SearchStore } from 'state';
+import { CurrencyStore, SearchStore } from 'state';
 import { parseSearchParams } from './search-params';
-import { CurrencyStore } from 'state';
 import { applyFlightFilter, IFlightFilter, NO_FLIGHT_FILTER, resetFlightFilter } from './filter/flight-filter.util';
 import { FlightSort } from './sort/flight-sort';
 import { FLIGHT_SORTS, sortFlights, TFlightSort } from './sort/flight-sort.util';
@@ -35,19 +31,7 @@ const PAGE_SIZE = 15;
   templateUrl: './flight-search.html',
   host: { class: 'flex flex-col p-0' },
   providers: [provideIcons({ heroFunnel, heroMagnifyingGlass })],
-  imports: [
-    Button,
-    TranslocoDirective,
-    SearchSkeleton,
-    SearchSummary,
-    FlightSearchFilter,
-    FlightOfferCard,
-    FlightSort,
-    Pagination,
-    NgIcon,
-    FlightOfferDetails,
-    Spinner,
-  ],
+  imports: [Button, TranslocoDirective, SearchSkeleton, SearchSummary, FlightSearchFilter, FlightOfferCard, FlightSort, Pagination, NgIcon, FlightOfferDetails, Spinner],
 })
 export class FlightSearch {
   readonly tripType = input<TTripType | undefined>(undefined, { alias: 't' });
@@ -61,7 +45,39 @@ export class FlightSearch {
   readonly infants = input(0, { alias: 'inf' });
   readonly cabin = input('economy');
   readonly airlineParam = input<string | undefined>(undefined, { alias: 'ax' });
-
+  readonly hasOffers = computed(() => (this.offers()?.length ?? 0) > 0);
+  readonly selected = signal<IFlightOffer | undefined>(undefined);
+  /** Panne côté API (hors critères refusés, qui renvoient à l'accueil) : on propose de relancer. */
+  readonly failed = computed(() => {
+    const error = this.searchResource.error();
+    return !!error && !this.isRejected(error);
+  });
+  /** Critères du panneau de filtres ; remis à zéro à chaque nouvelle recherche. */
+  protected readonly filter = signal<IFlightFilter>(NO_FLIGHT_FILTER);
+  protected readonly applyingFilter = signal(false);
+  /** Tri choisi au-dessus de la liste ; « le meilleur choix » par défaut. */
+  protected readonly sort = signal<TFlightSort>('best');
+  protected readonly pageSize = PAGE_SIZE;
+  /** Page courante, à partir de 1 ; revient à la première dès que la liste filtrée change. */
+  protected readonly page = signal(1);
+  protected readonly pageOffers = computed(() => {
+    const start = (this.page() - 1) * PAGE_SIZE;
+    return this.sortedOffers()[this.sort()].slice(start, start + PAGE_SIZE);
+  });
+  /** Critères relus de l'URL ; la garde garantit qu'ils sont valides. */
+  protected readonly search = computed(() =>
+    parseSearchParams({
+      t: this.tripType(),
+      o: this.origin(),
+      d: this.destination(),
+      from: this.from(),
+      to: this.to(),
+      adt: this.adults(),
+      chd: this.children(),
+      inf: this.infants(),
+      cabin: this.cabin(),
+    }),
+  );
   private readonly apiBaseUrl = inject(APP_CONFIG).apiBaseUrl;
   /**
    * Recherche relancée à chaque changement de l'URL : mêmes noms de paramètres côté front et côté API.
@@ -85,20 +101,15 @@ export class FlightSearch {
   });
   readonly loading = this.searchResource.isLoading;
   readonly offers = computed(() => (this.searchResource.hasValue() ? this.searchResource.value().data.offers : undefined));
-  readonly hasOffers = computed(() => (this.offers()?.length ?? 0) > 0);
-  /** Critères du panneau de filtres ; remis à zéro à chaque nouvelle recherche. */
-  protected readonly filter = signal<IFlightFilter>(NO_FLIGHT_FILTER);
+  protected readonly editing = signal(false);
   /** Critères appliqués à la liste : ceux du panneau, une fois la saisie posée et le chargement affiché. */
   private readonly appliedFilter = signal<IFlightFilter>(NO_FLIGHT_FILTER);
-  protected readonly applyingFilter = signal(false);
   private readonly currencyStore = inject(CurrencyStore);
   /** Offres affichées : le budget est dans la devise d'affichage, chaque prix y est converti avant comparaison. */
   protected readonly shownOffers = computed(() => {
     const target = this.currencyStore.selected();
     return applyFlightFilter(this.offers() ?? [], this.appliedFilter(), (amount, currency) => this.currencyStore.convert(amount, currency, target));
   });
-  /** Tri choisi au-dessus de la liste ; « le meilleur choix » par défaut. */
-  protected readonly sort = signal<TFlightSort>('best');
   /** Offres affichées triées de chaque façon : la liste suit le tri choisi, les onglets montrent la tête de chacun. */
   protected readonly sortedOffers = computed(() => {
     const target = this.currencyStore.selected();
@@ -106,39 +117,8 @@ export class FlightSearch {
     const offers = this.shownOffers();
     return Object.fromEntries(FLIGHT_SORTS.map((sort) => [sort, sortFlights(offers, sort, toDisplay)])) as Record<TFlightSort, IFlightOffer[]>;
   });
-  protected readonly pageSize = PAGE_SIZE;
-  /** Page courante, à partir de 1 ; revient à la première dès que la liste filtrée change. */
-  protected readonly page = signal(1);
-  protected readonly pageOffers = computed(() => {
-    const start = (this.page() - 1) * PAGE_SIZE;
-    return this.sortedOffers()[this.sort()].slice(start, start + PAGE_SIZE);
-  });
   private readonly offerList = viewChild<ElementRef<HTMLElement>>('offerList');
   private readonly viewportScroller = inject(ViewportScroller);
-  /** Panne côté API (hors critères refusés, qui renvoient à l'accueil) : on propose de relancer. */
-  readonly failed = computed(() => {
-    const error = this.searchResource.error();
-    return !!error && !this.isRejected(error);
-  });
-
-  readonly selected = signal<IFlightOffer | undefined>(undefined);
-
-  /** Critères relus de l'URL ; la garde garantit qu'ils sont valides. */
-  protected readonly search = computed(() =>
-    parseSearchParams({
-      t: this.tripType(),
-      o: this.origin(),
-      d: this.destination(),
-      from: this.from(),
-      to: this.to(),
-      adt: this.adults(),
-      chd: this.children(),
-      inf: this.infants(),
-      cabin: this.cabin(),
-    }),
-  );
-  protected readonly editing = signal(false);
-
   private readonly router = inject(Router);
   private readonly searchStore = inject(SearchStore);
 
@@ -202,10 +182,6 @@ export class FlightSearch {
     this.searchResource.reload();
   }
 
-  private isRejected(error: unknown): boolean {
-    return error instanceof HttpErrorResponse && error.status === HttpStatusCode.BadRequest;
-  }
-
   /** Nouveau tri : retour en tête de liste (la page revient à la première). */
   protected changeSort(sort: TFlightSort): void {
     this.sort.set(sort);
@@ -235,5 +211,9 @@ export class FlightSearch {
       return;
     }
     void this.router.navigate(['/flight', btoa(s.id)]);
+  }
+
+  private isRejected(error: unknown): boolean {
+    return error instanceof HttpErrorResponse && error.status === HttpStatusCode.BadRequest;
   }
 }

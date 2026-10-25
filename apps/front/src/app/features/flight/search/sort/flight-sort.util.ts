@@ -38,9 +38,7 @@ function offerStops(offer: IFlightOffer): number {
 
 /** Bagage en soute inclus pour chaque passager, sur chaque vol. */
 function includesCheckedBag(slice: IOfferSlice): boolean {
-  return slice.segments.every((segment) =>
-    segment.passengers.every((passenger) => passenger.baggages.some((baggage) => baggage.type === 'checked' && baggage.quantity > 0)),
-  );
+  return slice.segments.every((segment) => segment.passengers.every((passenger) => passenger.baggages.some((baggage) => baggage.type === 'checked' && baggage.quantity > 0)));
 }
 
 interface IRanked {
@@ -79,11 +77,7 @@ function bestScores(ranked: readonly IRanked[]): Map<IFlightOffer, number> {
  * Offres triées (nouvelle liste, l'entrée n'est pas modifiée). Prix comparés dans la devise d'affichage (frais BIP
  * compris), en devise d'origine si le taux manque. À égalité, le moins cher, puis le plus court, passe devant.
  */
-export function sortFlights(
-  offers: readonly IFlightOffer[],
-  sort: TFlightSort,
-  toDisplay: TPriceInDisplayCurrency = (amount) => amount,
-): IFlightOffer[] {
+export function sortFlights(offers: readonly IFlightOffer[], sort: TFlightSort, toDisplay: TPriceInDisplayCurrency = (amount) => amount): IFlightOffer[] {
   const ranked: IRanked[] = offers.map((offer) => {
     const amount = sellingTotal(offer);
     return {
