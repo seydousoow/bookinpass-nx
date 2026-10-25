@@ -37,6 +37,7 @@ import { extraBagGroups, extraBagLines, IExtraBagGroup, TBagSelection, toOrderSe
 import { ExtraBags, IExtrasTraveler } from './extra-bags/extra-bags';
 import { IBagLine, IncludedBags } from './included-bags/included-bags';
 import { ICheckoutSession, IPaymentAuthorisation, PaymentForm, PaymentService } from 'payment';
+import { clsx } from 'clsx';
 
 interface ITravelerCard {
   readonly id: string;
@@ -445,13 +446,12 @@ export class FlightOffer {
   }
 
   protected getStepClass(i: number): string {
-    if (i === this.stepIndex()) {
-      return 'bg-brand-primary border-brand-primary text-onbrand';
-    }
-    if (i < this.stepIndex()) {
-      return 'border-brand-primary text-brand-primary';
-    }
-    return 'border-ink';
+    const current = this.stepIndex();
+    return clsx({
+      'border-brand-primary bg-brand-primary text-onbrand': i === current,
+      'border-brand-primary text-brand-primary': i < current,
+      'border-ink': i > current,
+    });
   }
 
   /** Tarifie l'offre courante avec les services prévus ; l'offre rendue remplace l'actuelle. */

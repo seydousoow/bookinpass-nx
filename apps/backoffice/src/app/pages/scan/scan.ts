@@ -7,6 +7,7 @@ import { createAction } from '../../core/action';
 import { StaffApi } from '../../core/api';
 import { dakarDateTime, dakarTime } from '../../core/dakar';
 import { TicketCheck } from '../../core/models';
+import { clsx } from 'clsx';
 
 type Camera = 'off' | 'starting' | 'on' | 'denied' | 'unsupported';
 type Decoder = (data: Uint8ClampedArray, width: number, height: number, options?: { inversionAttempts?: string }) => { data: string } | null;
@@ -95,11 +96,13 @@ export class ScanPage {
     this.manual.set('');
   }
 
+  /** Verdict en couleur : validé, déjà contrôlé, refusé (toute autre réponse). */
   protected tone(r: TicketCheck): string {
-    if (r.status === 'scanned') {
-      return 'bg-state-success text-onbrand';
-    }
-    return r.status === 'already_scanned' ? 'bg-state-warning text-ink' : 'bg-state-error text-onbrand';
+    return clsx({
+      'bg-state-success text-onbrand': r.status === 'scanned',
+      'bg-state-warning text-ink': r.status === 'already_scanned',
+      'bg-state-error text-onbrand': r.status !== 'scanned' && r.status !== 'already_scanned',
+    });
   }
 
   private tick(): void {
