@@ -1,0 +1,117 @@
+{
+  "name": "backoffice",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "prefix": "bo",
+  "sourceRoot": "apps/backoffice/src",
+  "tags": ["type:app", "scope:backoffice"],
+  "targets": {
+    "build": {
+      "executor": "@angular/build:application",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "outputPath": "dist/apps/backoffice",
+        "browser": "apps/backoffice/src/main.ts",
+        "tsConfig": "apps/backoffice/tsconfig.app.json",
+        "assets": [
+          {
+            "glob": "**/*",
+            "input": "apps/backoffice/public"
+          },
+          {
+            "glob": "**/*",
+            "input": "apps/front/public/favicon",
+            "output": "favicon"
+          },
+          {
+            "glob": "**/*",
+            "input": "apps/front/public/images",
+            "output": "images"
+          },
+          {
+            "glob": "**/*",
+            "input": "apps/front/public/svg",
+            "output": "svg"
+          },
+          {
+            "glob": "*.svg",
+            "input": "node_modules/country-flag-icons/3x2",
+            "output": "svg"
+          },
+          {
+            "glob": "*.json",
+            "input": "packages/components/i18n",
+            "output": "i18n/components"
+          }
+        ],
+        "styles": ["apps/backoffice/src/styles.css"],
+        "allowedCommonJsDependencies": ["jsqr"]
+      },
+      "configurations": {
+        "production": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "500kB",
+              "maximumError": "800kB"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "4kb",
+              "maximumError": "8kb"
+            }
+          ],
+          "outputHashing": "all",
+          "optimization": {
+            "scripts": true,
+            "styles": {
+              "minify": true,
+              "inlineCritical": false
+            },
+            "fonts": true
+          }
+        },
+        "development": {
+          "optimization": false,
+          "extractLicenses": false,
+          "sourceMap": true
+        }
+      }
+    },
+    "serve": {
+      "continuous": true,
+      "readyWhen": {
+        "signal": true
+      },
+      "executor": "@angular/build:dev-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "port": 4300,
+        "proxyConfig": "apps/backoffice/proxy.conf.json"
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "backoffice:build:production"
+        },
+        "development": {
+          "buildTarget": "backoffice:build:development"
+        }
+      }
+    },
+    "serve-static": {
+      "continuous": true,
+      "readyWhen": {
+        "signal": true
+      },
+      "dependsOn": ["build"],
+      "executor": "@nx/web:file-server",
+      "options": {
+        "buildTarget": "backoffice:build",
+        "port": 4300,
+        "staticFilePath": "dist/apps/backoffice/browser",
+        "spa": true
+      }
+    }
+  }
+}
