@@ -4,6 +4,6 @@
   "sourceRoot": "packages/utils/src",
   "prefix": "bip",
   "projectType": "library",
-  "tags": ["test", "lint", "type:util"],
+  "tags": ["test", "lint", "type:util", "scope:shared"],
   "targets": {}
 }

@@ -2,20 +2,11 @@
   "common": {
     "bag": "Bagage",
     "included": "Inclus",
-    "clear": "Effacer",
-    "close": "Fermer",
     "continue": "Continuer",
     "editable": "Modifiable",
     "no-element": "Aucun élément",
-    "select": "Sélectionner",
     "choose": "Choisir",
-    "loading": "Chargement",
-    "loading-in-progress": "Chargement en cours",
     "required-field": "Ce champ est requis",
-    "radio": {
-      "no-option": "Aucune option spécifiée pour le groupe radio.",
-      "min-option": "Au moins deux options sont requises pour le groupe de boutons radio."
-    },
     "save": "Enregistrer",
     "share": "Partager",
     "view-details": "Voir les détails",
@@ -34,35 +25,16 @@
       "10": "Octobre",
       "11": "Novembre",
       "12": "Décembre"
-    },
-    "pagination": {
-      "label": "Pagination",
-      "previous": "Page précédente",
-      "next": "Page suivante",
-      "page": "Page {page}",
-      "summary": "{from}–{to} sur {total}"
-    },
-    "phone": {
-      "country": "Indicatif du pays",
-      "search": "Rechercher un pays ou un indicatif"
     }
   },
   "picker": {
-    "previous": "Mois précédent",
-    "next": "Mois suivant",
-    "placeholder": "Choisir une date",
     "travel-one-way-placeholder": "Aller",
     "travel-round-trip-placeholder": "Aller - Retour",
     "select": {
-      "one-way": "Sélectionnez une date",
-      "inbound": "Sélectionnez la date de départ",
-      "outbound": "Sélectionnez la date de retour",
       "travel-date": "{count, plural, one {Votre date de voyage} other {Vos dates de voyage}}"
     }
   },
   "nav": {
-    "main": "Navigation principale",
-    "menu": "Menu",
     "cart": "Panier",
     "home": "Accueil",
     "flights": "Vols",
@@ -70,13 +42,9 @@
     "sport": "Sport",
     "stays": "Hébergement",
     "uiKit": "Design system",
-    "currency": "Devise",
-    "language": "Langue",
     "bus": "Car"
   },
   "footer": {
-    "tagline": "Réservez vos vols, séjours et activités au Sénégal et au-delà.",
-    "legal": "Tous droits réservés.",
     "company": "Société",
     "help": "Aide",
     "legalTitle": "Informations légales",
@@ -93,7 +61,6 @@
     "to": "Destination",
     "depart": "Aller",
     "return": "Retour",
-    "travelers": "Voyageurs",
     "cabin": {
       "title": "Classe",
       "economy": "Économique",
@@ -141,31 +108,7 @@
     "location": {
       "origin": "D'où partez-vous ?",
       "destination": "Où allez-vous ?",
-      "all-airports": "Tous les aéroports · {name}",
-      "placeholder": "Ville, aéroport ou code",
-      "min-typing": "{count, plural, one {Saisissez au moins # caractère} other {Saisissez au moins # caractères}}",
-      "no-result": "Aucune correspondance pour « {value} »",
       "similar-location": "Les lieux d'origine et de destination doivent être différents."
-    },
-    "passenger": {
-      "add-a": "Ajouter un",
-      "remove-a": "Retirer un",
-      "adult": {
-        "label": "Adulte",
-        "detailed": "{count, plural, one {# adulte} other {# adultes}}",
-        "hint": "12 ans et plus"
-      },
-      "children": {
-        "label": "Enfant",
-        "detailed": "{count, plural, one {# enfant} other {# enfants}}",
-        "hint": "De 2 à 11 ans"
-      },
-      "infant": {
-        "label": "Bébé",
-        "detailed": "{count, plural, one {# bébé} other {# bébés}}",
-        "hint": "Moins de 2 ans",
-        "requirement": "Chaque adulte peut accompagner jusqu’à deux enfants, avec au maximum un bébé par adulte."
-      }
     },
     "offer-summary": {
       "title": "{slice, plural, one {Aller simple pour {city} } other {Aller-retour pour {city} } }",

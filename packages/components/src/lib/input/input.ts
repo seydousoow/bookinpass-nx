@@ -20,16 +20,21 @@ const sizesStyling = {
     <bip-field [errors]="errors()" [hideLabel]="hideLabel()" [hint]="hint()" [label]="label()" [name]="name()" [required]="required()" [showErrors]="touched() && invalid()">
       <div class="relative flex items-center">
         @if (prefix()) {
-          <span class="text-muted pointer-events-none absolute left-3 flex items-center text-sm">{{ prefix() }}</span>
+          <span class="pointer-events-none absolute left-3 flex items-center text-sm text-muted">{{ prefix() }}</span>
         }
         <input
           (blur)="touch.emit()"
           (input)="onInput($event)"
           [attr.aria-describedby]="describedBy()"
           [attr.aria-invalid]="touched() && invalid()"
+          [attr.autocapitalize]="autocapitalize()"
           [attr.autocomplete]="autocomplete()"
-          [attr.max]="dateMax()"
+          [attr.max]="max() ?? dateMax()"
           [attr.maxlength]="maxLength()"
+          [attr.min]="min()"
+          [attr.minlength]="minLength()"
+          [attr.pattern]="patternAttribute()"
+          [attr.step]="step()"
           [class]="controlClass()"
           [disabled]="disabled()"
           [id]="name()"
@@ -38,10 +43,9 @@ const sizesStyling = {
           [readOnly]="readonly()"
           [required]="required()"
           [type]="type()"
-          [value]="value() ?? ''"
-        />
+          [value]="value() ?? ''" />
         @if (suffix()) {
-          <span class="text-muted pointer-events-none absolute right-3 flex items-center text-sm">{{ suffix() }}</span>
+          <span class="pointer-events-none absolute right-3 flex items-center text-sm text-muted">{{ suffix() }}</span>
         }
       </div>
     </bip-field>
@@ -51,9 +55,17 @@ export class Input<T = string> implements FormValueControl<T | null> {
   readonly label = input.required<string>();
   readonly hideLabel = input(false, { transform: booleanAttribute });
 
-  readonly type = input<'text' | 'email' | 'tel' | 'number' | 'password' | 'search' | 'date'>('text');
+  readonly type = input<'text' | 'email' | 'tel' | 'number' | 'password' | 'search' | 'date' | 'time'>('text');
   /** Borne haute native — utile pour `type="date"` (ex. : pas de date de naissance future). */
   readonly dateMax = input<string>();
+  /** Bornes natives (`number`, `date`, `time`) ; posées aussi par les validateurs `min`/`max` des formulaires signal. */
+  readonly min = input<NonNullable<T> | undefined>();
+  readonly max = input<NonNullable<T> | undefined>();
+  readonly step = input<string | number>();
+  /** Motif natif (`pattern="[a-z0-9._-]+"`, ou le validateur `pattern` d'un formulaire signal). */
+  readonly pattern = input<readonly RegExp[], unknown>([], { transform: toPatterns });
+  /** Clavier mobile : `none` pour un identifiant, `characters` pour un code. */
+  readonly autocapitalize = input<'none' | 'sentences' | 'words' | 'characters'>();
   readonly placeholder = input<string>();
   readonly hint = input<string>();
   readonly prefix = input<string>();
@@ -74,6 +86,9 @@ export class Input<T = string> implements FormValueControl<T | null> {
   readonly minLength = input<number | undefined>(undefined);
   readonly hidden = input(false, { transform: booleanAttribute });
   readonly value = model<T | null>(null);
+
+  /** Un seul motif s'exprime nativement ; plusieurs restent vérifiés par le formulaire. */
+  protected readonly patternAttribute = computed(() => (this.pattern().length === 1 ? this.pattern()[0].source : null));
 
   protected readonly describedBy = computed(() => {
     if (this.touched() && this.invalid()) return `${this.name()}-error`;
@@ -109,6 +124,23 @@ export class Input<T = string> implements FormValueControl<T | null> {
   });
 
   protected onInput(event: Event): void {
-    this.value.set((event.target as HTMLInputElement).value as T);
+    const element = event.target as HTMLInputElement;
+    // Champ numérique : la valeur remonte en nombre (« 50 », pas "50"), vide ou invalide : null.
+    if (this.type() === 'number') {
+      this.value.set((Number.isNaN(element.valueAsNumber) ? null : element.valueAsNumber) as T);
+      return;
+    }
+    this.value.set(element.value as T);
   }
+}
+
+/** `pattern` accepte un motif écrit dans le gabarit, une RegExp, ou la liste fournie par un formulaire signal. */
+function toPatterns(value: unknown): readonly RegExp[] {
+  if (typeof value === 'string') {
+    return value ? [new RegExp(value)] : [];
+  }
+  if (value instanceof RegExp) {
+    return [value];
+  }
+  return Array.isArray(value) ? value.filter((item): item is RegExp => item instanceof RegExp) : [];
 }

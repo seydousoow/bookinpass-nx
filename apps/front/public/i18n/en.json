@@ -2,20 +2,11 @@
   "common": {
     "bag": "Bag",
     "included": "Included",
-    "clear": "Clear",
-    "close": "Close",
     "continue": "Continue",
     "editable": "Editable",
     "no-element": "No items",
-    "select": "Select an item",
     "choose": "Choose",
-    "loading": "Loading",
-    "loading-in-progress": "Loading",
     "required-field": "This field is required",
-    "radio": {
-      "no-option": "No options specified for the radio group.",
-      "min-option": "At least two options are required for the radio button group."
-    },
     "save": "Save",
     "share": "Share",
     "view-details": "View details",
@@ -34,35 +25,16 @@
       "10": "October",
       "11": "November",
       "12": "December"
-    },
-    "pagination": {
-      "label": "Pagination",
-      "previous": "Previous page",
-      "next": "Next page",
-      "page": "Page {page}",
-      "summary": "{from}–{to} of {total}"
-    },
-    "phone": {
-      "country": "Country code",
-      "search": "Search a country or code"
     }
   },
   "picker": {
-    "previous": "Previous month",
-    "next": "Next month",
-    "placeholder": "Choose a date",
     "travel-one-way-placeholder": "Departure",
     "travel-round-trip-placeholder": "Departure - Return",
     "select": {
-      "one-way": "Select a date",
-      "inbound": "Select the departure date",
-      "outbound": "Select the return date",
       "travel-date": "{count, plural, one {Your travel date} other {Your travel dates}}"
     }
   },
   "nav": {
-    "main": "Main navigation",
-    "menu": "Menu",
     "cart": "Cart",
     "home": "Home",
     "flights": "Flights",
@@ -70,13 +42,9 @@
     "sport": "Sports",
     "stays": "Accommodation",
     "uiKit": "Design system",
-    "currency": "Currency",
-    "language": "Language",
     "bus": "Bus"
   },
   "footer": {
-    "tagline": "Book your flights, stays, and activities in Senegal and beyond.",
-    "legal": "All rights reserved.",
     "company": "Company",
     "help": "Help",
     "legalTitle": "Legal information",
@@ -93,7 +61,6 @@
     "to": "To",
     "depart": "Departure",
     "return": "Return",
-    "travelers": "Travelers",
     "cabin": {
       "title": "Cabin class",
       "economy": "Economy",
@@ -141,31 +108,7 @@
     "location": {
       "origin": "Where from ?",
       "destination": "Where to ?",
-      "all-airports": "All airports · {name}",
-      "placeholder": "City, airport or code",
-      "min-typing": "{count, plural, one {Enter at least # character} other {Enter at least # characters}}",
-      "no-result": "No matches for «{value}»}",
       "similar-location": "The origin and destination must be different."
-    },
-    "passenger": {
-      "add-a": "Add a",
-      "remove-a": "Remove a",
-      "adult": {
-        "label": "Adult",
-        "detailed": "{count, plural, one {# adult} other {# adults}}",
-        "hint": "12 years and older"
-      },
-      "children": {
-        "label": "Child",
-        "detailed": "{count, plural, one {# child} other {# children}}",
-        "hint": "Ages 2 to 11"
-      },
-      "infant": {
-        "label": "Infant",
-        "detailed": "{count, plural, one {# infant} other {# infants}}",
-        "hint": "Less than 2 years old",
-        "requirement": "Each adult can accompany up to two children, with a maximum of one infant per adult."
-      }
     },
     "offer-summary": {
       "title": "{slice, plural, one {One-way to {city}} other {Round-trip to {city}}}",

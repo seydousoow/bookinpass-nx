@@ -1,0 +1,100 @@
+{
+  "common": {
+    "clear": "Clear",
+    "close": "Close",
+    "empty": "No results",
+    "loading": "Loading",
+    "loading-in-progress": "Loading",
+    "pagination": {
+      "label": "Pagination",
+      "next": "Next page",
+      "page": "Page {page}",
+      "previous": "Previous page",
+      "summary": "{from}–{to} of {total}"
+    },
+    "phone": {
+      "country": "Country code",
+      "search": "Search a country or code"
+    },
+    "radio": {
+      "min-option": "At least two options are required for the radio button group.",
+      "no-option": "No options specified for the radio group."
+    },
+    "select": "Select an item",
+    "system-state": {
+      "retry": "Try again",
+      "partial": {
+        "title": "Partially confirmed"
+      },
+      "idle": {
+        "title": "Start a search",
+        "message": "Enter your criteria to see offers."
+      },
+      "empty": {
+        "title": "No results",
+        "message": "No offer matches these criteria. Widen the dates or remove a filter."
+      },
+      "expired": {
+        "title": "This offer has expired",
+        "message": "The price is no longer guaranteed. We are searching again and keeping what you entered."
+      },
+      "error": {
+        "title": "Something went wrong",
+        "message": "Nothing was lost. You can try again."
+      },
+      "offline": {
+        "title": "You are offline",
+        "message": "Tickets you already downloaded are still available."
+      }
+    }
+  },
+  "footer": {
+    "legal": "All rights reserved.",
+    "tagline": "Book your flights, stays, and activities in Senegal and beyond."
+  },
+  "nav": {
+    "currency": "Currency",
+    "language": "Language",
+    "main": "Main navigation",
+    "menu": "Menu"
+  },
+  "picker": {
+    "next": "Next month",
+    "placeholder": "Choose a date",
+    "previous": "Previous month",
+    "select": {
+      "inbound": "Select the departure date",
+      "one-way": "Select a date",
+      "outbound": "Select the return date"
+    }
+  },
+  "search": {
+    "location": {
+      "all-airports": "All airports · {name}",
+      "min-typing": "{count, plural, one {Enter at least # character} other {Enter at least # characters}}",
+      "no-result": "No matches for «{value}»}",
+      "placeholder": "City, airport or code"
+    },
+    "passenger": {
+      "add-a": "Add a",
+      "adult": {
+        "detailed": "{count, plural, one {# adult} other {# adults}}",
+        "hint": "12 years and older",
+        "label": "Adult"
+      },
+      "children": {
+        "detailed": "{count, plural, one {# child} other {# children}}",
+        "hint": "Ages 2 to 11",
+        "label": "Child"
+      },
+      "infant": {
+        "detailed": "{count, plural, one {# infant} other {# infants}}",
+        "hint": "Less than 2 years old",
+        "label": "Infant",
+        "requirement": "Each adult can accompany up to two children, with a maximum of one infant per adult."
+      },
+      "remove-a": "Remove a"
+    },
+    "travelers": "Travelers"
+  }
+}

@@ -25,7 +25,8 @@ export class DatePicker implements FormValueControl<IDateRangeValue> {
 
   readonly prefixIcon = computed(() => (this.mode() === 'range' ? heroCalendarDateRangeSolid : heroCalendarSolid));
 
-  readonly placeholder = input<string>('picker.placeholder');
+  /** Texte d'attente déjà traduit ; à défaut, celui du sélecteur dans la langue active. */
+  readonly placeholder = input<string>();
   readonly unavailable = input<readonly IsoDate[]>([]);
   readonly visibleMonths = input(1);
 

@@ -2,7 +2,7 @@ import { Component, signal } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { NgIcon } from '@ng-icons/core';
 import { AppError, appError, SystemStatus } from 'models';
-import { render } from '../../testing';
+import { render, translocoTesting } from '../../testing';
 import { SystemState } from './system-state';
 
 @Component({
@@ -21,8 +21,9 @@ class Host {
 }
 
 describe('SystemState', () => {
+  // Vraies traductions des composants : les textes par défaut doivent exister et s'afficher.
   const setup = async (status: SystemStatus) => {
-    const view = await render(Host);
+    const view = await render(Host, [], translocoTesting('components'));
     view.host.status.set(status);
     await view.stable();
     return view;

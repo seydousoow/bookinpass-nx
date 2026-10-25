@@ -4,6 +4,6 @@
   "sourceRoot": "packages/payment/src",
   "prefix": "bip",
   "projectType": "library",
-  "tags": ["test", "lint", "type:ui"],
+  "tags": ["test", "lint", "type:ui", "scope:front"],
   "targets": {}
 }
