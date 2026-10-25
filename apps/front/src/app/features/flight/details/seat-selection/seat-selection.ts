@@ -68,16 +68,16 @@ export class SeatSelectionComponent {
     return [...byCurrency].map(([currency, amount]) => ({ currency, amount }));
   });
   private readonly apiBaseUrl = inject(APP_CONFIG).apiBaseUrl;
-  protected readonly cabins = computed((): readonly ICabinView[] => (this.currentMap()?.cabins ?? []).map((cabin) => ({ cabin, sectionWidths: this.sectionWidths(cabin) })));
-  protected readonly loading = this.seatMaps.isLoading;
+  private readonly seatMaps = httpResource<ISeatMapsResponse>(() => `${this.apiBaseUrl}/flights/offers/${encodeURIComponent(this.offer().id)}/seat-maps`);
   /** Panne (fournisseur, réseau) : distincte d'une compagnie sans choix de siège, qui rend une liste vide. */
   protected readonly failed = computed(() => !!this.seatMaps.error());
-  private readonly seatMaps = httpResource<ISeatMapsResponse>(() => `${this.apiBaseUrl}/flights/offers/${encodeURIComponent(this.offer().id)}/seat-maps`);
+  protected readonly loading = this.seatMaps.isLoading;
+  private readonly maps = computed((): readonly ISeatMap[] => (this.seatMaps.hasValue() ? this.seatMaps.value().data : []));
   /** Aucun plan : la compagnie ne propose pas de choix de siège. */
   protected readonly unavailable = computed(() => !this.loading() && !this.maps().length);
   private readonly mapBySegment = computed(() => new Map(this.maps().map((map) => [map.segment_id, map])));
   protected readonly currentMap = computed(() => this.mapBySegment().get(this.currentSegment() ?? ''));
-  private readonly maps = computed((): readonly ISeatMap[] => (this.seatMaps.hasValue() ? this.seatMaps.value().data : []));
+  protected readonly cabins = computed((): readonly ICabinView[] => (this.currentMap()?.cabins ?? []).map((cabin) => ({ cabin, sectionWidths: this.sectionWidths(cabin) })));
 
   constructor() {
     // Plans reçus : on écarte les choix devenus impossibles (tarif changé, siège parti, brouillon périmé).

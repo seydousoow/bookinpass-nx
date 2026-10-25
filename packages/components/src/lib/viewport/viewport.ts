@@ -20,9 +20,10 @@ const MOBILE_QUERY = '(max-width: 767.98px)';
  */
 @Service()
 export class Viewport {
+  // Déclaré avant isMobile : les champs s'initialisent dans l'ordre, et isMobile appelle observe(), qui le lit.
+  private readonly breakpointObserver = inject(BreakpointObserver);
   /** En dessous de `md:`. */
   readonly isMobile = this.observe(MOBILE_QUERY);
-  private readonly breakpointObserver = inject(BreakpointObserver);
 
   /**
    * Signal réactif pour une ou plusieurs media queries arbitraires (largeur,
