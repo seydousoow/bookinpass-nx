@@ -87,4 +87,13 @@ describe('SystemState', () => {
     await stable();
     expect(color()).toBe('var(--color-muted)');
   });
+
+  it('n’ajoute pas le message générique à un titre propre à la page', async () => {
+    const { element, host, stable } = await setup('empty');
+    host.title.set('departures.empty');
+    await stable();
+    expect(element.textContent).toContain('departures.empty');
+    expect(element.textContent).not.toContain('Élargissez les dates');
+    expect(element.querySelectorAll('[role="status"] p')).toHaveLength(1);
+  });
 });

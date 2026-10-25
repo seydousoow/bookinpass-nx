@@ -20,6 +20,7 @@
       "min-option": "At least two options are required for the radio button group.",
       "no-option": "No options specified for the radio group."
     },
+    "required-field": "This field is required",
     "select": "Select an item",
     "system-state": {
       "retry": "Try again",

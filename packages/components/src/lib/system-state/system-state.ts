@@ -48,7 +48,9 @@ const DEFAULT_TEXTS = new Set(['idle', 'empty', 'expired', 'error', 'offline']);
             <ng-icon name="heroExclamationCircleSolid" aria-hidden="true" [color]="iconClass()" />
             <div class="min-w-0 flex-1">
               <p class="text-sm font-semibold text-ink">{{ resolvedTitle() | transloco }}</p>
-              <p class="mt-1 text-sm text-muted">{{ error()?.what ?? (resolvedMessage() | transloco) }}</p>
+              @if (error()?.what || resolvedMessage()) {
+                <p class="mt-1 text-sm text-muted">{{ error()?.what ?? (resolvedMessage() | transloco) }}</p>
+              }
               @if (error()?.preserved; as preserved) {
                 <p class="mt-1.5 text-xs text-muted italic">{{ preserved }}</p>
               }
@@ -77,8 +79,11 @@ export class SystemState {
   /** Clé du titre : celle reçue, ou celle de l'état. */
   protected readonly resolvedTitle = computed(() => this.title() || (DEFAULT_TEXTS.has(this.status()) ? `common.system-state.${this.status()}.title` : ''));
 
-  /** Clé du message (le texte d'une `AppError` passe avant, dans le gabarit). */
-  protected readonly resolvedMessage = computed(() => this.message() || (DEFAULT_TEXTS.has(this.status()) ? `common.system-state.${this.status()}.message` : ''));
+  /**
+   * Clé du message (le texte d'une `AppError` passe avant, dans le gabarit). Le message par défaut n'accompagne que le titre par défaut : un titre propre à la page ne reçoit pas un message
+   * générique qui ne lui correspond pas.
+   */
+  protected readonly resolvedMessage = computed(() => this.message() || (!this.title() && DEFAULT_TEXTS.has(this.status()) ? `common.system-state.${this.status()}.message` : ''));
 
   /** Clé de l'action par défaut ; celle d'une `AppError` passe avant, dans le gabarit. */
   protected readonly actionLabel = computed(() => (this.error()?.action.label || this.status() === 'error' || this.status() === 'expired' ? 'common.system-state.retry' : null));

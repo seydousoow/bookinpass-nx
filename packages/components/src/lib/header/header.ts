@@ -24,8 +24,8 @@ export interface NavEntry {
 export class Header {
   readonly currentLang = model.required<string>();
   readonly languages = input.required<string[] | LangDefinition[]>();
-  /** Devise d'affichage — indépendante de la langue. */
-  currentCurrency = model.required<string>();
+  /** Devise d'affichage — indépendante de la langue. Sans devises proposées (back-office), le choix n'apparaît pas. */
+  readonly currentCurrency = model<string>('');
 
   readonly currencies = input<readonly ICurrencyOption[]>([]);
   readonly entries = input<readonly NavEntry[]>([]);

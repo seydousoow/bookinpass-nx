@@ -20,6 +20,7 @@
       "min-option": "Au moins deux options sont requises pour le groupe de boutons radio.",
       "no-option": "Aucune option spécifiée pour le groupe radio."
     },
+    "required-field": "Ce champ est requis",
     "select": "Sélectionner",
     "system-state": {
       "retry": "Réessayer",

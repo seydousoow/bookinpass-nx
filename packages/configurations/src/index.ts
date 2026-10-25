@@ -5,3 +5,4 @@ export { APP_CONFIG, runtimeConfig } from './lib/configs/app-config.token';
 export { environment } from './lib/configs/environment';
 export { HttpTranslocoLoader, mergeTranslations } from './lib/translation/transloco-loader';
 export type { AppEnvironment } from './lib/configs/app-config.token';
+export { provideAppIcons } from './lib/configs/icons.provider';
