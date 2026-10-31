@@ -1,0 +1,278 @@
+<section *transloco="let t" class="space-y-4">
+  <a class="text-sm text-brand-primary underline" routerLink="/activities">← {{ t('activity.back') }}</a>
+
+  @if (!isNew() && saved.isLoading() && !saved.hasValue()) {
+    <bip-spinner class="py-8" label="common.loading" showLabel />
+  } @else if (!isNew() && saved.error()) {
+    <bip-system-state (retry)="saved.reload()" message="errors.unexpected" status="error" />
+  } @else {
+    @let current = saved.value();
+    <div class="flex flex-wrap items-center gap-3">
+      <h1 class="mr-auto text-xl font-bold">{{ isNew() ? t('activity.new') : current?.title }}</h1>
+      @if (current) {
+        <bip-badge [tone]="tones[current.status]">{{ t('activities.statuses.' + current.status) }}</bip-badge>
+        @if (current.status !== 'published') {
+          <button (clicked)="changeStatus('published')" [loading]="action.busy()" bipButton>{{ t('activity.publish') }}</button>
+        }
+        @if (current.status === 'published') {
+          <button (clicked)="changeStatus('draft')" [loading]="action.busy()" bipButton variant="outline">{{ t('activity.unpublish') }}</button>
+        }
+        @if (current.status !== 'archived') {
+          <button (clicked)="changeStatus('archived')" [loading]="action.busy()" bipButton variant="ghost">{{ t('activity.archive') }}</button>
+        }
+      }
+    </div>
+    @if (current) {
+      <p class="text-xs text-muted">
+        {{ t('activity.address', { slug: current.slug }) }}
+        @if (current.published_at) {
+          · {{ t('activity.published-at', { time: dateTime(current.published_at) }) }}
+        }
+      </p>
+    }
+    @if (action.error(); as code) {
+      <p class="text-state-error" role="alert">{{ t('errors.' + code) }}</p>
+    }
+
+    <!-- Contenu de la fiche -->
+    <form (submit)="$event.preventDefault(); save()" class="space-y-4 bo-card" novalidate>
+      <h2 class="font-bold">{{ t('activity.content') }}</h2>
+      <div class="grid gap-3 md:grid-cols-2">
+        <bip-input
+          (valueChange)="patch({ title: $event ?? '' })"
+          [maxLength]="200"
+          [value]="form().title"
+          class="md:col-span-2"
+          label="activity.fields.title"
+          name="title"
+          required />
+        <div>
+          @if (city(); as c) {
+            <p class="mb-1 block text-xs font-semibold text-muted">{{ t('activity.fields.city') }}</p>
+            <p class="flex min-h-11 items-center gap-2 rounded-field border border-border-subtle px-3 text-sm">
+              <span class="flex-1">{{ c.name }} ({{ c.country_code }}) · {{ c.timezone }}</span>
+              <button (click)="city.set(null); patch({ city_id: null })" class="text-xs text-brand-primary underline" type="button">{{ t('activity.change-city') }}</button>
+            </p>
+          } @else {
+            <bip-input [(value)]="cityQuery" hint="activity.city-hint" label="activity.fields.city" name="city-search" type="search" />
+            @if (cities().length) {
+              <ul class="mt-1 rounded-card border border-border-subtle">
+                @for (result of cities(); track result.city.id) {
+                  <li>
+                    <button (click)="chooseCity(result.city)" class="block w-full px-3 py-2 text-left text-sm hover:bg-surface-muted" type="button">
+                      {{ result.city.name }} ({{ result.city.country_code }}) · <span class="text-muted">{{ result.city.timezone }}</span>
+                    </button>
+                  </li>
+                }
+              </ul>
+            }
+          }
+        </div>
+        <bip-select
+          (valueChange)="patch({ category: $event[0] ?? 'tour' })"
+          [options]="categories()"
+          [value]="[form().category]"
+          label="activity.fields.category"
+          name="category" />
+        <bip-input
+          (valueChange)="patch({ provider_name: $event ?? '' })"
+          [maxLength]="200"
+          [value]="form().provider_name"
+          label="activity.fields.provider"
+          name="provider"
+          required />
+        <bip-input (valueChange)="patch({ slug: $event ?? '' })" [maxLength]="120" [value]="form().slug" hint="activity.slug-hint" label="activity.fields.slug" name="slug" />
+        <bip-textarea
+          (valueChange)="patch({ summary: $event })"
+          [maxLength]="600"
+          [rows]="2"
+          [value]="form().summary"
+          class="md:col-span-2"
+          label="activity.fields.summary"
+          name="summary" />
+        <bip-textarea
+          (valueChange)="patch({ description: $event })"
+          [maxLength]="10000"
+          [rows]="8"
+          [value]="form().description"
+          class="md:col-span-2"
+          label="activity.fields.description"
+          name="description" />
+      </div>
+
+      <div class="grid gap-3 md:grid-cols-2">
+        @for (key of listKeys; track key) {
+          <bip-textarea
+            (valueChange)="setList(key, $event)"
+            [maxLength]="3000"
+            [rows]="4"
+            [value]="listText()[key]"
+            hint="activity.one-per-line"
+            [label]="'activity.lists.' + key"
+            [name]="key" />
+        }
+      </div>
+
+      <fieldset class="space-y-2 border-t border-border-subtle pt-3">
+        <legend class="font-semibold">{{ t('activity.itinerary') }}</legend>
+        @for (stop of form().itinerary; track $index; let i = $index) {
+          <div class="grid items-end gap-2 rounded-card border border-border-subtle p-3 md:grid-cols-[2fr_1fr_8rem_auto_auto]">
+            <bip-input (valueChange)="patchStop(i, { name: $event ?? '' })" [name]="'stop-name-' + i" [value]="stop.name" label="activity.stop.name" />
+            <bip-select
+              (valueChange)="patchStop(i, { kind: $event[0] ?? 'visit' })"
+              [name]="'stop-kind-' + i"
+              [options]="stopKinds()"
+              [value]="[stop.kind]"
+              label="activity.stop.kind" />
+            <bip-input
+              (valueChange)="patchStop(i, { duration_minutes: $event })"
+              [min]="1"
+              [name]="'stop-minutes-' + i"
+              [value]="stop.duration_minutes"
+              label="activity.stop.minutes"
+              type="number" />
+            <bip-checkbox
+              (checkedChange)="patchStop(i, { optional: $event })"
+              [checked]="stop.optional"
+              [label]="t('activity.stop.optional')"
+              [name]="'stop-optional-' + i"
+              class="flex min-h-11 items-center" />
+            <button (clicked)="removeStop(i)" bipButton size="sm" type="button" variant="ghost">{{ t('activity.remove') }}</button>
+            <bip-input
+              (valueChange)="patchStop(i, { description: $event })"
+              [name]="'stop-description-' + i"
+              [value]="stop.description"
+              class="md:col-span-5"
+              label="activity.stop.description" />
+          </div>
+        }
+        <button (clicked)="addStop()" bipButton size="sm" type="button" variant="outline">{{ t('activity.add-stop') }}</button>
+      </fieldset>
+
+      <fieldset class="space-y-2 border-t border-border-subtle pt-3">
+        <legend class="font-semibold">{{ t('activity.images') }}</legend>
+        <p class="text-xs text-muted">{{ t('activity.images-hint') }}</p>
+        @for (image of form().images; track $index; let i = $index, first = $first, last = $last) {
+          <div class="grid items-end gap-2 md:grid-cols-[4rem_2fr_1fr_auto]">
+            <span class="size-16 overflow-hidden rounded-card bg-surface-muted">
+              @if (image.url) {
+                <img [src]="image.url" alt="" class="size-full object-cover" />
+              }
+            </span>
+            <bip-input (valueChange)="patchImage(i, { url: $event ?? '' })" [name]="'image-url-' + i" [value]="image.url" label="activity.image.url" type="text" />
+            <bip-input (valueChange)="patchImage(i, { alt: $event })" [name]="'image-alt-' + i" [value]="image.alt" label="activity.image.alt" />
+            <span class="flex gap-1">
+              <button
+                (click)="moveImage(i, -1)"
+                [attr.aria-label]="t('activity.up')"
+                [disabled]="first"
+                class="bip-focusable size-11 rounded-button border border-border-subtle"
+                type="button">
+                ↑
+              </button>
+              <button
+                (click)="moveImage(i, 1)"
+                [attr.aria-label]="t('activity.down')"
+                [disabled]="last"
+                class="bip-focusable size-11 rounded-button border border-border-subtle"
+                type="button">
+                ↓
+              </button>
+              <button (clicked)="removeImage(i)" bipButton size="sm" type="button" variant="ghost">{{ t('activity.remove') }}</button>
+            </span>
+          </div>
+        }
+        <button (clicked)="addImage()" bipButton size="sm" type="button" variant="outline">{{ t('activity.add-image') }}</button>
+      </fieldset>
+
+      <fieldset class="grid gap-3 border-t border-border-subtle pt-3 md:grid-cols-4">
+        <legend class="font-semibold">{{ t('activity.practical') }}</legend>
+        <bip-input
+          (valueChange)="patch({ meeting_point: $event ?? '' })"
+          [value]="form().meeting_point"
+          class="md:col-span-2"
+          label="activity.fields.meeting-point"
+          name="meeting-point" />
+        <bip-input (valueChange)="patch({ latitude: $event })" [step]="'any'" [value]="form().latitude" label="activity.fields.latitude" name="latitude" type="number" />
+        <bip-input (valueChange)="patch({ longitude: $event })" [step]="'any'" [value]="form().longitude" label="activity.fields.longitude" name="longitude" type="number" />
+        <bip-input
+          (valueChange)="patch({ duration_min_minutes: $event })"
+          [min]="1"
+          [value]="form().duration_min_minutes"
+          label="activity.fields.duration-min"
+          name="duration-min"
+          type="number" />
+        <bip-input
+          (valueChange)="patch({ duration_max_minutes: $event })"
+          [min]="1"
+          [value]="form().duration_max_minutes"
+          hint="activity.duration-max-hint"
+          label="activity.fields.duration-max"
+          name="duration-max"
+          type="number" />
+        <bip-input
+          (valueChange)="patch({ free_cancellation_hours: $event })"
+          [min]="0"
+          [value]="form().free_cancellation_hours"
+          hint="activity.cancellation-hint"
+          label="activity.fields.free-cancellation"
+          name="free-cancellation"
+          type="number" />
+        <bip-input
+          (valueChange)="patch({ currency: ($event ?? 'XOF').toUpperCase() })"
+          [maxLength]="3"
+          [value]="form().currency"
+          hint="activity.currency-hint"
+          label="activity.fields.currency"
+          name="currency" />
+      </fieldset>
+
+      @if (problems().length) {
+        <ul class="list-disc pl-5 text-sm text-state-error" role="alert">
+          @for (problem of problems(); track problem) {
+            <li>{{ t('activity.missing.' + problem) }}</li>
+          }
+        </ul>
+      }
+      <div class="flex items-center gap-3">
+        <button [loading]="action.busy()" bipButton type="submit">{{ isNew() ? t('activity.create') : t('common.save') }}</button>
+        @if (savedAt()) {
+          <span class="text-sm text-state-success" role="status">✓ {{ t('activity.saved') }}</span>
+        }
+      </div>
+    </form>
+
+    @if (current) {
+      <bo-activity-options (changed)="refresh($event)" [activity]="current" />
+      <bo-activity-slots [activity]="current" />
+
+      <!-- Avis : notes publiées et résumé écrit par Claude -->
+      <section class="space-y-3 bo-card">
+        <div class="flex flex-wrap items-center gap-3">
+          <h2 class="mr-auto font-bold">{{ t('activity.reviews') }}</h2>
+          <a [queryParams]="{ activity: current.id }" class="text-sm text-brand-primary underline" routerLink="/activity-reviews">{{ t('activity.moderate') }}</a>
+        </div>
+        @if (current.rating.count) {
+          <p class="text-sm">★ {{ current.rating.average }} · {{ t('activity.review-count', { count: current.rating.count }) }}</p>
+        } @else {
+          <p class="text-sm text-muted">{{ t('activities.no-reviews') }}</p>
+        }
+        <div class="rounded-card bg-surface-muted p-3 text-sm">
+          <p class="font-semibold">✦ {{ t('activity.summary-title') }}</p>
+          @if (current.review_summary) {
+            <p class="mt-1">{{ current.review_summary }}</p>
+            <p class="mt-1 text-xs text-muted">{{ t('activity.summary-meta', { count: current.review_summary_count, time: dateTime(current.review_summary_at) }) }}</p>
+          } @else {
+            <p class="mt-1 text-muted">{{ t('activity.summary-none') }}</p>
+          }
+        </div>
+        <button (clicked)="summarize()" [disabled]="current.rating.count < 3" [loading]="action.busy()" bipButton size="sm" variant="outline">
+          {{ t('activity.summarize') }}
+        </button>
+        @if (current.rating.count < 3) {
+          <p class="text-xs text-muted">{{ t('activity.summary-needs') }}</p>
+        }
+      </section>
+    }
+  }
+</section>

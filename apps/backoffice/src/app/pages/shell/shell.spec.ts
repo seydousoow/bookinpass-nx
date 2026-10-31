@@ -15,7 +15,19 @@ describe('Shell', () => {
 
   it('montre tout aux responsables', async () => {
     const { element } = await renderPage(Shell, { user: staffUser('manager') });
-    expect(sections(element)).toEqual(['nav.departures', 'nav.scan', 'nav.luggage', 'nav.incidents', 'nav.bookings', 'nav.refunds', 'nav.routes', 'nav.staff']);
+    expect(sections(element)).toEqual([
+      'nav.departures',
+      'nav.scan',
+      'nav.luggage',
+      'nav.incidents',
+      'nav.bookings',
+      'nav.refunds',
+      'nav.activities',
+      'nav.activity-bookings',
+      'nav.activity-reviews',
+      'nav.routes',
+      'nav.staff',
+    ]);
   });
 
   it('affiche le membre connecté et sa gare', async () => {

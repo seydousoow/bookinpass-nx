@@ -58,4 +58,62 @@
       </li>
     }
   </ul>
+
+  <h2 class="pt-4 text-lg font-bold">{{ t('refunds.activities') }}</h2>
+  <p class="text-xs text-muted">{{ t('refunds.activities-hint') }}</p>
+  @if (activityList.isLoading() && !activityList.hasValue()) {
+    <bip-spinner class="py-8" label="common.loading" showLabel />
+  } @else if (activityList.error()) {
+    <bip-system-state (retry)="activityList.reload()" message="errors.unexpected" status="error" />
+  } @else if (!activityList.value()?.length) {
+    <bip-system-state status="empty" title="refunds.none" />
+  }
+  <ul class="grid gap-2">
+    @for (r of activityList.value() ?? []; track r.id) {
+      <li [class.opacity-70]="r.status === 'refunded'" class="space-y-2 bo-card text-sm">
+        <div class="flex flex-wrap items-start justify-between gap-2">
+          <div>
+            <p>
+              <a [routerLink]="['/activity-bookings', r.reference]" class="font-mono text-base font-bold underline">{{ r.reference }}</a> · {{ r.activity_title }} ·
+              {{ dateTime(r.starts_at) }}
+            </p>
+            <p>{{ r.customer }} · {{ r.reason }}</p>
+            <p class="text-muted">
+              {{ r.email }} · <a [href]="'tel:' + r.phone" class="underline">{{ r.phone }}</a>
+            </p>
+          </div>
+          <div class="text-right">
+            <p class="text-lg font-bold">{{ r.amount }} {{ r.currency }}</p>
+            <p class="text-xs text-muted">
+              {{ t('activity-bookings.methods.' + r.method) }} · {{ r.requested_by ?? t('activity-booking.by-customer') }} · {{ dateTime(r.created_at) }}
+            </p>
+          </div>
+        </div>
+        @if (r.status === 'refunded') {
+          <p class="flex flex-wrap items-center gap-2">
+            <bip-badge size="sm" tone="success">✓ {{ t('refunds.done', { time: dateTime(r.refunded_at), name: r.refunded_by ?? 'Stripe' }) }}</bip-badge>
+            <span>{{ r.note }}</span>
+          </p>
+        } @else if (r.status === 'failed') {
+          <p class="flex flex-wrap items-center gap-2">
+            <bip-badge size="sm" tone="error">{{ r.failure_reason }}</bip-badge>
+            <button (clicked)="retryActivity(r.id)" [loading]="action.busy()" bipButton size="sm" variant="outline">{{ t('activity-booking.retry') }}</button>
+          </p>
+        } @else {
+          <form (submit)="$event.preventDefault(); markActivityRefunded(r.id)" class="flex flex-wrap items-end gap-2 border-t border-border-subtle pt-2">
+            <bip-input
+              (valueChange)="setActivityNote(r.id, $event)"
+              [maxLength]="500"
+              [name]="'activity-note-' + r.id"
+              [value]="activityNotes()[r.id] ?? ''"
+              class="min-w-64 flex-1"
+              hideLabel
+              label="refunds.note"
+              placeholder="refunds.note" />
+            <button [disabled]="!activityNotes()[r.id]?.trim()" [loading]="action.busy()" bipButton type="submit">{{ t('refunds.mark') }}</button>
+          </form>
+        }
+      </li>
+    }
+  </ul>
 </section>
