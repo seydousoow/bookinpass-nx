@@ -109,7 +109,8 @@
     "@angular/build:application": {
       "cache": true,
       "dependsOn": ["^build"],
-      "inputs": ["production", "^production"]
+      "inputs": ["production", "^production"],
+      "defaultConfiguration": "production"
     }
   }
 }

@@ -34,6 +34,7 @@ export function staffApiMock(overrides: Partial<{ [K in keyof StaffApi]: StaffAp
       continue;
     }
     const fallback = (): Observable<unknown> => of(LISTS.includes(name as keyof StaffApi) ? [] : {});
+    // @ts-expect-error ignored
     mock[name] = jest.fn(overrides[name as keyof StaffApi] ?? fallback);
   }
   return mock as unknown as StaffApiMock;
