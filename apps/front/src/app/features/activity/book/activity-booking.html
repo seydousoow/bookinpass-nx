@@ -1,0 +1,144 @@
+<ng-container *transloco="let t; prefix: 'activity'">
+  <nav [attr.aria-label]="t('steps.label')" class="-mx-2 mb-4 bg-surface-muted px-4 py-3">
+    <ol class="flex items-center gap-3 overflow-x-auto">
+      @for (s of steps; track s; let i = $index, last = $last) {
+        <li
+          [attr.aria-current]="i === stepIndex() ? 'step' : null"
+          [class.max-md:hidden]="i !== stepIndex()"
+          [class.text-muted]="i > stepIndex()"
+          class="flex shrink-0 items-center gap-2 text-sm font-semibold">
+          <span
+            [class]="i === stepIndex() ? 'border-brand-primary bg-brand-primary text-onbrand' : i < stepIndex() ? 'border-brand-primary text-brand-primary' : 'border-ink'"
+            class="flex size-6 items-center justify-center rounded-full border-2 text-xs"
+            >{{ i + 1 }}</span
+          >
+          {{ t('steps.' + s) }}
+        </li>
+        @if (!last) {
+          <li aria-hidden="true" class="h-px w-10 shrink-0 bg-border-strong max-md:hidden"></li>
+        }
+      }
+    </ol>
+  </nav>
+
+  @if (step() === 'done' && booking(); as confirmed) {
+    <bip-activity-voucher [booking]="confirmed" />
+    <p class="mt-4 text-sm text-muted">{{ t('pay.mail-sent', { email: confirmed.email }) }}</p>
+    <a [queryParams]="{ n: confirmed.reference, l: confirmed.family_name }" class="mt-2 inline-block text-sm font-semibold underline" routerLink="/activities/booking">
+      {{ t('pay.manage') }}
+    </a>
+  } @else if (!choice()) {
+    <div class="flex flex-col items-center gap-4 py-16 text-center">
+      <p class="text-lg font-semibold">{{ t('book.missing') }}</p>
+      <a bipButton routerLink="/activities" variant="primary">{{ t('book.new-search') }}</a>
+    </div>
+  } @else if (loading() && !offer()) {
+    <div class="flex justify-center py-16"><bip-spinner showLabel /></div>
+  } @else if (failed()) {
+    <div class="flex flex-col items-center gap-4 py-16 text-center" role="alert">
+      <p class="text-lg font-semibold">{{ t('book.failed') }}</p>
+      <bip-button (clicked)="retry()" variant="primary">{{ t('book.retry') }}</bip-button>
+    </div>
+  } @else if (!offer()?.slot || !offer()?.option) {
+    <div class="flex flex-col items-center gap-4 py-16 text-center">
+      <p class="text-lg font-semibold">{{ t('book.unavailable') }}</p>
+      <bip-button (clicked)="backToActivity()" variant="primary">{{ t('book.back-to-activity') }}</bip-button>
+    </div>
+  } @else {
+    @let o = offer()!;
+    @let c = choice()!;
+    <section class="mb-6 grid gap-4 rounded-card border border-border-subtle bg-surface-card p-4 sm:grid-cols-[8rem_1fr]">
+      <bip-activity-photo [alt]="o.activity.title" [url]="o.activity.images[0]?.url" class="aspect-[4/3] w-full rounded-card" />
+      <div>
+        <p class="text-lg font-bold">{{ o.activity.title }}</p>
+        <p class="text-sm">{{ o.option!.title }}</p>
+        <p class="first-letter:uppercase">
+          {{ o.slot!.starts_at | bipDate: { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit', timeZone: o.activity.city.timezone } }}
+        </p>
+        <p class="text-sm text-muted">{{ t('book.meeting', { place: o.activity.meeting_point }) }}</p>
+        <p class="mt-2 font-semibold">{{ t('book.total', { adults: c.adults, children: c.children, total: (total() | bipMoney: o.activity.currency) }) }}</p>
+        <p class="text-xs text-muted">
+          {{ o.activity.free_cancellation_hours === null ? t('details.non-refundable') : t('details.free-cancellation', { hours: o.activity.free_cancellation_hours }) }}
+        </p>
+      </div>
+    </section>
+
+    @if (step() === 'details') {
+      <bip-activity-contact-form [(value)]="contact" />
+      @if (incomplete()) {
+        <p class="mt-4 text-sm text-state-error" role="alert">{{ t('contact.incomplete') }}</p>
+      }
+      <div class="mt-6 flex justify-between gap-2">
+        <bip-button (clicked)="backToActivity()" variant="ghost">{{ t('book.back-to-activity') }}</bip-button>
+        <bip-button (clicked)="toPayment()" [disabled]="!o.slot!.available" variant="primary">{{ t('book.to-payment') }}</bip-button>
+      </div>
+    } @else {
+      <section class="space-y-4">
+        <h2 class="text-xl font-bold">{{ t('pay.title') }}</h2>
+        @if (mobileState() !== 'idle') {
+          @switch (mobileState()) {
+            @case ('pending') {
+              @if (mobileNext(); as next) {
+                <bip-paydunya-step [step]="next" />
+              }
+              <p class="rounded-card bg-state-info-soft p-3 text-sm text-state-info" role="status">{{ t('pay.mobile.pending') }}</p>
+              <bip-button (clicked)="checkMobile()" variant="primary">{{ t('pay.mobile.check-again') }}</bip-button>
+            }
+            @case ('cancelled') {
+              <p class="rounded-card bg-state-warning-soft p-3 text-sm" role="status">{{ t('pay.mobile.cancelled') }}</p>
+              <div class="flex flex-wrap gap-2">
+                <bip-button (clicked)="retryMobile()" variant="primary">{{ t('pay.mobile.retry') }}</bip-button>
+                <bip-button (clicked)="backToDetails()" variant="ghost">{{ t('pay.mobile.use-card') }}</bip-button>
+              </div>
+            }
+            @case ('failed') {
+              <p class="rounded-card bg-state-error-soft p-3 text-sm text-state-error" role="alert">{{ t(confirmError() ?? 'pay.errors.mobile-failed') }}</p>
+              <div class="flex flex-wrap gap-2">
+                <bip-button (clicked)="checkMobile()" variant="primary">{{ t('book.retry') }}</bip-button>
+                <bip-button (clicked)="backToDetails()" variant="ghost">{{ t('book.back-to-details') }}</bip-button>
+              </div>
+            }
+            @default {
+              <div class="flex justify-center py-8">
+                <bip-spinner [label]="mobileState() === 'redirecting' ? 'activity.pay.mobile.redirecting' : 'activity.pay.mobile.checking'" showLabel />
+              </div>
+            }
+          }
+        } @else if (holding()) {
+          <div class="flex justify-center py-8"><bip-spinner [label]="'activity.pay.holding'" showLabel /></div>
+        } @else if (holdError(); as error) {
+          <p class="rounded-card bg-state-error-soft p-3 text-sm text-state-error" role="alert">{{ t(error) }}</p>
+          <div class="flex flex-wrap gap-2">
+            <bip-button (clicked)="backToDetails()" variant="ghost">{{ t('book.back-to-details') }}</bip-button>
+            @if (error === 'pay.errors.sold-out' || error === 'pay.errors.slot-closed') {
+              <bip-button (clicked)="backToActivity()" variant="primary">{{ t('book.back-to-activity') }}</bip-button>
+            } @else {
+              <bip-button (clicked)="placeHold()" variant="primary">{{ t('book.retry') }}</bip-button>
+            }
+          </div>
+        } @else if (hold(); as held) {
+          <p class="rounded-card bg-state-info-soft p-3 text-sm text-state-info">
+            {{ t('pay.held', { until: (held.hold_expires_at | bipDate: { hour: '2-digit', minute: '2-digit' }) }) }}
+          </p>
+          @if (confirming()) {
+            <div class="flex justify-center py-8"><bip-spinner [label]="'activity.pay.confirming'" showLabel /></div>
+          } @else if (confirmError(); as error) {
+            <p class="rounded-card bg-state-error-soft p-3 text-sm text-state-error" role="alert">{{ t(error) }}</p>
+            @if (error === 'pay.errors.confirm-failed') {
+              <bip-button (clicked)="retryConfirmation()" variant="primary">{{ t('book.retry') }}</bip-button>
+            } @else {
+              <bip-button (clicked)="backToActivity()" variant="primary">{{ t('book.back-to-activity') }}</bip-button>
+            }
+          } @else {
+            @if (mobileMoney()) {
+              <bip-paydunya-form (pay)="payMobile($event)" [error]="mobileError()" [methods]="methods().methods" />
+              <p class="text-center text-xs text-muted">{{ t('pay.mobile.or-card') }}</p>
+            }
+            <bip-payment-form (authorised)="onAuthorised($event)" [session]="held.checkout" />
+            <bip-button (clicked)="backToDetails()" variant="ghost">{{ t('book.back-to-details') }}</bip-button>
+          }
+        }
+      </section>
+    }
+  }
+</ng-container>

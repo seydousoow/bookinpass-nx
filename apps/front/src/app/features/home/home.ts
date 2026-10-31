@@ -4,13 +4,13 @@ import { TranslocoDirective } from '@jsverse/transloco';
 import { Card } from 'components';
 
 interface IHomeTab {
-  readonly key: 'flights' | 'stays' | 'bus' | 'manage';
+  readonly key: 'flights' | 'stays' | 'activities' | 'bus' | 'manage';
   readonly route: string;
 }
 
 /**
  * Accueil : un formulaire de recherche par produit. Chaque onglet est une route (`/flight` pour les vols, `/stays` pour
- * l'hébergement, `/bus` pour le car) dont le formulaire est fourni par sa feature via `app.routes.ts` — une feature n'en importe
+ * l'hébergement, `/activities` pour les activités, `/bus` pour le car) dont le formulaire est fourni par sa feature via `app.routes.ts` — une feature n'en importe
  * jamais une autre.
  */
 @Component({
@@ -22,6 +22,7 @@ export class Home {
   protected readonly tabs: readonly IHomeTab[] = [
     { key: 'flights', route: '/flight' },
     { key: 'stays', route: '/stays' },
+    { key: 'activities', route: '/activities' },
     { key: 'bus', route: '/bus' },
     { key: 'manage', route: '/flight/manage' },
   ];

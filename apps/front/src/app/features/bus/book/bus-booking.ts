@@ -9,7 +9,7 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroArrowRight } from '@ng-icons/heroicons/outline';
 import { DatePipe, MoneyPipe } from 'pipes';
 import { loadContact, saveContact } from 'state';
-import { IPaymentAuthorisation, PaymentForm } from 'payment';
+import { IPayDunyaPayment, IPayDunyaStep, IPaymentAuthorisation, IPaymentMethods, PAYDUNYA_FORM_ERRORS, PayDunyaForm, PayDunyaStep, PaymentForm } from 'payment';
 import { Button, Spinner } from 'components';
 import { IBusBooking, IBusDeparture } from 'models';
 import { BusService, IBusHold } from '../bus.service';
@@ -30,7 +30,7 @@ const codeOf = (error: unknown): string | undefined => (error instanceof HttpErr
  */
 @Component({
   selector: 'bip-bus-booking',
-  imports: [TranslocoDirective, NgIcon, Button, Spinner, DatePipe, MoneyPipe, PaymentForm, BusTickets, BusTravellerForm],
+  imports: [TranslocoDirective, NgIcon, Button, Spinner, DatePipe, MoneyPipe, PaymentForm, PayDunyaForm, PayDunyaStep, BusTickets, BusTravellerForm],
   providers: [provideIcons({ heroArrowRight })],
   templateUrl: './bus-booking.html',
   host: { class: 'mx-auto block w-full max-w-3xl px-2 py-4' },
@@ -61,6 +61,10 @@ export class BusBooking {
   protected readonly booking = signal<IBusBooking | null>(null);
   /** Paiement mobile : redirection vers PayDunya, puis vérification au retour (en attente de validation sur le téléphone). */
   protected readonly mobileState = signal<'idle' | 'redirecting' | 'checking' | 'pending' | 'cancelled' | 'failed'>('idle');
+  /** Suite du paiement PayDunya (QR code, validation sur le téléphone), affichée pendant l'attente. */
+  protected readonly mobileNext = signal<IPayDunyaStep | null>(null);
+  /** Erreur que le client corrige dans le formulaire PayDunya (numéro, code…). */
+  protected readonly mobileError = signal<string | null>(null);
   /** Départ choisi : celui de l'URL, sinon celui du brouillon (retour de Stripe). */
   private readonly draft = signal<IBusDraft | null>(null);
   protected readonly choice = computed(() => {
@@ -77,8 +81,8 @@ export class BusBooking {
   });
   private readonly api = inject(BusService);
   /** Moyens de paiement du serveur : Wave / Orange Money seulement si PayDunya est configuré. */
-  protected readonly methods = toSignal(this.api.paymentMethods().pipe(catchError(() => of({ card: true, mobile_money: false }))), {
-    initialValue: { card: true, mobile_money: false },
+  protected readonly methods = toSignal(this.api.paymentMethods().pipe(catchError(() => of({ card: true, methods: [] }))), {
+    initialValue: { card: true, methods: [] } as IPaymentMethods,
   });
   /** Le départ relu à l'ouverture : prix, gares, places encore disponibles. */
   private readonly lookup = rxResource({
@@ -168,6 +172,8 @@ export class BusBooking {
     this.hold.set(null);
     this.mobileReference.set(null);
     this.mobileState.set('idle');
+    this.mobileNext.set(null);
+    this.mobileError.set(null);
     this.holdError.set(null);
     this.requestId = crypto.randomUUID();
     this.goTo('travellers');
@@ -239,25 +245,49 @@ export class BusBooking {
     }
   }
 
-  /** Wave / Orange Money : la session de carte est fermée côté serveur, puis direction la page PayDunya. */
-  protected payMobile(): void {
+  /**
+   * Paiement PayDunya saisi sur notre page : le serveur ferme la session de carte, crée la facture et la paie. Selon
+   * le moyen : lien à ouvrir (Wave, carte PayDunya), QR code Orange Money, ou validation sur le téléphone ; la
+   * réservation est ensuite relue jusqu'au paiement.
+   */
+  protected payMobile(payment: IPayDunyaPayment): void {
     const reference = this.reference();
     if (!reference) {
       return;
     }
     this.mobileState.set('redirecting');
+    this.mobileError.set(null);
     this.confirmError.set(null);
     this.api
-      .mobilePayment(reference, '/bus/book')
+      .mobilePayment(reference, payment, '/bus/book')
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: ({ url }) => this.document.location.assign(url),
+        next: (next) => {
+          if (next.step === 'redirect' && next.url) {
+            this.document.location.assign(next.url);
+            return;
+          }
+          this.mobileNext.set(next);
+          this.mobileChecks = 0;
+          this.checkMobile();
+        },
         error: (error: unknown) => {
-          this.mobileState.set('failed');
           const code = codeOf(error);
+          if (PAYDUNYA_FORM_ERRORS.includes(code ?? '')) {
+            this.mobileState.set('idle');
+            this.mobileError.set(code ?? null);
+            return;
+          }
+          this.mobileState.set('failed');
           this.confirmError.set(code === 'hold-expired' || code === 'already-paid' ? `pay.errors.${code}` : 'pay.errors.mobile-failed');
         },
       });
+  }
+
+  /** Autre essai après un abandon : le formulaire PayDunya revient. */
+  protected retryMobile(): void {
+    this.mobileNext.set(null);
+    this.mobileState.set('idle');
   }
 
   /**

@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { TranslocoService } from '@jsverse/transloco';
 import { APP_CONFIG } from 'configs';
-import { ICheckoutSession } from 'payment';
+import { ICheckoutSession, IPayDunyaPayment, IPayDunyaStep, IPaymentMethods } from 'payment';
 import { IBusBooking, IBusDeparture, IBusPassenger, IBusPlace, IBusSearch } from 'models';
 
 /** Places bloquées le temps du paiement, et la session Stripe à afficher. */
@@ -46,14 +46,14 @@ export class BusService {
     return this.http.post<IBusHold>(`${this.url}/bookings`, { ...request, locale: this.transloco.getActiveLang() });
   }
 
-  /** Moyens de paiement configurés : carte (Stripe), mobile money (Wave, Orange Money via PayDunya). */
-  paymentMethods(): Observable<{ card: boolean; mobile_money: boolean }> {
-    return this.http.get<{ card: boolean; mobile_money: boolean }>(`${this.url}/payment-methods`);
+  /** Moyens de paiement configurés : carte Stripe, moyens PayDunya (carte, Wave et Orange Money par pays). */
+  paymentMethods(): Observable<IPaymentMethods> {
+    return this.http.get<IPaymentMethods>(`${this.url}/payment-methods`);
   }
 
-  /** Page PayDunya où payer par Wave / Orange Money ; la session de carte est fermée. */
-  mobilePayment(reference: string, returnPath: string): Observable<{ url: string }> {
-    return this.http.post<{ url: string }>(`${this.url}/bookings/${encodeURIComponent(reference)}/mobile-payment`, { return_path: returnPath });
+  /** Paiement PayDunya depuis notre page (corps JSON, HTTPS) ; la session de carte Stripe est fermée. */
+  mobilePayment(reference: string, payment: IPayDunyaPayment, returnPath: string): Observable<IPayDunyaStep> {
+    return this.http.post<IPayDunyaStep>(`${this.url}/bookings/${encodeURIComponent(reference)}/mobile-payment`, { ...payment, return_path: returnPath });
   }
 
   /** Retour de PayDunya : réservation confirmée, ou encore `held` tant que le paiement attend sa validation. */

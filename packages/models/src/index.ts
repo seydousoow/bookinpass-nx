@@ -1,3 +1,4 @@
+export * from './lib/models/activity.model';
 export * from './lib/models/airline.model';
 export * from './lib/models/app-error';
 export * from './lib/models/bus.model';
