@@ -1,4 +1,22 @@
 {
   "singleQuote": true,
-  "printWidth": 180
+  "printWidth": 180,
+  "bracketSameLine": true,
+  "plugins": ["prettier-plugin-tailwindcss"],
+  "overrides": [
+    {
+      "files": "*.html",
+      "options": {
+        "parser": "angular"
+      }
+    },
+    {
+      "files": "apps/backoffice/**",
+      "options": {
+        "tailwindStylesheet": "./apps/backoffice/src/styles.css"
+      }
+    }
+  ],
+  "tailwindStylesheet": "./apps/front/src/styles.css",
+  "tailwindFunctions": ["clsx"]
 }

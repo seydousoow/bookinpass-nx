@@ -5,25 +5,31 @@ import { AppError, SystemStatus } from 'models';
 import { Button } from '../button/button';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroExclamationCircleSolid } from '@ng-icons/heroicons/solid';
+import { TranslocoPipe } from '@jsverse/transloco';
+
+/** États qui ont un titre et un message par défaut (`common.system-state.<état>`). */
+const DEFAULT_TEXTS = new Set(['idle', 'empty', 'expired', 'error', 'offline']);
 
 /**
  * Rendu des huit états du cahier §11. Deux règles portées ici, pas ailleurs :
  *  - le squelette a la MÊME taille que le contenu qu'il remplace (sinon CLS) ;
  *  - un message d'erreur dit ce qui s'est passé, ce qui reste enregistré et
  *    l'action possible ; jamais la couleur seule.
+ *
+ * `title` et `message` sont des clés de traduction ; les textes d'une `AppError` sont affichés tels quels.
  */
 @Component({
   selector: 'bip-system-state',
-  imports: [Button, NgIcon],
+  imports: [Button, NgIcon, TranslocoPipe],
   host: { class: 'block' },
   providers: [provideIcons({ heroExclamationCircleSolid })],
   template: `
     <!-- Un seul <ng-content> : Angular ne projette que dans le dernier, un second laisserait l'état « success » vide. -->
     @if (status() === 'success' || status() === 'partial') {
       @if (status() === 'partial') {
-        <div class="border-state-warning bg-state-warning-soft rounded-card mb-3 border p-3">
-          <p class="text-sm text-ink font-semibold">{{ title() || 'Confirmation partielle' }}</p>
-          <p class="text-sm text-ink/80 mt-1">{{ message() }}</p>
+        <div class="mb-3 rounded-card border border-state-warning bg-state-warning-soft p-3">
+          <p class="text-sm font-semibold text-ink">{{ title() || 'common.system-state.partial.title' | transloco }}</p>
+          <p class="mt-1 text-sm text-ink/80">{{ message() ?? '' | transloco }}</p>
         </div>
       }
       <ng-content />
@@ -31,9 +37,9 @@ import { heroExclamationCircleSolid } from '@ng-icons/heroicons/solid';
       @switch (status()) {
         @case ('loading') {
           <div [attr.aria-busy]="true" aria-live="polite" class="animate-pulse space-y-3">
-            <span class="sr-only">Chargement en cours</span>
+            <span class="sr-only">{{ 'common.loading-in-progress' | transloco }}</span>
             @for (line of skeletonLines(); track $index) {
-              <div [style.height.px]="skeletonHeight()" class="bg-border-subtle rounded-card"></div>
+              <div [style.height.px]="skeletonHeight()" class="rounded-card bg-border-subtle"></div>
             }
           </div>
         }
@@ -41,14 +47,16 @@ import { heroExclamationCircleSolid } from '@ng-icons/heroicons/solid';
           <div [class]="panelClass()" role="status">
             <ng-icon name="heroExclamationCircleSolid" aria-hidden="true" [color]="iconClass()" />
             <div class="min-w-0 flex-1">
-              <p class="text-sm text-ink font-semibold">{{ resolvedTitle() }}</p>
-              <p class="text-sm text-muted mt-1">{{ resolvedMessage() }}</p>
+              <p class="text-sm font-semibold text-ink">{{ resolvedTitle() | transloco }}</p>
+              @if (error()?.what || resolvedMessage()) {
+                <p class="mt-1 text-sm text-muted">{{ error()?.what ?? (resolvedMessage() | transloco) }}</p>
+              }
               @if (error()?.preserved; as preserved) {
-                <p class="text-xs text-muted mt-1.5 italic">{{ preserved }}</p>
+                <p class="mt-1.5 text-xs text-muted italic">{{ preserved }}</p>
               }
             </div>
             @if (actionLabel()) {
-              <bip-button (clicked)="retry.emit()" size="sm" variant="outline">{{ actionLabel() }}</bip-button>
+              <bip-button (clicked)="retry.emit()" size="sm" variant="outline">{{ error()?.action?.label ?? (actionLabel() ?? '' | transloco) }}</bip-button>
             }
           </div>
         }
@@ -68,38 +76,17 @@ export class SystemState {
 
   protected readonly skeletonLines = computed(() => Array.from({ length: this.skeletonCount() }, (_, i) => i));
 
-  protected readonly resolvedTitle = computed(() => {
-    if (this.title()) {
-      return this.title();
-    }
-    const defaults: Record<string, string> = {
-      idle: 'Lancez une recherche',
-      empty: 'Aucun résultat',
-      expired: 'Cette offre a expiré',
-      error: 'Une action a échoué',
-      offline: 'Vous êtes hors ligne',
-    };
-    return defaults[this.status()] ?? '';
-  });
+  /** Clé du titre : celle reçue, ou celle de l'état. */
+  protected readonly resolvedTitle = computed(() => this.title() || (DEFAULT_TEXTS.has(this.status()) ? `common.system-state.${this.status()}.title` : ''));
 
-  protected readonly resolvedMessage = computed(() => {
-    if (this.error()) {
-      return this.error()!.what;
-    }
-    if (this.message()) {
-      return this.message();
-    }
-    const defaults: Record<string, string> = {
-      idle: 'Renseignez vos critères pour afficher des offres.',
-      empty: 'Aucune offre ne correspond à ces critères. Élargissez les dates ou retirez un filtre.',
-      expired: 'Le prix n’est plus garanti. Nous relançons la recherche en conservant votre saisie.',
-      error: 'Rien n’a été perdu. Vous pouvez réessayer.',
-      offline: 'Les billets déjà téléchargés restent accessibles.',
-    };
-    return defaults[this.status()] ?? '';
-  });
+  /**
+   * Clé du message (le texte d'une `AppError` passe avant, dans le gabarit). Le message par défaut n'accompagne que le titre par défaut : un titre propre à la page ne reçoit pas un message
+   * générique qui ne lui correspond pas.
+   */
+  protected readonly resolvedMessage = computed(() => this.message() || (!this.title() && DEFAULT_TEXTS.has(this.status()) ? `common.system-state.${this.status()}.message` : ''));
 
-  protected readonly actionLabel = computed(() => this.error()?.action.label ?? (this.status() === 'error' || this.status() === 'expired' ? 'Réessayer' : null));
+  /** Clé de l'action par défaut ; celle d'une `AppError` passe avant, dans le gabarit. */
+  protected readonly actionLabel = computed(() => (this.error()?.action.label || this.status() === 'error' || this.status() === 'expired' ? 'common.system-state.retry' : null));
 
   protected panelClass(): string {
     const tones: Record<string, string> = {

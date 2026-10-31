@@ -1,0 +1,21 @@
+<ng-container *transloco="let t">
+  <bip-header (currentLangChange)="changeLang($event)" [currentLang]="lang()" [entries]="entries()" [languages]="languages">
+    <div class="flex items-center gap-3" headerActions>
+      @if (session.user(); as user) {
+        <p class="hidden text-right text-xs leading-tight md:block">
+          <span class="block font-semibold text-ink">{{ user.full_name }}</span>
+          <span class="text-muted">
+            {{ t('roles.' + user.role) }}
+            @if (user.station; as station) {
+              · {{ station.name }}
+            }
+          </span>
+        </p>
+      }
+      <button (clicked)="logout()" [loading]="leaving()" bipButton loadingLabel="app.logout" size="sm" variant="outline">{{ t('app.logout') }}</button>
+    </div>
+  </bip-header>
+  <main class="mx-auto max-w-6xl px-4 py-4">
+    <router-outlet />
+  </main>
+</ng-container>

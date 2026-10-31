@@ -1,0 +1,68 @@
+<section *transloco="let t" class="space-y-4">
+  <div class="flex flex-wrap items-end gap-3">
+    <h1 class="mr-auto text-xl font-bold">{{ t('incidents.title') }}</h1>
+    <bip-checkbox [(checked)]="openOnly" [label]="t('incidents.open-only')" class="flex min-h-11 items-center" name="open-only" />
+    @if (session.manager()) {
+      <bip-select (valueChange)="station.set($event[0] ?? null)" [options]="stations()" [value]="[station()]" class="w-64" label="common.station" name="station" />
+    }
+  </div>
+  @if (action.error(); as code) {
+    <p class="text-state-error" role="alert">{{ t('errors.' + code) }}</p>
+  }
+
+  @if (session.manager()) {
+    <form (submit)="$event.preventDefault(); report()" class="flex flex-wrap items-end gap-3 bo-card">
+      <bip-select
+        (valueChange)="routeId.set($event[0] ?? null)"
+        [options]="routeOptions()"
+        [value]="routeId() === null ? [] : [routeId()!]"
+        class="w-72"
+        label="incidents.route"
+        name="route" />
+      <bip-select (valueChange)="type.set($event[0] ?? 'delay')" [options]="types()" [value]="[type()]" class="w-56" label="incidents.type" name="type" />
+      <bip-input [(value)]="description" [maxLength]="1000" class="min-w-64 flex-1" label="incidents.description" name="description" />
+      <button [disabled]="routeId() === null || !description()?.trim()" [loading]="action.busy()" bipButton type="submit" variant="outline">
+        {{ t('incidents.report') }}
+      </button>
+    </form>
+  }
+
+  @if (list.isLoading()) {
+    <bip-spinner class="py-8" label="common.loading" showLabel />
+  } @else if (list.error()) {
+    <bip-system-state (retry)="list.reload()" message="errors.unexpected" status="error" />
+  } @else if (!list.value()?.length) {
+    <bip-system-state status="empty" title="incidents.empty" />
+  } @else {
+    <ul class="grid gap-2">
+      @for (i of list.value(); track i.id) {
+        <li class="space-y-1 bo-card text-sm">
+          <p class="flex flex-wrap justify-between gap-2">
+            <span class="font-semibold">{{ t('incidents.types.' + i.type) }} · {{ i.origin }} → {{ i.destination }}</span>
+            <span class="text-muted">{{ dateTime(i.reported_at) }} · {{ i.reported_by }}</span>
+          </p>
+          @if (i.departure_id) {
+            <a [routerLink]="['/departures', i.departure_id]" class="text-brand-primary underline">{{ t('incidents.departure', { time: dateTime(i.departs_at) }) }}</a>
+          }
+          <p>{{ i.description }}</p>
+          @if (i.resolved_at) {
+            <p class="text-state-success">✓ {{ i.resolution }} ({{ dateTime(i.resolved_at) }})</p>
+          } @else if (session.chief()) {
+            <form (submit)="$event.preventDefault(); resolve(i.id)" class="flex flex-wrap items-end gap-2">
+              <bip-input
+                (valueChange)="setResolution(i.id, $event)"
+                [maxLength]="1000"
+                [name]="'resolution-' + i.id"
+                [value]="resolutions()[i.id] ?? ''"
+                class="min-w-64 flex-1"
+                hideLabel
+                label="incidents.resolution"
+                placeholder="incidents.resolution" />
+              <button [disabled]="!resolutions()[i.id]?.trim()" [loading]="action.busy()" bipButton type="submit">{{ t('incidents.resolve') }}</button>
+            </form>
+          }
+        </li>
+      }
+    </ul>
+  }
+</section>

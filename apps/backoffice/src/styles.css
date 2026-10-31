@@ -1,0 +1,10 @@
+@import 'tailwindcss';
+/* Design du site : thème et règles de base de la bibliothèque components. */
+@import '../../../packages/components/src/styles/theme.css';
+@import '../../../packages/components/src/styles/base.css';
+
+/* Mise en page propre au back-office : surface de carte pour un lien, un formulaire ou une ligne de liste (là où
+   l'élément bip-card changerait la sémantique). Mêmes valeurs que la carte du site, sans ombre. */
+@utility bo-card {
+  @apply rounded-card border border-border-subtle bg-surface-card p-4;
+}

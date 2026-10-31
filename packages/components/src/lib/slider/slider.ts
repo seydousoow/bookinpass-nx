@@ -26,30 +26,20 @@ export class Slider {
   protected onMinInput(event: Event): void {
     const value = Number((event.target as HTMLInputElement).value);
     const current = this.value();
-
-    this.value.set({
-      min: Math.min(value, current.max - this.step()),
-      max: current.max,
-    });
+    this.value.set({ min: Math.min(value, current.max - this.step()), max: current.max });
   }
 
   protected onMaxInput(event: Event): void {
     const value = Number((event.target as HTMLInputElement).value);
     const current = this.value();
-
-    this.value.set({
-      min: current.min,
-      max: Math.max(value, current.min + this.step()),
-    });
+    this.value.set({ min: current.min, max: Math.max(value, current.min + this.step()) });
   }
 
   private position(value: number): number {
     const range = this.max() - this.min();
-
     if (range <= 0) {
       return 0;
     }
-
     return ((value - this.min()) / range) * 100;
   }
 }

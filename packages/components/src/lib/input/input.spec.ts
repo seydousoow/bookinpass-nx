@@ -1,4 +1,5 @@
 import { Component, signal } from '@angular/core';
+import { form, FormField, min, pattern, required } from '@angular/forms/signals';
 import { render } from '../../testing';
 import { Input } from './input';
 
@@ -16,8 +17,7 @@ import { Input } from './input';
       label="form.email"
       name="email"
       placeholder="form.email-placeholder"
-      type="email"
-    />
+      type="email" />
   `,
 })
 class Host {
@@ -80,5 +80,84 @@ describe('Input', () => {
     host.hidden.set(true);
     await stable();
     expect(element.querySelector('bip-input')?.classList).toContain('hidden');
+  });
+
+  describe('champs numériques, horaires et contraintes natives', () => {
+    @Component({
+      imports: [Input],
+      template: `
+        <bip-input [(value)]="price" label="routes.price" name="price" type="number" [min]="1" [step]="1" />
+        <bip-input [(value)]="at" label="routes.departs-at" name="at" type="time" />
+        <bip-input [(value)]="username" label="staff.username" name="username" pattern="[a-z0-9._-]+" autocapitalize="none" [minLength]="3" [maxLength]="50" />
+      `,
+    })
+    class Fields {
+      readonly price = signal<number | null>(1000);
+      readonly at = signal<string | null>(null);
+      readonly username = signal<string | null>(null);
+    }
+
+    const field = (element: HTMLElement, name: string) => element.querySelector<HTMLInputElement>(`input[name="${name}"]`)!;
+
+    it('remonte un nombre, et null pour un champ vidé', async () => {
+      const { element, host } = await render(Fields);
+      const price = field(element, 'price');
+      expect(price.value).toBe('1000');
+
+      price.value = '2500';
+      price.dispatchEvent(new Event('input'));
+      expect(host.price()).toBe(2500);
+
+      price.value = '';
+      price.dispatchEvent(new Event('input'));
+      expect(host.price()).toBeNull();
+    });
+
+    it('accepte une heure', async () => {
+      const { element, host } = await render(Fields);
+      const at = field(element, 'at');
+      expect(at.type).toBe('time');
+      at.value = '07:30';
+      at.dispatchEvent(new Event('input'));
+      expect(host.at()).toBe('07:30');
+    });
+
+    it('pose les contraintes natives', async () => {
+      const { element } = await render(Fields);
+      const price = field(element, 'price');
+      expect(price.getAttribute('min')).toBe('1');
+      expect(price.getAttribute('step')).toBe('1');
+      const username = field(element, 'username');
+      expect(username.getAttribute('pattern')).toBe('[a-z0-9._-]+');
+      expect(username.getAttribute('autocapitalize')).toBe('none');
+      expect(username.getAttribute('minlength')).toBe('3');
+      expect(username.getAttribute('maxlength')).toBe('50');
+    });
+  });
+
+  it('reçoit les contraintes des validateurs d’un formulaire signal', async () => {
+    @Component({
+      imports: [Input, FormField],
+      template: `
+        <bip-input [formField]="staff.username" label="staff.username" name="username" />
+        <bip-input [formField]="staff.capacity" label="routes.capacity" name="capacity" type="number" />
+      `,
+    })
+    class SignalForm {
+      readonly model = signal({ username: '', capacity: 50 });
+      readonly staff = form(this.model, (path) => {
+        required(path.username);
+        pattern(path.username, /[a-z0-9._-]+/);
+        min(path.capacity, 1);
+      });
+    }
+
+    const { element } = await render(SignalForm);
+    // Le formulaire signal donne lui-même un nom à chaque champ : les champs sont pris dans l'ordre.
+    const [username, capacity] = [...element.querySelectorAll<HTMLInputElement>('input')];
+    expect(username.getAttribute('pattern')).toBe('[a-z0-9._-]+');
+    expect(username.required).toBe(true);
+    expect(capacity.getAttribute('min')).toBe('1');
+    expect(capacity.value).toBe('50');
   });
 });

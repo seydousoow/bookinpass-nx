@@ -115,4 +115,20 @@ describe('DatePicker', () => {
     buttons[buttons.length - 1].click();
     expect(host.dates()).toEqual({ start: null, end: null });
   });
+
+  it('affiche son texte d’attente par défaut, ou celui reçu', async () => {
+    @Component({
+      imports: [DatePicker],
+      template: `
+        <bip-date-picker label="a" name="a" />
+        <bip-date-picker label="b" name="b" placeholder="Date du voyage" />
+      `,
+    })
+    class Placeholders {}
+
+    const { element } = await render(Placeholders);
+    const [byDefault, given] = [...element.querySelectorAll('bip-dropdown button')].map((b) => b.textContent?.trim());
+    expect(byDefault).toBe('picker.placeholder');
+    expect(given).toBe('Date du voyage');
+  });
 });

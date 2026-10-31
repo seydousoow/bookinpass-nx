@@ -1,5 +1,6 @@
 import { booleanAttribute, Component, computed, ElementRef, HostListener, inject, input, output } from '@angular/core';
 import { Spinner } from '../spinner/spinner';
+import { clsx } from 'clsx';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'accent' | 'success' | 'danger' | 'warning' | 'link';
 
@@ -68,26 +69,22 @@ export class Button {
   protected readonly nonInteractive = computed(() => this.disabled() || this.loading());
 
   protected readonly hostClass = computed(() => {
-    const base = ['inline-flex items-center justify-center gap-2 border font-semibold transition-colors bip-focusable select-none whitespace-nowrap'];
+    return clsx(
+      'bip-focusable inline-flex items-center justify-center gap-2 border font-semibold whitespace-nowrap transition-colors select-none',
 
-    if (this.variant() === 'link') {
-      base.push(
-        'border-transparent bg-transparent p-0 text-brand-primary underline underline-offset-4 hover:text-brand-dark min-h-0 rounded-button',
-        this.size() === 'sm' ? 'text-sm' : 'text-base',
-      );
-    } else {
-      base.push(sizes[this.size()], variants[this.variant()]);
-    }
+      this.variant() === 'link'
+        ? [
+            'min-h-0 rounded-button border-transparent bg-transparent p-0 text-brand-primary underline underline-offset-4 hover:text-brand-dark',
+            this.size() === 'sm' ? 'text-sm' : 'text-base',
+          ]
+        : [sizes[this.size()], variants[this.variant()]],
 
-    if (this.disabled()) {
-      base.push('cursor-not-allowed opacity-50');
-    } else if (this.loading()) {
-      base.push('cursor-wait opacity-90');
-    } else {
-      base.push('cursor-pointer');
-    }
-
-    return base.join(' ');
+      {
+        'cursor-not-allowed opacity-50': this.disabled(),
+        'cursor-wait opacity-90': !this.disabled() && this.loading(),
+        'cursor-pointer': !this.disabled() && !this.loading(),
+      },
+    );
   });
 
   @HostListener('click', ['$event'])

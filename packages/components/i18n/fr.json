@@ -1,0 +1,101 @@
+{
+  "common": {
+    "clear": "Effacer",
+    "close": "Fermer",
+    "empty": "Aucun résultat",
+    "loading": "Chargement",
+    "loading-in-progress": "Chargement en cours",
+    "pagination": {
+      "label": "Pagination",
+      "next": "Page suivante",
+      "page": "Page {page}",
+      "previous": "Page précédente",
+      "summary": "{from}–{to} sur {total}"
+    },
+    "phone": {
+      "country": "Indicatif du pays",
+      "search": "Rechercher un pays ou un indicatif"
+    },
+    "radio": {
+      "min-option": "Au moins deux options sont requises pour le groupe de boutons radio.",
+      "no-option": "Aucune option spécifiée pour le groupe radio."
+    },
+    "required-field": "Ce champ est requis",
+    "select": "Sélectionner",
+    "system-state": {
+      "retry": "Réessayer",
+      "partial": {
+        "title": "Confirmation partielle"
+      },
+      "idle": {
+        "title": "Lancez une recherche",
+        "message": "Renseignez vos critères pour afficher des offres."
+      },
+      "empty": {
+        "title": "Aucun résultat",
+        "message": "Aucune offre ne correspond à ces critères. Élargissez les dates ou retirez un filtre."
+      },
+      "expired": {
+        "title": "Cette offre a expiré",
+        "message": "Le prix n’est plus garanti. Nous relançons la recherche en conservant votre saisie."
+      },
+      "error": {
+        "title": "Une action a échoué",
+        "message": "Rien n’a été perdu. Vous pouvez réessayer."
+      },
+      "offline": {
+        "title": "Vous êtes hors ligne",
+        "message": "Les billets déjà téléchargés restent accessibles."
+      }
+    }
+  },
+  "footer": {
+    "legal": "Tous droits réservés.",
+    "tagline": "Réservez vos vols, séjours et activités au Sénégal et au-delà."
+  },
+  "nav": {
+    "currency": "Devise",
+    "language": "Langue",
+    "main": "Navigation principale",
+    "menu": "Menu"
+  },
+  "picker": {
+    "next": "Mois suivant",
+    "placeholder": "Choisir une date",
+    "previous": "Mois précédent",
+    "select": {
+      "inbound": "Sélectionnez la date de départ",
+      "one-way": "Sélectionnez une date",
+      "outbound": "Sélectionnez la date de retour"
+    }
+  },
+  "search": {
+    "location": {
+      "all-airports": "Tous les aéroports · {name}",
+      "min-typing": "{count, plural, one {Saisissez au moins # caractère} other {Saisissez au moins # caractères}}",
+      "no-result": "Aucune correspondance pour « {value} »",
+      "placeholder": "Ville, aéroport ou code"
+    },
+    "passenger": {
+      "add-a": "Ajouter un",
+      "adult": {
+        "detailed": "{count, plural, one {# adulte} other {# adultes}}",
+        "hint": "12 ans et plus",
+        "label": "Adulte"
+      },
+      "children": {
+        "detailed": "{count, plural, one {# enfant} other {# enfants}}",
+        "hint": "De 2 à 11 ans",
+        "label": "Enfant"
+      },
+      "infant": {
+        "detailed": "{count, plural, one {# bébé} other {# bébés}}",
+        "hint": "Moins de 2 ans",
+        "label": "Bébé",
+        "requirement": "Chaque adulte peut accompagner jusqu’à deux enfants, avec au maximum un bébé par adulte."
+      },
+      "remove-a": "Retirer un"
+    },
+    "travelers": "Voyageurs"
+  }
+}

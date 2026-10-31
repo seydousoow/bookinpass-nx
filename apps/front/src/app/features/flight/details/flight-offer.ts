@@ -9,7 +9,9 @@ import { APP_CONFIG } from 'configs';
 import { TranslocoLocaleService } from '@jsverse/transloco-locale';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroCheck, heroChevronDown, heroInformationCircle, heroUser } from '@ng-icons/heroicons/outline';
-import { Button, Input, isValidPhone, Modal, PhoneInput, Spinner } from 'components';
+import { Button, Input, Modal, PhoneInput, Spinner } from 'components';
+import { deadline, formatMoney, inactivity, REVALIDATE_MS } from 'utils';
+import { isValidPhone } from 'utils/phone-number.utils';
 import {
   IFlightOfferDetails,
   IFlightOfferResponse,
@@ -29,13 +31,13 @@ import { OfferItinerary } from './offer-itinerary/offer-itinerary';
 import { FareOptions } from './fare-options/fare-options';
 import { clearDraft, IContact, loadDraft, saveDraft, STEPS, TStep } from './checkout-draft';
 import { loadContact, saveContact, SearchStore } from 'state';
-import { deadline, formatMoney, inactivity, REVALIDATE_MS } from 'utils';
 import { FlightDetailsLoader } from './flight-details-loader';
 import { ISeatTraveler, SeatSelectionComponent } from './seat-selection/seat-selection';
 import { extraBagGroups, extraBagLines, IExtraBagGroup, TBagSelection, toOrderServices } from './extra-bags/extra-bags.util';
 import { ExtraBags, IExtrasTraveler } from './extra-bags/extra-bags';
 import { IBagLine, IncludedBags } from './included-bags/included-bags';
 import { ICheckoutSession, IPaymentAuthorisation, PaymentForm, PaymentService } from 'payment';
+import { clsx } from 'clsx';
 
 interface ITravelerCard {
   readonly id: string;
@@ -444,13 +446,12 @@ export class FlightOffer {
   }
 
   protected getStepClass(i: number): string {
-    if (i === this.stepIndex()) {
-      return 'bg-brand-primary border-brand-primary text-onbrand';
-    }
-    if (i < this.stepIndex()) {
-      return 'border-brand-primary text-brand-primary';
-    }
-    return 'border-ink';
+    const current = this.stepIndex();
+    return clsx({
+      'border-brand-primary bg-brand-primary text-onbrand': i === current,
+      'border-brand-primary text-brand-primary': i < current,
+      'border-ink': i > current,
+    });
   }
 
   /** Tarifie l'offre courante avec les services prévus ; l'offre rendue remplace l'actuelle. */

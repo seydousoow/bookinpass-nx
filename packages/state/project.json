@@ -4,6 +4,6 @@
   "sourceRoot": "packages/state/src",
   "prefix": "bip",
   "projectType": "library",
-  "tags": ["test", "lint", "type:state"],
+  "tags": ["test", "lint", "type:state", "scope:front"],
   "targets": {}
 }

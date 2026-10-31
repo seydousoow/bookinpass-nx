@@ -22,7 +22,9 @@
       "components/*": ["./packages/components/src/lib/*"],
       "models": ["./packages/models/src/index.ts"],
       "configs": ["./packages/configurations/src/index.ts"],
+      "configs/*": ["./packages/configurations/src/lib/*"],
       "utils": ["./packages/utils/src/index.ts"],
+      "utils/*": ["./packages/utils/src/lib/utils/*"],
       "pipes": ["./packages/pipes/src/index.ts"],
       "state": ["./packages/state/src/index.ts"],
       "payment": ["./packages/payment/src/index.ts"]

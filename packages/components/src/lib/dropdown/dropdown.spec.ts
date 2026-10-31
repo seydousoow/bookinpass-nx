@@ -58,4 +58,26 @@ describe('Dropdown', () => {
     await stable();
     expect(trigger(element).disabled).toBe(true);
   });
+
+  it('affiche le texte d’attente reçu tel quel, déjà traduit', async () => {
+    @Component({
+      imports: [Dropdown],
+      template: `<bip-dropdown [error]="false" label="Dates" name="dates" placeholder="Choisissez vos dates" />`,
+    })
+    class WithPlaceholder {}
+
+    const { element } = await render(WithPlaceholder);
+    expect(trigger(element).textContent?.trim()).toBe('Choisissez vos dates');
+  });
+
+  it('signale une erreur par la bordure d’état', async () => {
+    @Component({
+      imports: [Dropdown],
+      template: `<bip-dropdown [error]="true" label="Dates" name="dates" />`,
+    })
+    class Invalid {}
+
+    const { element } = await render(Invalid);
+    expect(trigger(element).classList).toContain('border-state-error');
+  });
 });

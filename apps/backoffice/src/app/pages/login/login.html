@@ -1,0 +1,17 @@
+<main *transloco="let t" class="flex min-h-screen items-center justify-center p-4">
+  <bip-card class="w-full max-w-sm" padding="lg">
+    <form [formRoot]="loginForm" class="space-y-4" novalidate>
+      <img alt="Book In Pass" class="h-12 w-auto" height="512" ngSrc="/images/bip-transparent-logo.png" priority width="2112" />
+      <div>
+        <h1 class="text-xl font-bold">{{ t('app.title') }}</h1>
+        <p class="text-sm text-muted">{{ t('login.subtitle') }}</p>
+      </div>
+      <bip-input [formField]="loginForm.username" autocapitalize="none" autocomplete="username" label="login.username" />
+      <bip-input [formField]="loginForm.password" autocomplete="current-password" label="login.password" type="password" />
+      @if (action.error(); as code) {
+        <p class="text-sm text-state-error" role="alert">{{ t('errors.' + code) }}</p>
+      }
+      <button [loading]="action.busy()" bipButton block loadingLabel="login.submit" type="submit">{{ t('login.submit') }}</button>
+    </form>
+  </bip-card>
+</main>

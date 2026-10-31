@@ -2,7 +2,7 @@ import { Component, signal } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { NgIcon } from '@ng-icons/core';
 import { AppError, appError, SystemStatus } from 'models';
-import { render } from '../../testing';
+import { render, translocoTesting } from '../../testing';
 import { SystemState } from './system-state';
 
 @Component({
@@ -21,8 +21,9 @@ class Host {
 }
 
 describe('SystemState', () => {
+  // Vraies traductions des composants : les textes par défaut doivent exister et s'afficher.
   const setup = async (status: SystemStatus) => {
-    const view = await render(Host);
+    const view = await render(Host, [], translocoTesting('components'));
     view.host.status.set(status);
     await view.stable();
     return view;
@@ -85,5 +86,14 @@ describe('SystemState', () => {
     host.status.set('empty');
     await stable();
     expect(color()).toBe('var(--color-muted)');
+  });
+
+  it('n’ajoute pas le message générique à un titre propre à la page', async () => {
+    const { element, host, stable } = await setup('empty');
+    host.title.set('departures.empty');
+    await stable();
+    expect(element.textContent).toContain('departures.empty');
+    expect(element.textContent).not.toContain('Élargissez les dates');
+    expect(element.querySelectorAll('[role="status"] p')).toHaveLength(1);
   });
 });

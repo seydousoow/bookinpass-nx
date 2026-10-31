@@ -1,18 +1,19 @@
 import { booleanAttribute, Component, computed, input } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
+import { clsx } from 'clsx';
 
 const paddings = { none: '', sm: 'p-3', md: 'p-4', lg: 'p-6' } as const;
 
 @Component({
   selector: 'bip-card',
-  host: { '[class]': 'hostClass()', '[class.shadow-card]': '!this.flat()' },
+  host: { '[class]': 'hostClass()' },
   template: `
     @if (title(); as heading) {
       <header class="flex items-start justify-between gap-2">
         <div class="min-w-0">
-          <h3 class="text-lg text-muted truncate">{{ heading | transloco }}</h3>
+          <h3 class="truncate text-lg text-muted">{{ heading | transloco }}</h3>
           @if (subtitle(); as sub) {
-            <p class="text-sm text-muted mt-1">{{ sub | transloco }}</p>
+            <p class="mt-1 text-sm text-muted">{{ sub | transloco }}</p>
           }
         </div>
         <ng-content select="[cardActions]" />
@@ -30,11 +31,12 @@ export class Card {
   readonly interactive = input(false, { transform: booleanAttribute });
   readonly flat = input(false, { transform: booleanAttribute });
 
-  protected readonly hostClass = computed(() => {
-    const base = ['flex flex-col gap-3 rounded-card border border-border-subtle bg-surface-card', paddings[this.padding()]];
-    if (this.interactive()) {
-      base.push('cursor-pointer transition-shadow hover:shadow-panel focus-within:ring-2 focus-within:ring-brand-primary');
-    }
-    return base.join(' ');
-  });
+  protected readonly hostClass = computed(() =>
+    clsx(
+      'flex flex-col gap-3 rounded-card border border-border-subtle bg-surface-card',
+      paddings[this.padding()],
+      this.interactive() && 'cursor-pointer transition-shadow focus-within:ring-2 focus-within:ring-brand-primary hover:shadow-panel',
+      { 'shadow-card': !this.flat() },
+    ),
+  );
 }

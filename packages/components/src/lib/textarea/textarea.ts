@@ -1,9 +1,8 @@
-// noinspection ES6PreferShortImport
-
 import { booleanAttribute, Component, computed, inject, input, model, output } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
 import { FormValueControl, ValidationError, WithOptionalFieldTree } from '@angular/forms/signals';
 import { Field } from '../field/field';
+import { clsx } from 'clsx';
 
 @Component({
   selector: 'bip-textarea',
@@ -25,8 +24,7 @@ import { Field } from '../field/field';
         [placeholder]="placeholder()"
         [required]="required()"
         [rows]="rows()"
-        [value]="value()"
-      ></textarea>
+        [value]="value()"></textarea>
     </bip-field>
   `,
 })
@@ -35,8 +33,6 @@ export class Textarea implements FormValueControl<string> {
   readonly placeholder = input('');
   readonly hint = input<string>();
   readonly rows = input(4);
-
-  // readonly errors = input<readonly ValidationError.WithOptionalFieldTree[]>([]);
 
   readonly name = input('');
   readonly touched = input(false, { transform: booleanAttribute });
@@ -50,17 +46,14 @@ export class Textarea implements FormValueControl<string> {
   readonly maxLength = input<number | undefined>(1000);
   readonly hidden = input(false, { transform: booleanAttribute });
   readonly value = model<string>('');
-  protected readonly controlClass = computed(() => {
-    const base = ['w-full rounded-field border bg-surface-card text-ink text-sm px-3 py-2.5 transition-colors bip-focusable resize-y'];
-    base.push(this.touched() && this.invalid() ? 'border-state-error focus-visible:ring-state-error' : 'border-border-strong hover:border-brand-primary/60');
-    return base.join(' ');
-  });
+  protected readonly controlClass = computed(() =>
+    clsx(
+      'bip-focusable w-full resize-y rounded-field border bg-surface-card px-3 py-2.5 text-sm text-ink transition-colors',
+      this.touched() && this.invalid() ? 'border-state-error focus-visible:ring-state-error' : 'border-border-strong hover:border-brand-primary/60',
+    ),
+  );
   private readonly transloco = inject(TranslocoService);
   private readonly lang = this.transloco.activeLang;
-  /**
-   * Indication suivie du compteur. L'indication est traduite ici : la clé collée au compteur
-   * (« stay.…-hint — 0/500 ») ne correspondrait plus à aucune traduction dans `bip-field`.
-   */
   protected readonly counterHint = computed(() => {
     const max = this.maxLength();
     const key = this.hint();

@@ -1,0 +1,54 @@
+<section *transloco="let t" class="space-y-4">
+  <h1 class="text-xl font-bold">{{ t('bookings.title') }}</h1>
+  <form (submit)="$event.preventDefault(); search()" class="flex flex-wrap items-end gap-2 bo-card">
+    <bip-input [(value)]="query" [maxLength]="50" autocomplete="off" class="min-w-64 flex-1" label="bookings.query" name="q" type="search" />
+    <button [disabled]="trimmed().length < minQuery" [loading]="action.busy()" bipButton type="submit">{{ t('bookings.search') }}</button>
+  </form>
+  @if (action.error(); as code) {
+    <p class="text-state-error" role="alert">{{ t('errors.' + code) }}</p>
+  }
+  @if (notice(); as text) {
+    <p class="rounded-card bg-state-success-soft p-3 text-sm text-state-success" role="status">{{ text }}</p>
+  }
+  @if (results(); as list) {
+    @if (!list.length) {
+      <bip-system-state status="empty" title="bookings.none" />
+    }
+    <ul class="grid gap-2">
+      @for (b of list; track b.reference) {
+        <li class="space-y-2 bo-card text-sm">
+          <div class="flex flex-wrap items-start justify-between gap-2">
+            <div>
+              <p>
+                <span class="font-mono text-base font-bold">{{ b.reference }}</span> · {{ b.origin }} → {{ b.destination }}
+              </p>
+              <a [routerLink]="['/departures', b.departure_id]" class="text-brand-primary underline">{{ dateTime(b.departs_at) }}</a>
+              <p class="text-muted">
+                {{ b.email }} · <a [href]="'tel:' + b.phone" class="underline">{{ b.phone }}</a>
+              </p>
+            </div>
+            <div class="flex flex-col items-end gap-1">
+              <bip-badge [tone]="b.status === 'confirmed' ? 'success' : 'warning'" size="sm">{{ t('bookings.status.' + b.status) }}</bip-badge>
+              <p>{{ b.total }} {{ b.currency }}</p>
+              @if (b.payment_method) {
+                <p class="text-xs text-muted">{{ t('bookings.method.' + b.payment_method) }} · {{ t('bookings.payment.' + b.payment_status) }}</p>
+              }
+            </div>
+          </div>
+          <ul class="border-t border-border-subtle pt-2">
+            @for (ticket of b.tickets; track $index) {
+              <li class="flex flex-wrap justify-between gap-2">
+                <span>{{ ticket.given_name }} {{ ticket.family_name }}</span>
+                <span class="font-mono">{{ ticket.code ?? '—' }}</span>
+                <span [class.text-state-success]="ticket.scanned_at">{{ ticket.scanned_at ? '✓ ' + time(ticket.scanned_at) : t('bookings.not-scanned') }}</span>
+              </li>
+            }
+          </ul>
+          @if (session.chief() && b.status === 'confirmed') {
+            <button (clicked)="resend(b)" [loading]="action.busy()" bipButton size="sm" variant="outline">{{ t('bookings.resend') }}</button>
+          }
+        </li>
+      }
+    </ul>
+  }
+</section>

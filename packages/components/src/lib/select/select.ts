@@ -8,6 +8,7 @@ import { CdkConnectedOverlay } from '@angular/cdk/overlay';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { heroCheckSolid, heroChevronDownSolid } from '@ng-icons/heroicons/solid';
 import { NgIcon, provideIcons } from '@ng-icons/core';
+import { clsx } from 'clsx';
 
 @Component({
   selector: 'bip-select',
@@ -55,20 +56,17 @@ export class Select<T = string> implements FormValueControl<T[]> {
   }
 
   protected triggerClass(): string {
-    const base = ['flex min-h-11 w-full items-center gap-2 rounded-field border bg-surface-card px-3 py-2 text-left transition-colors bip-focusable'];
-    if (this.touched() && this.invalid()) {
-      base.push('border-state-error');
-    } else {
-      base.push(this.open() ? 'border-brand-primary' : 'border-border-strong hover:border-brand-primary/60');
-    }
-    base.push(this.disabled() ? 'bg-surface-muted cursor-not-allowed opacity-60' : 'cursor-pointer');
-    return base.join(' ');
+    return clsx('bip-focusable flex min-h-11 w-full items-center gap-2 rounded-field border bg-surface-card px-3 py-2 text-left transition-colors', {
+      'border-state-error': this.touched() && this.invalid(),
+      'border-brand-primary': !(this.touched() && this.invalid()) && this.open(),
+      'border-border-strong hover:border-brand-primary/60': !(this.touched() && this.invalid()) && !this.open(),
+      'cursor-not-allowed bg-surface-muted opacity-60': this.disabled(),
+      'cursor-pointer': !this.disabled(),
+    });
   }
 
   protected optionClass(active: boolean): string {
-    const base = ['flex min-h-11 items-center gap-2 px-3 py-2.5 text-sm'];
-    base.push(active ? 'bg-brand-soft text-brand-dark' : 'hover:bg-brand-soft/60');
-    return base.join(' ');
+    return clsx('flex min-h-11 items-center gap-2 px-3 py-2.5 text-sm', active ? 'bg-brand-soft text-brand-dark' : 'hover:bg-brand-soft/60');
   }
 
   protected onCommit(): void {

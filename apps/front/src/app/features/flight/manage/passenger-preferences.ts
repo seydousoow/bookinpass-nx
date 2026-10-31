@@ -2,6 +2,7 @@ import { Component, computed, input, linkedSignal } from '@angular/core';
 import { TranslocoDirective } from '@jsverse/transloco';
 import { IBookedOrder, IBookedPassenger, IBookedService } from './manage-booking.service';
 import { initials, ticketNumber } from './booking-view.util';
+import { clsx } from 'clsx';
 
 export type TPreferenceTab = 'passengers' | 'seats' | 'bags' | 'meals';
 
@@ -107,9 +108,9 @@ export class PassengerPreferences {
   });
 
   protected tabClass(tab: TPreferenceTab): string {
-    return [
-      'flex-1 cursor-pointer whitespace-nowrap px-4 py-3 text-sm font-semibold transition-colors',
-      this.active() === tab ? 'bg-surface-card text-ink' : 'bg-surface-page text-muted hover:text-ink',
-    ].join(' ');
+    return clsx('flex-1 cursor-pointer px-4 py-3 text-sm font-semibold whitespace-nowrap transition-colors', {
+      'bg-surface-card text-ink': this.active() === tab,
+      'bg-surface-page text-muted hover:text-ink': this.active() !== tab,
+    });
   }
 }

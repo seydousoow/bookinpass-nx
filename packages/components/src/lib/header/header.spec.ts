@@ -1,5 +1,6 @@
 import { Component, signal } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { TestBed } from '@angular/core/testing';
+import { provideRouter, Router } from '@angular/router';
 import { ICurrencyOption } from 'models';
 import { render } from '../../testing';
 import { Header, NavEntry } from './header';
@@ -55,5 +56,42 @@ describe('Header', () => {
     element.querySelector<HTMLElement>('bip-button')!.click();
     await stable();
     expect(element.querySelectorAll('nav')).toHaveLength(2);
+  });
+
+  describe('sans devises, avec des actions (back-office)', () => {
+    @Component({ template: '' })
+    class Page {}
+
+    @Component({
+      imports: [Header],
+      template: `
+        <bip-header [(currentLang)]="lang" [entries]="entries" [languages]="languages">
+          <button class="logout" headerActions type="button">Se déconnecter</button>
+        </bip-header>
+      `,
+    })
+    class Backoffice {
+      readonly lang = signal('fr');
+      readonly languages = ['fr', 'en'];
+      readonly entries: readonly NavEntry[] = [
+        { labelKey: 'nav.departures', route: '/' },
+        { labelKey: 'nav.scan', route: '/scan' },
+      ];
+    }
+
+    it('affiche les actions projetées, sans choix de devise', async () => {
+      const { element } = await render(Backoffice, [provideRouter([])]);
+      expect(element.querySelector('header .logout')?.textContent).toBe('Se déconnecter');
+      expect(element.querySelector('bip-currency-selector')).toBeNull();
+    });
+
+    it('signale la section courante aux lecteurs d’écran', async () => {
+      const { element, stable } = await render(Backoffice, [provideRouter([{ path: 'scan', component: Page }])]);
+      await TestBed.inject(Router).navigateByUrl('/scan');
+      await stable();
+      const nav = element.querySelector('nav')!;
+      expect(nav.querySelector('a[href="/scan"]')?.getAttribute('aria-current')).toBe('page');
+      expect(nav.querySelector('a[href="/"]')?.getAttribute('aria-current')).toBeNull();
+    });
   });
 });
