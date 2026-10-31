@@ -108,5 +108,13 @@
       "prettier --write"
     ],
     "*.{html,css,scss,json,md,yml,yaml}": "prettier --write"
+  },
+  "overrides": {
+    "minimatch": "^11.0.3",
+    "glob": "^14.0.3",
+    "@oxc-parser/binding-wasm32-wasi": {
+      "@emnapi/core": "2.0.0-beta.2",
+      "@emnapi/runtime": "2.0.0-beta.2"
+    }
   }
 }
