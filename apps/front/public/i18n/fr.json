@@ -570,7 +570,8 @@
       "flights": "Vols",
       "stays": "Hébergement",
       "manage": "Gérer mon vol",
-      "bus": "Car"
+      "bus": "Car",
+      "activities": "Activités"
     }
   },
   "stay": {
@@ -830,7 +831,53 @@
       "service-unavailable": "Un service choisi n'est plus disponible : revenez aux étapes précédentes pour le modifier.",
       "expired": "La session de paiement a expiré : rechargez la page pour recommencer."
     },
-    "processing": "Paiement en cours…"
+    "processing": "Paiement en cours…",
+    "paydunya": {
+      "title": "Payer avec PayDunya",
+      "secure": "Paiement sécurisé par PayDunya. Votre numéro est transmis chiffré (HTTPS) ; le code de paiement n'est jamais conservé.",
+      "country": "Pays",
+      "method": "Moyen de paiement",
+      "phone": "Numéro de téléphone",
+      "phone-hint": "Numéro national, sans l'indicatif.",
+      "otp": "Code de paiement",
+      "card-hint": "Vous saisirez votre carte sur la page sécurisée de PayDunya (Visa, Mastercard). Pour American Express, payez par carte ci-dessous.",
+      "pay": "Payer",
+      "pay-card": "Continuer vers la page de paiement",
+      "countries": {
+        "WW": "Monde (carte)",
+        "SN": "Sénégal",
+        "CI": "Côte d'Ivoire",
+        "BF": "Burkina Faso",
+        "ML": "Mali"
+      },
+      "methods": {
+        "paydunya-card": "Carte bancaire",
+        "wave-senegal": "Wave",
+        "orange-money-senegal": "Orange Money",
+        "wave-ci": "Wave",
+        "orange-money-ci": "Orange Money",
+        "orange-money-burkina": "Orange Money",
+        "orange-money-mali": "Orange Money"
+      },
+      "otp-how": {
+        "orange-money-ci": "Composez le #144*82# puis choisissez l'option 2 pour obtenir votre code de paiement, puis saisissez-le ci-dessous.",
+        "orange-money-burkina": "Obtenez votre code de paiement Orange Money depuis votre téléphone (menu Orange Money), puis saisissez-le ci-dessous."
+      },
+      "next": {
+        "qr": "Scannez le QR code avec Orange Money ou Max it, ou ouvrez l'application sur ce téléphone.",
+        "open-om": "Ouvrir Orange Money",
+        "open-maxit": "Ouvrir Max it",
+        "show-qr": "Afficher le QR code",
+        "phone": "Une demande de paiement a été envoyée sur votre téléphone : validez-la pour terminer."
+      },
+      "errors": {
+        "invalid-phone": "Ce numéro ne peut pas payer avec ce moyen. Vérifiez le pays et le numéro.",
+        "otp-required": "Saisissez le code de paiement reçu de votre opérateur.",
+        "payment-refused": "Le paiement a été refusé. Vérifiez le numéro, le code et votre solde, puis réessayez.",
+        "too-many-attempts": "Trop de tentatives. Patientez quelques minutes avant de réessayer.",
+        "unknown-payment-method": "Ce moyen de paiement n'est plus proposé. Choisissez-en un autre."
+      }
+    }
   },
   "bus": {
     "network": {
@@ -922,16 +969,15 @@
         "mobile-failed": "Le paiement mobile n'a pas pu être vérifié. Réessayez."
       },
       "mobile": {
-        "title": "Wave, Orange Money ou Free Money",
-        "hint": "Vous validez le paiement sur votre téléphone, sur la page sécurisée de PayDunya.",
-        "pay": "Payer par mobile money",
+        "title": "Mobile money ou carte PayDunya",
+        "hint": "Wave et Orange Money (Sénégal, Côte d'Ivoire, Burkina Faso, Mali), ou carte sur la page PayDunya.",
         "or-card": "ou par carte bancaire",
-        "redirecting": "Ouverture de la page de paiement…",
+        "redirecting": "Envoi du paiement…",
         "checking": "Vérification de votre paiement…",
         "pending": "Paiement en attente : validez-le sur votre téléphone. Cette page se met à jour toute seule.",
         "check-again": "Vérifier à nouveau",
         "cancelled": "Paiement annulé : rien n'a été débité. Vos places restent réservées quelques minutes.",
-        "retry": "Réessayer avec Wave / Orange Money",
+        "retry": "Réessayer avec PayDunya",
         "use-card": "Payer par carte"
       }
     },
@@ -960,6 +1006,287 @@
       "submit": "Afficher",
       "not-found": "Aucune réservation ne correspond à cette référence et ce nom.",
       "failed": "Les billets n'ont pas pu être chargés. Réessayez."
+    }
+  },
+  "activity": {
+    "duration": {
+      "range": "{from} à {to}",
+      "days": "{count, plural, one {# jour} other {# jours}}",
+      "minutes": "{count} min",
+      "hours-minutes": "{hours} h {minutes}",
+      "hours": "{count, plural, one {# heure} other {# heures}}"
+    },
+    "card": {
+      "free-cancellation": "Annulation gratuite",
+      "rating": "Note {rating} sur 5, {count} avis",
+      "from": "À partir de"
+    },
+    "search": {
+      "city": "Destination",
+      "any-city": "Toutes les destinations",
+      "query": "Que voulez-vous faire ?",
+      "query-placeholder": "Visite, croisière, île de Gorée…",
+      "submit": "Rechercher",
+      "destinations-failed": "Les destinations n'ont pas pu être chargées.",
+      "categories": "Catégories",
+      "all": "Tout",
+      "category": {
+        "tour": "Visites guidées",
+        "cruise": "Croisières",
+        "excursion": "Excursions",
+        "museum": "Musées",
+        "outdoor": "Nature et plein air",
+        "food": "Gastronomie",
+        "culture": "Culture",
+        "water": "Activités nautiques",
+        "other": "Autres"
+      },
+      "failed": "Les activités n'ont pas pu être chargées.",
+      "retry": "Réessayer",
+      "count": "{count, plural, =0 {Aucune activité} one {# activité} other {# activités}}",
+      "empty-title": "Aucune activité ne correspond",
+      "empty-message": "Essayez une autre destination ou d'autres mots."
+    },
+    "book-card": {
+      "label": "Réserver cette activité",
+      "from": "À partir de",
+      "per-person": "par personne",
+      "not-on-sale": "Cette activité n'est pas encore en vente.",
+      "participants": "Participants",
+      "participants-value": "{adults, plural, =0 {} one {# adulte} other {# adultes}}{children, plural, =0 {} one {, # enfant} other {, # enfants}}",
+      "adults": "Adultes",
+      "children": "Enfants",
+      "children-hint": "Tarif enfant selon l'option",
+      "less": "Un de moins : {who}",
+      "more": "Un de plus : {who}",
+      "date": "Date",
+      "date-placeholder": "Choisir une date",
+      "dates-failed": "Les dates disponibles n'ont pas pu être chargées.",
+      "no-dates": "Aucune date disponible dans les trois prochains mois pour ce nombre de participants.",
+      "check": "Voir les disponibilités",
+      "loading": "Recherche des horaires…",
+      "slots-failed": "Les horaires n'ont pas pu être chargés.",
+      "no-slots": "Plus de place ce jour-là. Choisissez une autre date.",
+      "total": "{total} pour {count, plural, one {# participant} other {# participants}}",
+      "times": "Horaires",
+      "few-left": "{count, plural, one {Plus qu'une place} other {Plus que # places}}",
+      "book": "Réserver",
+      "time-zone": "Heures locales ({zone})."
+    },
+    "reviews": {
+      "stars": "{rating} étoiles sur 5",
+      "verified": "Réservation vérifiée",
+      "helpful": "Cet avis vous a-t-il été utile ?",
+      "helpful-button": "Utile ({count})",
+      "title": "Avis clients",
+      "overall": "Note globale",
+      "based-on": "{count, plural, one {Sur la base de # avis} other {Sur la base de # avis}}",
+      "summary": "En détail",
+      "detail": {
+        "value": "Rapport qualité-prix",
+        "service": "Accueil et guide",
+        "organization": "Organisation"
+      },
+      "by-stars": "Par note",
+      "stars-short": "{count} ★",
+      "none": "Pas encore d'avis.",
+      "ai-title": "Ce qu'en disent les voyageurs",
+      "ai-note": "{count, plural, one {Résumé par IA à partir de # avis vérifié} other {Résumé par IA à partir de # avis vérifiés}}",
+      "search": "Chercher dans les avis",
+      "search-placeholder": "ex. guide",
+      "sort": "Trier par",
+      "sorts": {
+        "recent": "Les plus récents",
+        "rating_high": "Meilleures notes",
+        "rating_low": "Moins bonnes notes",
+        "helpful": "Les plus utiles"
+      },
+      "filtered": "Avis à {count} étoiles seulement.",
+      "clear-filter": "Tous les avis",
+      "no-match": "Aucun avis ne correspond.",
+      "loading": "Chargement des avis…",
+      "failed": "Les avis n'ont pas pu être chargés.",
+      "retry": "Réessayer",
+      "more": "Voir plus d'avis"
+    },
+    "gallery": {
+      "open": "Agrandir la photo {index}",
+      "all": "Tout voir ({count})"
+    },
+    "map": {
+      "title": "Carte : {place}",
+      "open": "Ouvrir la carte"
+    },
+    "details": {
+      "loading": "Chargement de l'activité…",
+      "not-found": "Cette activité n'existe pas ou n'est plus proposée.",
+      "failed": "L'activité n'a pas pu être chargée.",
+      "retry": "Réessayer",
+      "back-to-search": "Voir les activités",
+      "review-count": "{count, plural, one {# avis} other {# avis}}",
+      "provider": "Prestataire : {name}",
+      "share": "Partager",
+      "link-copied": "Lien copié",
+      "cancellation": "Conditions d'annulation",
+      "non-refundable": "Cette activité n'est pas remboursable",
+      "free-cancellation": "Annulation gratuite jusqu'à {hours} h avant le début, remboursement intégral",
+      "duration": "Durée : {duration}",
+      "duration-hint": "Choisissez une date pour voir les horaires",
+      "loved": "Ce que les voyageurs ont aimé",
+      "more-reviews": "Voir plus d'avis",
+      "highlights": "Points forts",
+      "description": "Description complète",
+      "see-more": "Voir plus",
+      "see-less": "Voir moins",
+      "itinerary": "Itinéraire",
+      "meeting-point": "Point de rendez-vous",
+      "stop-kind": {
+        "sightseeing": "Visite panoramique",
+        "visit": "Visite",
+        "transfer": "Trajet",
+        "meal": "Repas",
+        "free_time": "Temps libre",
+        "other": "Étape"
+      },
+      "stop-minutes": "{count} minutes",
+      "optional": "Facultatif",
+      "itinerary-note": "À titre indicatif : l'itinéraire peut changer.",
+      "includes": "Inclus",
+      "included": "Inclus",
+      "excluded": "Non inclus",
+      "location": "Lieu",
+      "important": "Informations importantes",
+      "not-allowed": "Non autorisé",
+      "know-before": "À savoir avant de partir",
+      "related": "Vous aimerez aussi…",
+      "previous": "Précédentes",
+      "next": "Suivantes",
+      "product-id": "Référence de l'activité : {id}"
+    },
+    "steps": {
+      "label": "Étapes de la réservation",
+      "details": "Coordonnées",
+      "pay": "Paiement",
+      "done": "Bon d'échange"
+    },
+    "book": {
+      "missing": "Aucun créneau choisi.",
+      "new-search": "Voir les activités",
+      "failed": "La réservation n'a pas pu être préparée.",
+      "retry": "Réessayer",
+      "unavailable": "Ce créneau n'est plus disponible pour ce nombre de participants.",
+      "back-to-activity": "Retour à l'activité",
+      "meeting": "Rendez-vous : {place}",
+      "total": "Total ({adults, plural, =0 {} one {# adulte} other {# adultes}}{children, plural, =0 {} one {, # enfant} other {, # enfants}}) : {total}",
+      "to-payment": "Continuer vers le paiement",
+      "back-to-details": "Modifier mes coordonnées"
+    },
+    "contact": {
+      "title": "Voyageur principal",
+      "subtitle": "Son nom est donné au prestataire ; le bon d'échange est envoyé à son adresse.",
+      "given-name": "Prénom",
+      "family-name": "Nom",
+      "email": "E-mail",
+      "email-hint": "Votre bon d'échange y sera envoyé.",
+      "phone": "Téléphone",
+      "phone-hint": "En cas de changement sur votre activité.",
+      "incomplete": "Complétez vos nom et coordonnées.",
+      "errors": {
+        "name": "Lettres, espaces, apostrophes et traits d'union uniquement.",
+        "name-length": "50 caractères au plus.",
+        "email": "Adresse e-mail invalide.",
+        "phone": "Numéro de téléphone invalide."
+      }
+    },
+    "pay": {
+      "title": "Paiement",
+      "holding": "Réservation de vos places…",
+      "confirming": "Confirmation de votre réservation…",
+      "held": "Vos places sont réservées jusqu'à {until} : payez avant pour les garder.",
+      "mail-sent": "Votre bon d'échange a été envoyé à {email}.",
+      "manage": "Gérer ma réservation (annulation, avis)",
+      "errors": {
+        "sold-out": "Il ne reste plus assez de places sur ce créneau.",
+        "slot-closed": "Ce créneau n'est plus en vente.",
+        "slot-not-found": "Ce créneau n'existe plus.",
+        "children-not-offered": "Cette option n'a pas de tarif enfant.",
+        "hold-expired": "Le délai est dépassé et vos places ont été libérées. Réessayez pour en réserver de nouvelles.",
+        "payments-unavailable": "Le paiement en ligne est momentanément indisponible.",
+        "failed": "Vos places n'ont pas pu être réservées. Réessayez.",
+        "sold-out-paid": "Les dernières places ont été vendues pendant votre paiement. Rien n'a été débité.",
+        "confirm-failed": "Votre paiement est autorisé mais la réservation n'a pas pu être confirmée. Réessayez : vous ne serez pas débité deux fois.",
+        "already-paid": "Cette réservation a déjà été payée par carte.",
+        "mobile-failed": "Le paiement mobile n'a pas pu être vérifié. Réessayez."
+      },
+      "mobile": {
+        "title": "Mobile money ou carte PayDunya",
+        "hint": "Wave et Orange Money (Sénégal, Côte d'Ivoire, Burkina Faso, Mali), ou carte sur la page PayDunya.",
+        "or-card": "ou par carte bancaire",
+        "redirecting": "Envoi du paiement…",
+        "checking": "Vérification de votre paiement…",
+        "pending": "Paiement en attente : validez-le sur votre téléphone. Cette page se met à jour toute seule.",
+        "check-again": "Vérifier à nouveau",
+        "cancelled": "Paiement annulé : rien n'a été débité. Vos places restent réservées quelques minutes.",
+        "retry": "Réessayer avec PayDunya",
+        "use-card": "Payer par carte"
+      }
+    },
+    "voucher": {
+      "status": {
+        "held": "Paiement en attente : le bon sera valable une fois le paiement reçu.",
+        "confirmed": "Réservation confirmée",
+        "released": "Réservation non payée : les places ont été libérées.",
+        "cancelled": "Réservation annulée"
+      },
+      "reference": "Référence de réservation",
+      "participants": "{adults, plural, =0 {} one {# adulte} other {# adultes}}{children, plural, =0 {} one {, # enfant} other {, # enfants}}",
+      "total": "Total payé : {total}",
+      "refunded": "Remboursé : {amount}",
+      "provider": "Prestataire : {name}",
+      "present": "Présentez la référence (ou le QR code de l'e-mail) au prestataire. Arrivez 15 minutes avant le début."
+    },
+    "review-form": {
+      "title": "Votre avis",
+      "subtitle": "Partagez votre expérience : il sera publié après vérification.",
+      "ratings": {
+        "rating": "Note générale",
+        "value_rating": "Rapport qualité-prix",
+        "service_rating": "Accueil et guide",
+        "organization_rating": "Organisation"
+      },
+      "star": "{count, plural, one {# étoile} other {# étoiles}}",
+      "rating-required": "Donnez une note générale.",
+      "country": "Votre pays",
+      "country-hint": "Facultatif, affiché à côté de votre prénom.",
+      "text": "Votre avis",
+      "text-hint": "Ce qui vous a plu, ce qui pourrait être mieux.",
+      "text-length": "{min} caractères au moins.",
+      "submit": "Envoyer mon avis"
+    },
+    "lookup": {
+      "title": "Ma réservation d'activité",
+      "cancel-until": "Annulation gratuite jusqu'au {until}.",
+      "cancel": "Annuler la réservation",
+      "cancel-closed": "Le délai d'annulation gratuite est passé.",
+      "non-refundable": "Cette activité n'est pas remboursable.",
+      "cancel-reason": "Motif : {reason}",
+      "errors": {
+        "not-cancellable": "Le délai d'annulation gratuite est passé.",
+        "cancel-failed": "L'annulation n'a pas abouti. Réessayez.",
+        "already-reviewed": "Vous avez déjà donné votre avis.",
+        "review-not-allowed": "Vous pourrez donner votre avis après l'activité.",
+        "review-failed": "Votre avis n'a pas pu être envoyé. Réessayez."
+      },
+      "review-sent": "Merci ! Votre avis sera publié après vérification.",
+      "reviewed": "Vous avez donné votre avis sur cette activité. Merci !",
+      "cancel-title": "Annuler cette réservation ?",
+      "cancel-confirm": "Vos places seront libérées et {amount} vous seront remboursés.",
+      "keep": "Garder ma réservation",
+      "not-found": "Aucune réservation ne correspond à cette référence et ce nom.",
+      "failed": "La réservation n'a pas pu être chargée.",
+      "reference": "Référence",
+      "last-name": "Nom de famille",
+      "submit": "Afficher"
     }
   }
 }

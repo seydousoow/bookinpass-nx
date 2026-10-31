@@ -58,6 +58,33 @@ export const appRoutes: Routes = [
     ],
   },
   {
+    path: 'activities',
+    children: [
+      {
+        path: '',
+        pathMatch: 'full',
+        loadComponent: () => import('./features/home/home').then((m) => m.Home),
+        children: [{ path: '', loadComponent: () => import('./features/activity/search-form/activity-search-form').then((m) => m.ActivitySearchForm) }],
+      },
+      {
+        path: 'search',
+        loadComponent: () => import('./features/activity/search/activity-search').then((m) => m.ActivitySearch),
+      },
+      {
+        path: 'book',
+        loadComponent: () => import('./features/activity/book/activity-booking').then((m) => m.ActivityBooking),
+      },
+      {
+        path: 'booking',
+        loadComponent: () => import('./features/activity/booking/activity-booking-lookup').then((m) => m.ActivityBookingLookup),
+      },
+      {
+        path: ':slug',
+        loadComponent: () => import('./features/activity/details/activity-details').then((m) => m.ActivityDetails),
+      },
+    ],
+  },
+  {
     path: 'bus',
     children: [
       {

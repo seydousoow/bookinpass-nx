@@ -3,6 +3,20 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { APP_CONFIG } from 'configs/configs/app-config.token';
 import {
+  ActivityBooking,
+  ActivityBookingDetail,
+  ActivityCity,
+  ActivityDetail,
+  ActivityForm,
+  ActivityOptionForm,
+  ActivityRefund,
+  ActivityReview,
+  ActivitySettings,
+  ActivitySlot,
+  ActivitySlotsForm,
+  ActivityStatus,
+  ActivitySummary,
+  Page,
   Departure,
   DepartureDetail,
   DeskBooking,
@@ -153,5 +167,133 @@ export class StaffApi {
 
   markRefunded(id: number, note: string): Observable<Refund> {
     return this.http.post<Refund>(`${this.url}/refunds/${id}/refunded`, { note });
+  }
+
+  /** Villes GeoNames (2 lettres au moins), pour placer une activité. */
+  cities(query: string): Observable<{ city: ActivityCity; population: number }[]> {
+    return this.http.get<{ city: ActivityCity; population: number }[]>(`${this.url}/cities`, { params: { q: query } });
+  }
+
+  activities(): Observable<ActivitySummary[]> {
+    return this.http.get<ActivitySummary[]>(`${this.url}/activities`);
+  }
+
+  activity(id: number): Observable<ActivityDetail> {
+    return this.http.get<ActivityDetail>(`${this.url}/activities/${id}`);
+  }
+
+  createActivity(form: ActivityForm): Observable<ActivityDetail> {
+    return this.http.post<ActivityDetail>(`${this.url}/activities`, form);
+  }
+
+  updateActivity(id: number, form: ActivityForm): Observable<ActivityDetail> {
+    return this.http.put<ActivityDetail>(`${this.url}/activities/${id}`, form);
+  }
+
+  activityStatus(id: number, status: ActivityStatus): Observable<ActivityDetail> {
+    return this.http.post<ActivityDetail>(`${this.url}/activities/${id}/status`, { status });
+  }
+
+  addOption(activityId: number, form: ActivityOptionForm): Observable<ActivityDetail> {
+    return this.http.post<ActivityDetail>(`${this.url}/activities/${activityId}/options`, form);
+  }
+
+  updateOption(id: number, form: ActivityOptionForm): Observable<ActivityDetail> {
+    return this.http.put<ActivityDetail>(`${this.url}/activity-options/${id}`, form);
+  }
+
+  /** Créneaux d'une option, du jour `from` au jour `to` (3 mois au plus). */
+  slots(optionId: number, from: string, to: string): Observable<ActivitySlot[]> {
+    return this.http.get<ActivitySlot[]>(`${this.url}/activity-options/${optionId}/slots`, { params: { from, to } });
+  }
+
+  openSlots(optionId: number, form: ActivitySlotsForm): Observable<{ created: number }> {
+    return this.http.post<{ created: number }>(`${this.url}/activity-options/${optionId}/slots`, form);
+  }
+
+  resizeSlot(id: number, capacity: number): Observable<ActivitySlot> {
+    return this.http.patch<ActivitySlot>(`${this.url}/activity-slots/${id}`, { capacity });
+  }
+
+  deleteSlot(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.url}/activity-slots/${id}`);
+  }
+
+  /** Créneau annulé : chaque réservation payée est annulée et remboursée en entier. */
+  cancelSlot(id: number, reason: string): Observable<{ cancelled: number }> {
+    return this.http.post<{ cancelled: number }>(`${this.url}/activity-slots/${id}/cancel`, { reason });
+  }
+
+  summarizeReviews(activityId: number): Observable<ActivityDetail> {
+    return this.http.post<ActivityDetail>(`${this.url}/activities/${activityId}/review-summary`, null);
+  }
+
+  activityBookings(filter: { q: string; status: string; activity_id: number | null; from: string; to: string; page: number }): Observable<Page<ActivityBooking>> {
+    const params: Record<string, string | number> = { page: filter.page, size: 25 };
+    for (const key of ['q', 'status', 'from', 'to'] as const) {
+      if (filter[key]) {
+        params[key] = filter[key];
+      }
+    }
+    if (filter.activity_id !== null) {
+      params['activity_id'] = filter.activity_id;
+    }
+    return this.http.get<Page<ActivityBooking>>(`${this.url}/activity-bookings`, { params });
+  }
+
+  activityBooking(reference: string): Observable<ActivityBookingDetail> {
+    return this.http.get<ActivityBookingDetail>(`${this.url}/activity-bookings/${encodeURIComponent(reference)}`);
+  }
+
+  cancelActivityBooking(reference: string, reason: string, refundAmount: number): Observable<ActivityBookingDetail> {
+    return this.http.post<ActivityBookingDetail>(`${this.url}/activity-bookings/${encodeURIComponent(reference)}/cancel`, {
+      reason,
+      refund_amount: refundAmount,
+    });
+  }
+
+  refundActivityBooking(reference: string, amount: number, reason: string): Observable<ActivityBookingDetail> {
+    return this.http.post<ActivityBookingDetail>(`${this.url}/activity-bookings/${encodeURIComponent(reference)}/refunds`, { amount, reason });
+  }
+
+  activityRefunds(all: boolean): Observable<ActivityRefund[]> {
+    return this.http.get<ActivityRefund[]>(`${this.url}/activity-refunds`, { params: { all: String(all) } });
+  }
+
+  markActivityRefunded(id: number, note: string): Observable<ActivityRefund> {
+    return this.http.post<ActivityRefund>(`${this.url}/activity-refunds/${id}/refunded`, { note });
+  }
+
+  retryActivityRefund(id: number): Observable<void> {
+    return this.http.post<void>(`${this.url}/activity-refunds/${id}/retry`, null);
+  }
+
+  reviews(status: string, activityId: number | null, page: number): Observable<Page<ActivityReview>> {
+    const params: Record<string, string | number> = { status, page, size: 20 };
+    if (activityId !== null) {
+      params['activity_id'] = activityId;
+    }
+    return this.http.get<Page<ActivityReview>>(`${this.url}/activity-reviews`, { params });
+  }
+
+  approveReview(id: number): Observable<ActivityReview> {
+    return this.http.post<ActivityReview>(`${this.url}/activity-reviews/${id}/approve`, null);
+  }
+
+  rejectReview(id: number, reason: string): Observable<ActivityReview> {
+    return this.http.post<ActivityReview>(`${this.url}/activity-reviews/${id}/reject`, { reason });
+  }
+
+  /** Nouvel avis de Claude sur un avis en attente. */
+  moderateReview(id: number): Observable<ActivityReview> {
+    return this.http.post<ActivityReview>(`${this.url}/activity-reviews/${id}/moderate`, null);
+  }
+
+  activitySettings(): Observable<ActivitySettings> {
+    return this.http.get<ActivitySettings>(`${this.url}/activity-settings`);
+  }
+
+  updateActivitySettings(autoModeration: boolean): Observable<ActivitySettings> {
+    return this.http.put<ActivitySettings>(`${this.url}/activity-settings`, { auto_moderation: autoModeration });
   }
 }

@@ -1,0 +1,66 @@
+<section *transloco="let t" class="space-y-4">
+  <h1 class="text-xl font-bold">{{ t('activity-bookings.title') }}</h1>
+  <p class="text-xs text-muted">{{ t('activity-bookings.hint') }}</p>
+
+  <div class="grid gap-3 bo-card sm:grid-cols-2 lg:grid-cols-5 lg:items-end">
+    <bip-input (valueChange)="filter(query, $event)" [value]="query()" class="lg:col-span-2" label="activity-bookings.search" name="booking-search" type="search" />
+    <bip-select
+      (valueChange)="filter(status, $event[0] ?? null)"
+      [options]="statusOptions()"
+      [value]="status() ? [status()!] : []"
+      label="activity-bookings.status"
+      name="booking-status"
+      placeholder="activity-bookings.any" />
+    <bip-select
+      (valueChange)="filter(activityId, $event[0] ?? null)"
+      [options]="activityOptions()"
+      [value]="activityId() === null ? [] : [activityId()!]"
+      label="activity-bookings.activity"
+      name="booking-activity"
+      placeholder="activity-bookings.any" />
+    <div class="grid grid-cols-2 gap-2">
+      <bip-input (valueChange)="filter(from, $event)" [value]="from()" label="activity-bookings.from" name="booking-from" type="date" />
+      <bip-input (valueChange)="filter(to, $event)" [value]="to()" label="activity-bookings.to" name="booking-to" type="date" />
+    </div>
+  </div>
+
+  @if (list.isLoading() && !list.hasValue()) {
+    <bip-spinner class="py-8" label="common.loading" showLabel />
+  } @else if (list.error()) {
+    <bip-system-state (retry)="list.reload()" message="errors.unexpected" status="error" />
+  } @else if (list.value(); as result) {
+    <p class="text-sm text-muted" role="status">{{ t('activity-bookings.count', { count: result.total }) }}</p>
+    @if (!result.items.length) {
+      <bip-system-state status="empty" title="activity-bookings.none" />
+    }
+    <ul class="grid gap-2">
+      @for (b of result.items; track b.reference) {
+        <li>
+          <a [routerLink]="['/activity-bookings', b.reference]" class="bip-focusable flex flex-wrap items-start justify-between gap-2 bo-card text-sm hover:border-brand-primary">
+            <span>
+              <span class="flex flex-wrap items-center gap-2">
+                <span class="font-mono text-base font-bold">{{ b.reference }}</span>
+                <bip-badge [tone]="tones[b.status]" size="sm">{{ t('activity-bookings.statuses.' + b.status) }}</bip-badge>
+                @if (b.refunded !== '0') {
+                  <bip-badge size="sm" tone="info">{{ t('activity-bookings.refunded', { amount: b.refunded, currency: b.currency }) }}</bip-badge>
+                }
+              </span>
+              <span class="block font-semibold">{{ b.activity_title }} · {{ b.option_title }}</span>
+              <span class="block">{{ when(b.starts_at, b.timezone) }} · {{ t('activity-bookings.participants', { adults: b.adults, children: b.children }) }}</span>
+              <span class="block text-muted">{{ b.given_name }} {{ b.family_name }} · {{ b.email }} · {{ b.phone }}</span>
+            </span>
+            <span class="text-right">
+              <span class="block text-lg font-bold">{{ b.total }} {{ b.currency }}</span>
+              @if (b.payment_method) {
+                <span class="block text-xs text-muted">{{ t('activity-bookings.methods.' + b.payment_method) }} · {{ b.payment_status }}</span>
+              }
+            </span>
+          </a>
+        </li>
+      }
+    </ul>
+    @if (result.total > pageSize) {
+      <bip-pagination [(page)]="page" [pageSize]="pageSize" [total]="result.total" />
+    }
+  }
+</section>

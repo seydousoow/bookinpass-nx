@@ -34,11 +34,12 @@ describe('AppComponent', () => {
     expect(element.querySelector('bip-footer')).not.toBeNull();
   });
 
-  it('liste les rubriques, le tourisme encore désactivé', async () => {
+  it('liste les rubriques, le tourisme ouvert sur les activités', async () => {
     const { element } = await setup();
     const nav = element.querySelector('nav')!;
     expect(nav.querySelector('a[href="/flight"]')?.textContent?.trim()).toBe('nav.flights');
-    expect(nav.querySelector('[aria-disabled="true"]')?.textContent?.trim()).toBe('nav.tourism');
+    expect(nav.querySelector('a[href="/activities"]')?.textContent?.trim()).toBe('nav.tourism');
+    expect(nav.querySelector('[aria-disabled="true"]')).toBeNull();
   });
 
   it('change de langue', async () => {

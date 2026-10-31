@@ -12,7 +12,20 @@ import { Session } from './app/core/session';
 /** StaffApi factice : chaque méthode est un jest.fn ; par défaut, les listes sont vides et les actions réussissent. */
 export type StaffApiMock = { [K in keyof StaffApi]: jest.Mock<ReturnType<StaffApi[K]>, Parameters<StaffApi[K]>> };
 
-const LISTS: readonly (keyof StaffApi)[] = ['stations', 'departures', 'luggage', 'incidents', 'routes', 'users', 'searchBookings', 'refunds'];
+const LISTS: readonly (keyof StaffApi)[] = [
+  'stations',
+  'departures',
+  'luggage',
+  'incidents',
+  'routes',
+  'users',
+  'searchBookings',
+  'refunds',
+  'cities',
+  'activities',
+  'slots',
+  'activityRefunds',
+];
 
 export function staffApiMock(overrides: Partial<{ [K in keyof StaffApi]: StaffApi[K] }> = {}): StaffApiMock {
   const mock = {} as Record<string, jest.Mock>;

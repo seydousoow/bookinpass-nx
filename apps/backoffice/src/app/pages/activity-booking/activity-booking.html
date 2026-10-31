@@ -1,0 +1,155 @@
+<section *transloco="let t" class="space-y-4">
+  <a class="text-sm text-brand-primary underline" routerLink="/activity-bookings">← {{ t('activity-booking.back') }}</a>
+  @if (detail.isLoading() && !detail.hasValue()) {
+    <bip-spinner class="py-8" label="common.loading" showLabel />
+  } @else if (detail.error()) {
+    <bip-system-state (retry)="detail.reload()" message="errors.unexpected" status="error" />
+  } @else if (detail.value(); as d) {
+    @let b = d.booking;
+    <div class="flex flex-wrap items-center gap-3">
+      <h1 class="font-mono text-2xl font-bold">{{ b.reference }}</h1>
+      <bip-badge [tone]="tones[b.status]">{{ t('activity-bookings.statuses.' + b.status) }}</bip-badge>
+    </div>
+    @if (action.error(); as code) {
+      <p class="text-state-error" role="alert">{{ t('errors.' + code) }}</p>
+    }
+
+    <div class="grid gap-4 md:grid-cols-2">
+      <div class="space-y-1 bo-card text-sm">
+        <h2 class="font-bold">{{ t('activity-booking.activity') }}</h2>
+        <p class="font-semibold">{{ b.activity_title }}</p>
+        <p>{{ b.option_title }}</p>
+        <p>
+          {{ when(b.starts_at, b.timezone) }} <span class="text-muted">({{ b.timezone }})</span>
+        </p>
+        <p>{{ t('activity-bookings.participants', { adults: b.adults, children: b.children }) }}</p>
+        <p class="text-muted">
+          {{ t('activity-booking.prices', { adult: d.adult_price, child: d.child_price ?? '—', currency: b.currency }) }}
+        </p>
+        <p class="text-lg font-bold">{{ b.total }} {{ b.currency }}</p>
+        <a [routerLink]="['/activities', b.activity_id]" class="text-brand-primary underline">{{ t('activity-booking.open-activity') }}</a>
+      </div>
+      <div class="space-y-1 bo-card text-sm">
+        <h2 class="font-bold">{{ t('activity-booking.customer') }}</h2>
+        <p class="font-semibold">{{ b.given_name }} {{ b.family_name }}</p>
+        <p>
+          <a [href]="'mailto:' + b.email" class="underline">{{ b.email }}</a>
+        </p>
+        <p>
+          <a [href]="'tel:' + b.phone" class="underline">{{ b.phone }}</a>
+        </p>
+        <p class="text-muted">{{ t('activity-booking.lang', { lang: d.lang }) }}</p>
+        <p class="text-muted">{{ t('activity-booking.created', { time: dateTime(b.created_at) }) }}</p>
+        @if (d.confirmed_at) {
+          <p class="text-muted">{{ t('activity-booking.confirmed', { time: dateTime(d.confirmed_at) }) }}</p>
+        }
+        @if (d.released_at) {
+          <p class="text-muted">{{ t('activity-booking.released', { time: dateTime(d.released_at) }) }}</p>
+        }
+        @if (d.cancelled_at) {
+          <p class="text-state-error">
+            {{ t('activity-booking.cancelled', { time: dateTime(d.cancelled_at), by: d.cancelled_by ?? t('activity-booking.by-customer') }) }}
+          </p>
+          @if (d.cancel_reason) {
+            <p>{{ d.cancel_reason }}</p>
+          }
+        }
+      </div>
+    </div>
+
+    <div class="space-y-2 bo-card text-sm">
+      <h2 class="font-bold">{{ t('activity-booking.payment') }}</h2>
+      @if (d.payment; as p) {
+        <p>
+          {{ t('activity-bookings.methods.' + p.method) }} · {{ p.status }}
+          @if (p.card_brand) {
+            · {{ p.card_brand }} •••• {{ p.card_last4 }}
+          }
+        </p>
+        @if (p.reference) {
+          <p class="font-mono text-xs text-muted">{{ p.reference }}</p>
+        }
+        @if (p.receipt_url) {
+          <a [href]="p.receipt_url" class="text-brand-primary underline" rel="noopener" target="_blank">{{ t('refunds.receipt') }}</a>
+        }
+      } @else {
+        <p class="text-muted">{{ t('activity-booking.unpaid') }}</p>
+      }
+      <p class="font-semibold">{{ t('activity-booking.refundable', { amount: d.refundable, currency: b.currency }) }}</p>
+    </div>
+
+    <div class="space-y-2 bo-card text-sm">
+      <h2 class="font-bold">{{ t('activity-booking.refunds') }}</h2>
+      @for (r of d.refunds; track r.id) {
+        <div class="flex flex-wrap items-center gap-2 border-t border-border-subtle pt-2">
+          <bip-badge [tone]="r.status === 'refunded' ? 'success' : r.status === 'failed' ? 'error' : 'warning'" size="sm">{{
+            t('activity-booking.refund-statuses.' + r.status)
+          }}</bip-badge>
+          <span class="font-semibold">{{ r.amount }} {{ r.currency }}</span>
+          <span>· {{ t('activity-bookings.methods.' + r.method) }} · {{ r.reason }}</span>
+          <span class="text-muted">· {{ r.requested_by ?? t('activity-booking.by-customer') }} · {{ dateTime(r.created_at) }}</span>
+          @if (r.failure_reason) {
+            <span class="w-full text-state-error">{{ r.failure_reason }}</span>
+          }
+          @if (r.note) {
+            <span class="w-full">{{ t('activity-booking.note', { note: r.note, name: r.refunded_by }) }}</span>
+          }
+          @if (r.status === 'failed') {
+            <button (clicked)="retry(r.id)" [loading]="action.busy()" bipButton size="sm" variant="outline">{{ t('activity-booking.retry') }}</button>
+          }
+          @if (r.status === 'pending' && r.method === 'mobile_money') {
+            <a class="text-brand-primary underline" routerLink="/refunds">{{ t('activity-booking.to-refunds') }}</a>
+          }
+        </div>
+      } @empty {
+        <p class="text-muted">{{ t('activity-booking.no-refunds') }}</p>
+      }
+    </div>
+
+    @if (d.review; as review) {
+      <p class="bo-card text-sm">
+        {{ t('activity-booking.review', { rating: review.rating }) }} · {{ t('reviews.statuses.' + review.status) }}
+        <a [queryParams]="{ activity: b.activity_id }" class="text-brand-primary underline" routerLink="/activity-reviews">{{ t('activity-booking.see-review') }}</a>
+      </p>
+    }
+
+    @if (b.status === 'confirmed' || (b.status === 'cancelled' && d.refundable !== '0')) {
+      <div class="space-y-3 bo-card">
+        <div class="flex flex-wrap gap-2">
+          @if (b.status === 'confirmed') {
+            <button (clicked)="start('cancel')" [variant]="mode() === 'cancel' ? 'primary' : 'outline'" bipButton>{{ t('activity-booking.cancel') }}</button>
+          }
+          @if (d.refundable !== '0') {
+            <button (clicked)="start('refund')" [variant]="mode() === 'refund' ? 'primary' : 'outline'" bipButton>{{ t('activity-booking.refund') }}</button>
+          }
+        </div>
+        @if (mode(); as m) {
+          <form (submit)="$event.preventDefault(); submit(d)" class="grid gap-3 sm:grid-cols-[1fr_12rem_auto] sm:items-end">
+            <bip-input [(value)]="reason" [maxLength]="500" label="activity-booking.reason" name="reason" />
+            <bip-input
+              [(value)]="amount"
+              [max]="+d.refundable"
+              [min]="m === 'cancel' ? 0 : 1"
+              hint="activity-booking.amount-hint"
+              label="activity-booking.amount"
+              name="amount"
+              type="number" />
+            <button
+              [disabled]="!reason()?.trim() || amount() === null || amount()! > +d.refundable || (m === 'refund' && !amount())"
+              [loading]="action.busy()"
+              bipButton
+              type="submit">
+              {{ t(m === 'cancel' ? 'activity-booking.confirm-cancel' : 'activity-booking.confirm-refund') }}
+            </button>
+            <p class="text-xs text-muted sm:col-span-3">
+              {{ t(d.payment?.method === 'mobile_money' ? 'activity-booking.mobile-note' : 'activity-booking.card-note') }}
+              @if (m === 'cancel') {
+                {{ t('activity-booking.cancel-note') }}
+              }
+            </p>
+          </form>
+        }
+      </div>
+    }
+  }
+</section>

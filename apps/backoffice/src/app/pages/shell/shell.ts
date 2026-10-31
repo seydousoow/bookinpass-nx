@@ -22,6 +22,9 @@ const SECTIONS: readonly Section[] = [
   { key: 'incidents', route: '/incidents' },
   { key: 'bookings', route: '/bookings' },
   { key: 'refunds', route: '/refunds', roles: MANAGERS },
+  { key: 'activities', route: '/activities', roles: MANAGERS },
+  { key: 'activity-bookings', route: '/activity-bookings', roles: MANAGERS },
+  { key: 'activity-reviews', route: '/activity-reviews', roles: MANAGERS },
   { key: 'routes', route: '/routes', roles: MANAGERS },
   { key: 'staff', route: '/staff', roles: MANAGERS },
 ];

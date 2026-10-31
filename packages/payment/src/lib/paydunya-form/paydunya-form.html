@@ -1,0 +1,56 @@
+<form
+  (submit)="$event.preventDefault(); submit()"
+  *transloco="let t; prefix: 'payment.paydunya'"
+  class="space-y-4 rounded-card border border-border-subtle bg-surface-card p-4"
+  novalidate>
+  <div>
+    <h3 class="font-bold">{{ t('title') }}</h3>
+    <p class="mt-1 text-xs text-muted">{{ t('secure') }}</p>
+  </div>
+
+  @if (countries().length > 1) {
+    <bip-radio-group [(value)]="country" [options]="countries()" appearance="segmented" label="payment.paydunya.country" name="paydunya-country" />
+  }
+  @if (methodOptions().length > 1) {
+    <bip-radio-group [(value)]="methodId" [options]="methodOptions()" appearance="segmented" label="payment.paydunya.method" name="paydunya-method" />
+  }
+
+  @if (method(); as m) {
+    @if (m.country) {
+      <bip-input
+        [(value)]="phone"
+        [hint]="t('phone-hint')"
+        [invalid]="submitted() && phoneInvalid()"
+        [prefix]="'+' + m.dial_code"
+        [touched]="submitted()"
+        autocomplete="tel-national"
+        label="payment.paydunya.phone"
+        name="paydunya-phone"
+        type="tel" />
+      @if (submitted() && phoneInvalid()) {
+        <p class="text-sm text-state-error" role="alert">{{ t('errors.invalid-phone') }}</p>
+      }
+    } @else {
+      <p class="text-sm text-muted">{{ t('card-hint') }}</p>
+    }
+    @if (m.otp) {
+      <p class="rounded-card bg-state-info-soft p-3 text-sm text-state-info">{{ t('otp-how.' + m.id) }}</p>
+      <bip-input
+        [(value)]="otp"
+        [invalid]="submitted() && otpInvalid()"
+        [touched]="submitted()"
+        autocomplete="one-time-code"
+        label="payment.paydunya.otp"
+        name="paydunya-otp"
+        type="text" />
+      @if (submitted() && otpInvalid()) {
+        <p class="text-sm text-state-error" role="alert">{{ t('errors.otp-required') }}</p>
+      }
+    }
+  }
+
+  @if (error(); as key) {
+    <p class="rounded-card bg-state-error-soft p-3 text-sm text-state-error" role="alert">{{ t('errors.' + key) }}</p>
+  }
+  <bip-button [disabled]="!method() || busy()" [loading]="busy()" type="submit" variant="accent">{{ t(method()?.country ? 'pay' : 'pay-card') }}</bip-button>
+</form>

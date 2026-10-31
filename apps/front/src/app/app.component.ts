@@ -23,8 +23,7 @@ import { injectSpeedInsights } from '@vercel/speed-insights';
         [currentCurrency]="_currentCurrency"
         [currentLang]="_currentLang"
         [entries]="navEntries"
-        [languages]="languages"
-      />
+        [languages]="languages" />
       <main class="flex-1">
         <router-outlet />
       </main>
@@ -36,7 +35,7 @@ export class AppComponent implements OnInit {
   protected readonly navEntries: readonly NavEntry[] = [
     { labelKey: 'nav.home', route: '/', disabled: false },
     { labelKey: 'nav.flights', route: '/flight', disabled: false },
-    { labelKey: 'nav.tourism', route: '/tourism', disabled: true },
+    { labelKey: 'nav.tourism', route: '/activities', disabled: false },
     { labelKey: 'nav.stays', route: '/stays', disabled: false },
     { labelKey: 'nav.bus', route: '/bus', disabled: false },
     { labelKey: 'nav.uiKit', route: '/ui-kit', disabled: false },

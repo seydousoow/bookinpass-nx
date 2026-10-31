@@ -1,0 +1,69 @@
+<section *transloco="let t" class="space-y-4">
+  <div class="flex flex-wrap items-center gap-3">
+    <h1 class="mr-auto text-xl font-bold">{{ t('activities.title') }}</h1>
+    <a bipButton routerLink="/activities/new">{{ t('activities.new') }}</a>
+  </div>
+  <p class="text-xs text-muted">{{ t('activities.hint') }}</p>
+
+  <div class="flex flex-wrap items-end gap-3">
+    <bip-input [(value)]="query" class="min-w-64 flex-1" label="activities.search" name="activity-search" type="search" />
+    <div [attr.aria-label]="t('activities.status')" class="flex flex-wrap gap-2" role="group">
+      <button
+        (click)="status.set(null)"
+        [attr.aria-pressed]="!status()"
+        [class.bg-surface-muted]="!status()"
+        class="bip-focusable min-h-11 rounded-pill border border-border-subtle px-4 text-sm font-semibold"
+        type="button">
+        {{ t('activities.all') }}
+      </button>
+      @for (s of statuses; track s) {
+        <button
+          (click)="status.set(s)"
+          [attr.aria-pressed]="status() === s"
+          [class.bg-surface-muted]="status() === s"
+          class="bip-focusable min-h-11 rounded-pill border border-border-subtle px-4 text-sm font-semibold"
+          type="button">
+          {{ t('activities.statuses.' + s) }}
+        </button>
+      }
+    </div>
+  </div>
+
+  @if (list.isLoading() && !list.hasValue()) {
+    <bip-spinner class="py-8" label="common.loading" showLabel />
+  } @else if (list.error()) {
+    <bip-system-state (retry)="list.reload()" message="errors.unexpected" status="error" />
+  } @else if (!shown().length) {
+    <bip-system-state status="empty" title="activities.none" />
+  }
+  <ul class="grid gap-2">
+    @for (a of shown(); track a.id) {
+      <li>
+        <a [routerLink]="['/activities', a.id]" class="bip-focusable flex gap-3 bo-card hover:border-brand-primary">
+          <span class="size-20 shrink-0 overflow-hidden rounded-card bg-surface-muted">
+            @if (a.image) {
+              <img [alt]="a.image.alt ?? ''" [src]="a.image.url" class="size-full object-cover" loading="lazy" />
+            }
+          </span>
+          <span class="min-w-0 flex-1">
+            <span class="flex flex-wrap items-center gap-2">
+              <span class="font-bold">{{ a.title }}</span>
+              <bip-badge [tone]="tones[a.status]" size="sm">{{ t('activities.statuses.' + a.status) }}</bip-badge>
+            </span>
+            <span class="block text-sm text-muted"
+              >{{ a.city.name }} · {{ t('activities.categories.' + a.category) }} · {{ t('activities.options-count', { count: a.options }) }}</span
+            >
+            <span class="block text-sm">
+              @if (a.rating !== null) {
+                ★ {{ a.rating }} ({{ a.review_count }})
+              } @else {
+                {{ t('activities.no-reviews') }}
+              }
+            </span>
+            <span class="block text-xs text-muted">{{ t('activities.updated', { time: dateTime(a.updated_at) }) }}</span>
+          </span>
+        </a>
+      </li>
+    }
+  </ul>
+</section>
