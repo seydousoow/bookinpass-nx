@@ -30,8 +30,7 @@
             "output": "i18n/components"
           }
         ],
-        "styles": ["apps/front/src/styles.css"],
-        "allowedCommonJsDependencies": ["@messageformat/core"]
+        "styles": ["apps/front/src/styles.css"]
       },
       "configurations": {
         "production": {

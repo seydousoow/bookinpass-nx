@@ -1,11 +1,11 @@
 import { EnvironmentProviders, makeEnvironmentProviders } from '@angular/core';
-import { provideTransloco, TranslocoConfig } from '@jsverse/transloco';
+import { provideTransloco, provideTranslocoTranspiler, TranslocoConfig } from '@jsverse/transloco';
 import { provideTranslocoLocale, TranslocoLocaleConfig } from '@jsverse/transloco-locale';
 import { cookiesStorage, GetLangParams, provideTranslocoPersistLang } from '@jsverse/transloco-persist-lang';
 import { CONTRACT_CURRENCY } from 'models';
 import { environment } from '../configs/environment';
 import { HttpTranslocoLoader } from './transloco-loader';
-import { provideTranslocoMessageformat } from '@jsverse/transloco-messageformat';
+import { IcuTranspiler } from './icu-transpiler';
 
 /** Langue de référence : un libellé fr manquant doit se voir, pas se déguiser. */
 export const DEFAULT_LANG = 'fr';
@@ -66,7 +66,8 @@ const localeConfig: TranslocoLocaleConfig = {
 export function provideI18n(): EnvironmentProviders {
   return makeEnvironmentProviders([
     provideTransloco({ config: translocoConfig, loader: HttpTranslocoLoader }),
-    provideTranslocoMessageformat({ locales: ['fr', 'en'] }),
+    // ICU sans eval : la CSP du site refuse 'unsafe-eval' (voir IcuTranspiler).
+    provideTranslocoTranspiler(IcuTranspiler),
     provideTranslocoPersistLang({
       getLangFn,
       storage: { useValue: cookiesStorage(LANG_COOKIE_HOURS) },
