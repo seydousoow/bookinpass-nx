@@ -17,7 +17,6 @@ describe('Shell', () => {
     const { element } = await renderPage(Main, { user: staffUser('manager') });
     expect(sections(element)).toEqual([
       'nav.home',
-      'nav.scan',
       'nav.departures',
       'nav.luggage',
       'nav.incidents',
