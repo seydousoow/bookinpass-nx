@@ -1,4 +1,5 @@
-import { Route } from '@angular/router';
+import { inject } from '@angular/core';
+import { Route, Router } from '@angular/router';
 import { passwordGuard, roleGuard, signedInGuard } from './core/session';
 import { StaffRole } from './core/models';
 
@@ -6,7 +7,10 @@ import { StaffRole } from './core/models';
 export const MANAGERS: readonly StaffRole[] = ['admin', 'manager'];
 export const CHIEFS: readonly StaffRole[] = ['admin', 'manager', 'station_chief'];
 
-/** Pages du back-office ; réseau, remboursements, personnel et activités réservés aux responsables (admin, manager). */
+/**
+ * Pages du back-office ; l'accueil est un tableau de bord (contrôle des billets, incidents, avis, remboursements). Réseau,
+ * remboursements, personnel et activités sont réservés aux responsables (admin, manager).
+ */
 export const appRoutes: Route[] = [
   { path: 'login', loadComponent: () => import('./pages/login/login').then((m) => m.LoginPage) },
   { path: 'password', canActivate: [passwordGuard], loadComponent: () => import('./pages/password/password').then((m) => m.PasswordPage) },
@@ -15,9 +19,11 @@ export const appRoutes: Route[] = [
     canActivate: [signedInGuard],
     loadComponent: () => import('./pages/shell/shell').then((m) => m.Shell),
     children: [
-      { path: '', pathMatch: 'full', loadComponent: () => import('./pages/departures/departures').then((m) => m.DeparturesPage) },
+      { path: '', pathMatch: 'full', loadComponent: () => import('./pages/dashboard/dashboard').then((m) => m.DashboardPage) },
+      { path: 'departures', loadComponent: () => import('./pages/departures/departures').then((m) => m.DeparturesPage) },
       { path: 'departures/:id', loadComponent: () => import('./pages/departure/departure').then((m) => m.DeparturePage) },
-      { path: 'scan', loadComponent: () => import('./pages/scan/scan').then((m) => m.ScanPage) },
+      // Le contrôle des billets est sur l'accueil.
+      { path: 'scan', redirectTo: () => inject(Router).createUrlTree(['/'], { fragment: 'control' }) },
       { path: 'luggage', canActivate: [roleGuard], data: { roles: CHIEFS }, loadComponent: () => import('./pages/luggage/luggage').then((m) => m.LuggagePage) },
       { path: 'incidents', loadComponent: () => import('./pages/incidents/incidents').then((m) => m.IncidentsPage) },
       { path: 'bookings', loadComponent: () => import('./pages/bookings/bookings').then((m) => m.BookingsPage) },

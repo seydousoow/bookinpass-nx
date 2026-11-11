@@ -3,7 +3,8 @@
     "title": "Book In Pass — Stations",
     "other-lang": "Français",
     "logout": "Sign out",
-    "nav": "Sections"
+    "nav": "Sections",
+    "loading": "Loading…"
   },
   "roles": {
     "admin": "Administrator",
@@ -12,6 +13,7 @@
     "inspector": "Inspector"
   },
   "nav": {
+    "home": "Home",
     "departures": "Departures",
     "scan": "Check tickets",
     "luggage": "Luggage",
@@ -28,7 +30,26 @@
     "subtitle": "Station staff area.",
     "username": "Username",
     "password": "Password",
-    "submit": "Sign in"
+    "submit": "Sign in",
+    "greeting": {
+      "morning": "Good morning",
+      "afternoon": "Good afternoon",
+      "evening": "Good evening"
+    },
+    "brand": {
+      "kicker": "Book In Pass back office",
+      "title": "The whole network at a glance.",
+      "control": "Today’s departures and ticket checks",
+      "reviews": "Traveller reviews moderated with Claude",
+      "refunds": "Refunds followed from start to finish"
+    },
+    "server": {
+      "checking": "Checking the server…",
+      "online": "Server available",
+      "offline": "Server unreachable: retrying automatically.",
+      "retry": "Retry"
+    },
+    "lock-hint": "After 5 failed attempts, the account is locked for 15 minutes."
   },
   "password": {
     "title": "New password",
@@ -61,7 +82,10 @@
       "planned": "Planned",
       "departed": "Departed",
       "arrived": "Arrived"
-    }
+    },
+    "count": "{{count}} departure(s)",
+    "expand-all": "Expand all",
+    "collapse-all": "Collapse all"
   },
   "departure": {
     "back": "Departures",
@@ -258,7 +282,13 @@
     "review-not-found": "Review not found.",
     "review-decided": "This review has already been decided.",
     "invalid-request": "The server refused the input: check the fields.",
-    "payment-provider-error": "The payment provider refused the operation."
+    "payment-provider-error": "The payment provider refused the operation.",
+    "invalid-image": "This file is not a JPEG, PNG, WebP, GIF or AVIF image.",
+    "image-too-large": "Photo too large: 10 MB max.",
+    "invalid-image-url": "Give a public HTTPS address.",
+    "image-download-failed": "The photo could not be downloaded from this address.",
+    "image-upload-failed": "The photo could not be stored on the CDN. Try again.",
+    "images-unavailable": "Photo storage is not configured on the server."
   },
   "bookings": {
     "title": "Bookings",
@@ -329,7 +359,11 @@
     },
     "options-count": "{{count}} option(s)",
     "no-reviews": "No reviews yet",
-    "updated": "Updated {{time}}"
+    "updated": "Updated {{time}}",
+    "slots-ending": "Time slots until {{time}}",
+    "no-slots": "No open time slots",
+    "upcoming": "{{count}} upcoming booking(s)",
+    "upcoming-label": "upcoming"
   },
   "activity": {
     "back": "All activities",
@@ -365,7 +399,8 @@
       "includes": "Includes",
       "excludes": "Not included",
       "not_allowed": "Not allowed",
-      "know_before": "Know before you go"
+      "know_before": "Good to know",
+      "to_bring": "What to bring"
     },
     "itinerary": "Itinerary",
     "stop": {
@@ -378,10 +413,26 @@
     "remove": "Remove",
     "add-stop": "Add a stop",
     "images": "Photos",
-    "images-hint": "HTTPS addresses of the photos; the first one is the main image.",
+    "images-hint": "Photos are stored on our CDN; the first one is the main image.",
     "image": {
       "url": "Photo address (https://…)",
-      "alt": "Description (accessibility)"
+      "alt": "Description (accessibility)",
+      "main": "Main",
+      "rehost": "Copy to our CDN",
+      "add": "Add photos",
+      "source": "Photo source",
+      "sources": {
+        "file": "From this device",
+        "base64": "Base64",
+        "url": "Address"
+      },
+      "drop": "Choose photos or drop them here",
+      "uploading": "Uploading…",
+      "formats": "JPEG, PNG, WebP, GIF or AVIF · 10 MB max",
+      "base64": "Base64 image",
+      "base64-hint": "With or without a data:image/…;base64, header",
+      "url-hint": "The server downloads the photo and stores it on our CDN.",
+      "import": "Import"
     },
     "up": "Move up",
     "down": "Move down",
@@ -419,7 +470,8 @@
       "meal": "Meal",
       "free_time": "Free time",
       "other": "Other"
-    }
+    },
+    "know-before": "Know before you go"
   },
   "options": {
     "title": "Options and prices",
@@ -448,7 +500,7 @@
     "capacity": "Places",
     "capacity-hint": "Empty: the option's.",
     "open-button": "Open",
-    "open-hint": "Existing slots are kept; past dates are skipped.",
+    "open-hint": "Time slots already open are kept; past dates are skipped. Up to {{date}} at most (two years).",
     "none": "No time slots in this period.",
     "counts": "{{sold}} sold, {{held}} being paid, {{capacity}} places",
     "cancelled": "Cancelled: {{reason}}",
@@ -457,7 +509,22 @@
     "confirm-cancel": "Cancel and refund ({{count}} place(s) sold)",
     "cancel": "Cancel slot",
     "opened": "Time slots opened: {{count}}",
-    "bookings-cancelled": "Slot cancelled, bookings refunded: {{count}}"
+    "bookings-cancelled": "Slot cancelled, bookings refunded: {{count}}",
+    "span": "Length",
+    "spans": {
+      "1": "1 month",
+      "3": "3 months",
+      "6": "6 months",
+      "12": "1 year",
+      "24": "2 years"
+    },
+    "previous": "Previous month",
+    "next": "Next month",
+    "today": "Today",
+    "cell": "{{date}}: {{count}} time slot(s)",
+    "day-title": "Time slots on {{date}}",
+    "close-day": "Close",
+    "none-day": "No time slots that day."
   },
   "activity-bookings": {
     "title": "Activity bookings",
@@ -566,5 +633,67 @@
     "reject": "Reject",
     "reason": "Rejection reason (internal)",
     "ask-ai": "Ask Claude again"
+  },
+  "dashboard": {
+    "hello": "Hello {{name}}",
+    "subtitle": "What needs your attention today.",
+    "tiles": {
+      "pending-reviews": "Reviews awaiting validation",
+      "auto-approved": "Reviews approved automatically by Claude",
+      "refunds": "Refunds requested or in progress",
+      "slots-ending": "Activities whose time slots end within a month"
+    },
+    "reviews": {
+      "title": "Reviews to validate",
+      "moderate": "Moderate",
+      "auto-on": "Automatic moderation on: {{count}} reviews published by Claude.",
+      "auto-off": "Automatic moderation off; {{count}} reviews published by Claude so far.",
+      "none": "No reviews waiting.",
+      "rating": "{{rating}} out of 5",
+      "more": "See the {{count}} other waiting reviews"
+    },
+    "incidents": {
+      "title": "Incidents",
+      "all": "All incidents",
+      "ongoing": "Ongoing ({{count}})",
+      "expected": "Expected ({{count}})",
+      "none": "None.",
+      "resolved": "Last 10 resolved incidents",
+      "none-resolved": "No resolved incidents.",
+      "resolved-at": "resolved on {{time}}"
+    },
+    "refunds": {
+      "title": "Refunds requested or in progress",
+      "all": "All refunds",
+      "none": "No refunds to follow."
+    },
+    "refund-states": {
+      "requested": "Requested by the customer",
+      "in-progress": "In progress",
+      "failed": "Failed",
+      "to-refund": "To refund"
+    },
+    "slots": {
+      "title": "Time slots running out",
+      "all": "All activities",
+      "hint": "Published activities whose last time slot is less than a month away: open more to keep selling.",
+      "none": "Every published activity has time slots for more than a month."
+    }
+  },
+  "calendar": {
+    "months": {
+      "1": "January",
+      "2": "February",
+      "3": "March",
+      "4": "April",
+      "5": "May",
+      "6": "June",
+      "7": "July",
+      "8": "August",
+      "9": "September",
+      "10": "October",
+      "11": "November",
+      "12": "December"
+    }
   }
 }

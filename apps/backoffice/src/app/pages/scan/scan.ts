@@ -20,11 +20,13 @@ const SAME_CODE_MS = 4000;
 const FRAME_MS = 200;
 
 /**
- * Contrôle des billets : la caméra du téléphone lit le QR code (jsQR, chargé à la première ouverture), ou le code se
- * tape à la main. Chaque lecture valide le billet côté serveur (une seule fois) et affiche le verdict en grand.
+ * Contrôle des billets, sur l'accueil (`/#control`) : la caméra du téléphone lit le QR code (jsQR, chargé à la première
+ * ouverture), ou le code se tape à la main. Chaque lecture valide le billet côté serveur (une seule fois) et affiche le
+ * verdict en grand.
  */
 @Component({
   selector: 'bo-scan',
+  host: { class: 'block' },
   imports: [TranslocoDirective, Button, Input, Spinner],
   templateUrl: './scan.html',
 })

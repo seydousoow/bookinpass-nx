@@ -1,5 +1,5 @@
 import { ApplicationConfig, isDevMode, provideBrowserGlobalErrorListeners } from '@angular/core';
-import { provideRouter, withComponentInputBinding } from '@angular/router';
+import { provideRouter, withComponentInputBinding, withInMemoryScrolling } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideTransloco } from '@jsverse/transloco';
 // Par fichier, pas par le barrel 'configs' : il entraînerait la configuration i18n du site (messageformat, locale)
@@ -15,7 +15,7 @@ import { savedLang } from './core/lang';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideRouter(appRoutes, withComponentInputBinding()),
+    provideRouter(appRoutes, withComponentInputBinding(), withInMemoryScrolling({ anchorScrolling: 'enabled', scrollPositionRestoration: 'enabled' })),
     provideHttpClient(withInterceptors([credentialsInterceptor, signedOutInterceptor])),
     // URL de l'API : celle du déploiement (`/env.js`), `/api` à défaut.
     { provide: APP_CONFIG, useFactory: () => runtimeConfig(environment) },

@@ -10,14 +10,15 @@ describe('Shell', () => {
 
   it('ne montre à un contrôleur que les sections de gare', async () => {
     const { element } = await renderPage(Shell, { user: staffUser('inspector') });
-    expect(sections(element)).toEqual(['nav.departures', 'nav.scan', 'nav.incidents', 'nav.bookings']);
+    expect(sections(element)).toEqual(['nav.home', 'nav.scan', 'nav.departures', 'nav.incidents', 'nav.bookings']);
   });
 
   it('montre tout aux responsables', async () => {
     const { element } = await renderPage(Shell, { user: staffUser('manager') });
     expect(sections(element)).toEqual([
-      'nav.departures',
+      'nav.home',
       'nav.scan',
+      'nav.departures',
       'nav.luggage',
       'nav.incidents',
       'nav.bookings',
@@ -28,6 +29,12 @@ describe('Shell', () => {
       'nav.routes',
       'nav.staff',
     ]);
+  });
+
+  it('mène « Contrôle » au formulaire de l’accueil', async () => {
+    const { element } = await renderPage(Shell, { user: staffUser('inspector') });
+    const control = [...element.querySelectorAll('nav a')].find((a) => a.textContent?.trim() === 'nav.scan');
+    expect(control?.getAttribute('href')).toBe('/#control');
   });
 
   it('affiche le membre connecté et sa gare', async () => {

@@ -38,7 +38,7 @@ function literalKeys(): string[] {
 const TICKET_STATUSES: readonly TicketStatus[] = ['valid', 'scanned', 'already_scanned', 'not_paid', 'wrong_day', 'other_station', 'unknown'];
 const DYNAMIC: Record<string, readonly (string | number)[]> = {
   'roles.': ['admin', 'manager', 'station_chief', 'inspector'],
-  'nav.': ['departures', 'scan', 'luggage', 'incidents', 'bookings', 'refunds', 'routes', 'staff'],
+  'nav.': ['home', 'departures', 'scan', 'luggage', 'incidents', 'bookings', 'refunds', 'routes', 'staff'],
   'incidents.types.': INCIDENT_TYPES,
   'routes.networks.': NETWORKS,
   'days.': [1, 2, 3, 4, 5, 6, 7],
@@ -47,8 +47,28 @@ const DYNAMIC: Record<string, readonly (string | number)[]> = {
   'departures.status.': ['arrived', 'departed', 'planned'],
   'bookings.status.': ['held', 'confirmed', 'released'],
   'bookings.method.': ['card', 'mobile_money'],
+  'login.greeting.': ['morning', 'afternoon', 'evening'],
+  'calendar.months.': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+  'slots.spans.': [1, 3, 6, 12, 24],
+  'activity.lists.': ['highlights', 'includes', 'excludes', 'not_allowed', 'to_bring', 'know_before'],
+  'activity.image.sources.': ['file', 'base64', 'url'],
+  'activities.': ['slots-ending', 'no-slots'],
+  'dashboard.reviews.': ['auto-on', 'auto-off'],
+  'dashboard.incidents.': ['ongoing', 'expected'],
+  'dashboard.refund-states.': ['requested', 'in-progress', 'failed', 'to-refund'],
   // Codes posés par le back-office lui-même (les autres viennent du serveur).
-  'errors.': ['network', 'unexpected', 'days-required', 'station-required', 'departure-not-found', 'weak-password', 'password-mismatch', 'username-required'],
+  'errors.': [
+    'network',
+    'unexpected',
+    'days-required',
+    'station-required',
+    'departure-not-found',
+    'weak-password',
+    'password-mismatch',
+    'username-required',
+    'invalid-image',
+    'image-too-large',
+  ],
 };
 const dynamicKeys = Object.entries(DYNAMIC).flatMap(([prefix, values]) => values.map((value) => `${prefix}${value}`));
 

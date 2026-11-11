@@ -11,13 +11,16 @@ import { CHIEFS, MANAGERS } from '../../app.routes';
 interface Section {
   readonly key: string;
   readonly route: string;
+  /** Ancre dans la page (`/#control`). */
+  readonly fragment?: string;
   /** Rôles qui voient la section ; sans rôles, tout le personnel. */
   readonly roles?: readonly StaffRole[];
 }
 
 const SECTIONS: readonly Section[] = [
-  { key: 'departures', route: '/' },
-  { key: 'scan', route: '/scan' },
+  { key: 'home', route: '/' },
+  { key: 'scan', route: '/', fragment: 'control' },
+  { key: 'departures', route: '/departures' },
   { key: 'luggage', route: '/luggage', roles: CHIEFS },
   { key: 'incidents', route: '/incidents' },
   { key: 'bookings', route: '/bookings' },
@@ -39,7 +42,11 @@ export class Shell {
   protected readonly session = inject(Session);
   protected readonly languages: BackofficeLang[] = ['fr', 'en'];
   protected readonly entries = computed<readonly NavEntry[]>(() =>
-    SECTIONS.filter((section) => !section.roles || this.session.has(...section.roles)).map((section) => ({ labelKey: `nav.${section.key}`, route: section.route })),
+    SECTIONS.filter((section) => !section.roles || this.session.has(...section.roles)).map((section) => ({
+      labelKey: `nav.${section.key}`,
+      route: section.route,
+      fragment: section.fragment,
+    })),
   );
   protected readonly leaving = signal(false);
   private readonly router = inject(Router);

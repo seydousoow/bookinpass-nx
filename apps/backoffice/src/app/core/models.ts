@@ -261,6 +261,10 @@ export interface ActivitySummary {
   readonly review_count: number;
   readonly published_at: string | null;
   readonly updated_at: string;
+  /** Début du dernier créneau ouvert ; `null` : aucun. */
+  readonly last_slot_at: string | null;
+  /** Réservations confirmées sur des créneaux à venir. */
+  readonly upcoming_bookings: number;
 }
 
 export interface ActivityOption {
@@ -289,6 +293,9 @@ export interface ActivityForm {
   includes: string[];
   excludes: string[];
   not_allowed: string[];
+  /** « À emporter ». */
+  to_bring: string[];
+  /** « Bon à savoir ». */
   know_before: string[];
   itinerary: ItineraryStop[];
   images: ActivityImage[];
@@ -465,4 +472,6 @@ export interface ActivitySettings {
   readonly ai_enabled: boolean;
   readonly ai_model: string;
   readonly pending_reviews: number;
+  /** Avis publiés par Claude, sans décision d'un responsable. */
+  readonly auto_approved_reviews: number;
 }

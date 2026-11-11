@@ -1,0 +1,228 @@
+<section *transloco="let t" class="space-y-6">
+  <div>
+    <h1 class="text-xl font-bold">{{ t('dashboard.hello', { name: session.user()?.full_name }) }}</h1>
+    <p class="text-sm text-muted">{{ t('dashboard.subtitle') }}</p>
+  </div>
+
+  <!-- Notifications : chiffres du jour, un lien vers la page qui les traite. -->
+  @if (session.manager()) {
+    <ul class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <li>
+        <a class="bip-focusable flex h-full items-center gap-3 bo-card hover:border-brand-primary" routerLink="/activity-reviews">
+          <ng-icon aria-hidden="true" class="text-brand-primary" name="heroChatBubbleLeftRight" size="28" />
+          <span>
+            <span class="block text-2xl font-bold">{{ settings.value()?.pending_reviews ?? '–' }}</span>
+            <span class="block text-sm text-muted">{{ t('dashboard.tiles.pending-reviews') }}</span>
+          </span>
+        </a>
+      </li>
+      <li>
+        <a [queryParams]="{ status: 'approved' }" class="bip-focusable flex h-full items-center gap-3 bo-card hover:border-brand-primary" routerLink="/activity-reviews">
+          <ng-icon aria-hidden="true" class="text-brand-primary" name="heroSparkles" size="28" />
+          <span>
+            <span class="block text-2xl font-bold">{{ settings.value()?.auto_approved_reviews ?? '–' }}</span>
+            <span class="block text-sm text-muted">{{ t('dashboard.tiles.auto-approved') }}</span>
+          </span>
+        </a>
+      </li>
+      <li>
+        <a class="bip-focusable flex h-full items-center gap-3 bo-card hover:border-brand-primary" routerLink="/refunds">
+          <ng-icon aria-hidden="true" class="text-brand-primary" name="heroBanknotes" size="28" />
+          <span>
+            <span class="block text-2xl font-bold">{{ refundsLoading() ? '–' : refunds().length }}</span>
+            <span class="block text-sm text-muted">{{ t('dashboard.tiles.refunds') }}</span>
+          </span>
+        </a>
+      </li>
+      <li>
+        <a class="bip-focusable flex h-full items-center gap-3 bo-card hover:border-brand-primary" routerLink="/activities">
+          <ng-icon aria-hidden="true" [class]="endingActivities().length ? 'text-state-warning' : 'text-brand-primary'" name="heroCalendarDays" size="28" />
+          <span>
+            <span class="block text-2xl font-bold">{{ activitiesLoading() ? '–' : endingActivities().length }}</span>
+            <span class="block text-sm text-muted">{{ t('dashboard.tiles.slots-ending') }}</span>
+          </span>
+        </a>
+      </li>
+    </ul>
+  }
+
+  <div class="grid items-start gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
+    <!-- Contrôle des billets : le menu « Contrôle » mène ici. -->
+    <div class="scroll-mt-24 bo-card" id="control">
+      <bo-scan />
+    </div>
+
+    <div class="space-y-6">
+      <!-- Avis à modérer -->
+      @if (session.manager()) {
+        <section class="space-y-3 bo-card">
+          <div class="flex flex-wrap items-center gap-2">
+            <h2 class="mr-auto text-lg font-bold">{{ t('dashboard.reviews.title') }}</h2>
+            <a class="text-sm text-brand-primary underline" routerLink="/activity-reviews">{{ t('dashboard.reviews.moderate') }}</a>
+          </div>
+          @if (settings.value(); as s) {
+            <p class="text-xs text-muted">
+              {{ t(s.auto_moderation ? 'dashboard.reviews.auto-on' : 'dashboard.reviews.auto-off', { count: s.auto_approved_reviews }) }}
+            </p>
+          }
+          @if (pendingReviews.isLoading() && !pendingReviews.hasValue()) {
+            <bip-spinner label="common.loading" />
+          } @else if (pendingReviews.error()) {
+            <bip-system-state (retry)="pendingReviews.reload()" message="errors.unexpected" status="error" />
+          } @else if (!shownReviews().length) {
+            <p class="text-sm text-muted">{{ t('dashboard.reviews.none') }}</p>
+          } @else {
+            <ul class="divide-y divide-border-subtle">
+              @for (r of shownReviews(); track r.id) {
+                <li class="space-y-1 py-2 text-sm">
+                  <p class="flex flex-wrap items-center gap-2">
+                    <span class="font-semibold">{{ r.activity_title }}</span>
+                    <span aria-hidden="true">{{ '★'.repeat(r.rating) }}</span>
+                    <span class="sr-only">{{ t('dashboard.reviews.rating', { rating: r.rating }) }}</span>
+                    @if (r.ai_verdict) {
+                      <bip-badge [tone]="r.ai_verdict === 'approve' ? 'success' : r.ai_verdict === 'reject' ? 'error' : 'warning'" size="sm">
+                        {{ t('reviews.verdicts.' + r.ai_verdict) }}
+                      </bip-badge>
+                    }
+                  </p>
+                  <p class="line-clamp-2 text-muted">« {{ r.text }} » — {{ r.author_name }}</p>
+                </li>
+              }
+            </ul>
+            @if ((pendingReviews.value()?.total ?? 0) > shownReviews().length) {
+              <a class="text-sm text-brand-primary underline" routerLink="/activity-reviews">
+                {{ t('dashboard.reviews.more', { count: (pendingReviews.value()?.total ?? 0) - shownReviews().length }) }}
+              </a>
+            }
+          }
+        </section>
+      }
+
+      <!-- Incidents : en cours, prévus, et les derniers clos -->
+      <section class="space-y-3 bo-card">
+        <div class="flex flex-wrap items-center gap-2">
+          <h2 class="mr-auto text-lg font-bold">{{ t('dashboard.incidents.title') }}</h2>
+          <a class="text-sm text-brand-primary underline" routerLink="/incidents">{{ t('dashboard.incidents.all') }}</a>
+        </div>
+        @if (openIncidents.isLoading() && !openIncidents.hasValue()) {
+          <bip-spinner label="common.loading" />
+        } @else if (openIncidents.error()) {
+          <bip-system-state (retry)="openIncidents.reload()" message="errors.unexpected" status="error" />
+        } @else {
+          @for (
+            group of [
+              { key: 'ongoing', list: ongoing() },
+              { key: 'expected', list: expected() },
+            ];
+            track group.key
+          ) {
+            <div>
+              <h3 class="text-sm font-semibold">{{ t('dashboard.incidents.' + group.key, { count: group.list.length }) }}</h3>
+              @if (!group.list.length) {
+                <p class="text-sm text-muted">{{ t('dashboard.incidents.none') }}</p>
+              }
+              <ul class="divide-y divide-border-subtle">
+                @for (i of group.list; track i.id) {
+                  <li class="flex flex-wrap items-center gap-x-3 gap-y-1 py-2 text-sm">
+                    <bip-badge [tone]="group.key === 'ongoing' ? 'error' : 'warning'" size="sm">{{ t('incidents.types.' + i.type) }}</bip-badge>
+                    <span class="font-semibold">{{ i.origin }} → {{ i.destination }}</span>
+                    @if (i.departs_at) {
+                      @if (i.departure_id) {
+                        <a [routerLink]="['/departures', i.departure_id]" class="text-brand-primary underline">{{ dateTime(i.departs_at) }}</a>
+                      } @else {
+                        <span>{{ dateTime(i.departs_at) }}</span>
+                      }
+                    }
+                    <span class="w-full text-muted">{{ i.description }}</span>
+                  </li>
+                }
+              </ul>
+            </div>
+          }
+        }
+        <details class="rounded-card border border-border-subtle">
+          <summary class="bip-focusable cursor-pointer p-2 text-sm font-semibold">{{ t('dashboard.incidents.resolved') }}</summary>
+          @if (resolvedIncidents.isLoading() && !resolvedIncidents.hasValue()) {
+            <bip-spinner class="p-2" label="common.loading" />
+          } @else if (resolvedIncidents.error()) {
+            <bip-system-state (retry)="resolvedIncidents.reload()" message="errors.unexpected" status="error" />
+          } @else if (!resolvedIncidents.value()?.length) {
+            <p class="p-2 text-sm text-muted">{{ t('dashboard.incidents.none-resolved') }}</p>
+          } @else {
+            <ul class="divide-y divide-border-subtle border-t border-border-subtle">
+              @for (i of resolvedIncidents.value() ?? []; track i.id) {
+                <li class="space-y-0.5 p-2 text-sm">
+                  <p class="flex flex-wrap items-center gap-2">
+                    <bip-badge size="sm" tone="success">{{ t('incidents.types.' + i.type) }}</bip-badge>
+                    <span class="font-semibold">{{ i.origin }} → {{ i.destination }}</span>
+                    <span class="text-xs text-muted">{{ t('dashboard.incidents.resolved-at', { time: dateTime(i.resolved_at) }) }}</span>
+                  </p>
+                  <p class="text-muted">{{ i.resolution }}</p>
+                </li>
+              }
+            </ul>
+          }
+        </details>
+      </section>
+
+      @if (session.manager()) {
+        <!-- Remboursements demandés ou en cours -->
+        <section class="space-y-3 bo-card">
+          <div class="flex flex-wrap items-center gap-2">
+            <h2 class="mr-auto text-lg font-bold">{{ t('dashboard.refunds.title') }}</h2>
+            <a class="text-sm text-brand-primary underline" routerLink="/refunds">{{ t('dashboard.refunds.all') }}</a>
+          </div>
+          @if (refundsLoading() && !refunds().length) {
+            <bip-spinner label="common.loading" />
+          } @else if (refundsError()) {
+            <bip-system-state (retry)="reloadRefunds()" message="errors.unexpected" status="error" />
+          } @else if (!refunds().length) {
+            <p class="text-sm text-muted">{{ t('dashboard.refunds.none') }}</p>
+          } @else {
+            <ul class="divide-y divide-border-subtle">
+              @for (r of refunds(); track r.key) {
+                <li>
+                  <a [routerLink]="r.link" class="bip-focusable flex flex-wrap items-center gap-x-3 gap-y-1 py-2 text-sm hover:bg-surface-muted">
+                    <span class="font-mono font-bold">{{ r.reference }}</span>
+                    <span class="min-w-0 flex-1 truncate">{{ r.label }} · {{ r.customer }}</span>
+                    <span class="font-semibold">{{ r.amount }} {{ r.currency }}</span>
+                    <bip-badge [tone]="refundTones[r.state]" size="sm">{{ t('dashboard.refund-states.' + r.state) }}</bip-badge>
+                  </a>
+                </li>
+              }
+            </ul>
+          }
+        </section>
+
+        <!-- Activités dont les créneaux s'arrêtent bientôt -->
+        <section class="space-y-3 bo-card">
+          <div class="flex flex-wrap items-center gap-2">
+            <h2 class="mr-auto text-lg font-bold">{{ t('dashboard.slots.title') }}</h2>
+            <a class="text-sm text-brand-primary underline" routerLink="/activities">{{ t('dashboard.slots.all') }}</a>
+          </div>
+          <p class="text-xs text-muted">{{ t('dashboard.slots.hint') }}</p>
+          @if (activitiesLoading()) {
+            <bip-spinner label="common.loading" />
+          } @else if (activitiesError()) {
+            <bip-system-state (retry)="reloadActivities()" message="errors.unexpected" status="error" />
+          } @else if (!endingActivities().length) {
+            <p class="text-sm text-muted">{{ t('dashboard.slots.none') }}</p>
+          } @else {
+            <ul class="divide-y divide-border-subtle">
+              @for (a of endingActivities(); track a.id) {
+                <li>
+                  <a [routerLink]="['/activities', a.id]" class="bip-focusable flex flex-wrap items-center gap-x-3 gap-y-1 py-2 text-sm hover:bg-surface-muted">
+                    <ng-icon aria-hidden="true" class="text-state-warning" name="heroExclamationTriangle" size="18" />
+                    <span class="min-w-0 flex-1 font-semibold">{{ a.title }}</span>
+                    <span class="text-muted">{{ a.last_slot_at ? t('activities.slots-ending', { time: dateTime(a.last_slot_at) }) : t('activities.no-slots') }}</span>
+                    <bip-badge size="sm" tone="info">{{ t('activities.upcoming', { count: a.upcoming_bookings }) }}</bip-badge>
+                  </a>
+                </li>
+              }
+            </ul>
+          }
+        </section>
+      }
+    </div>
+  </div>
+</section>

@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { of, throwError } from 'rxjs';
-import { departure, get, optionsOf, pick, renderPage, staffApiMock, staffUser, STATIONS, type } from '../../../testing';
-import { DeparturesPage } from './departures';
+import { button, departure, get, optionsOf, pick, renderPage, staffApiMock, staffUser, STATIONS, type } from '../../../testing';
+import { byOrigin, DeparturesPage } from './departures';
 
 describe('DeparturesPage', () => {
   it('liste les départs du jour, avec leur état', async () => {
@@ -15,6 +15,26 @@ describe('DeparturesPage', () => {
     expect(links[0].querySelector('bip-badge')?.textContent?.trim()).toBe('departures.status.planned');
     expect(links[1].textContent).toContain('departures.status.departed');
     expect(links[1].textContent).toContain('departures.incidents');
+  });
+
+  it('regroupe les départs par gare de départ, en accordéon', async () => {
+    const thies = { ...STATIONS[1] };
+    const api = staffApiMock({
+      departures: () =>
+        of([departure({ id: 3 }), departure({ id: 4, origin: thies, destination: STATIONS[0], passengers: 5, scanned: 2 }), departure({ id: 5, open_incidents: 2 })]),
+    });
+    const { element, stable } = await renderPage(DeparturesPage, { api });
+    const panels = [...element.querySelectorAll('details')];
+    expect(panels.map((p) => p.querySelector('summary')?.textContent)).toEqual([expect.stringContaining('Dakar'), expect.stringContaining('Thiès')]);
+    expect(panels[0].querySelectorAll('a')).toHaveLength(2);
+    expect(panels.every((p) => !p.open)).toBe(true);
+
+    button(element, 'departures.expand-all').click();
+    await stable();
+    expect([...element.querySelectorAll('details')].every((p) => p.open)).toBe(true);
+    expect(byOrigin([departure({ id: 3 }), departure({ id: 5, open_incidents: 2, passengers: 3, scanned: 1 })])[0]).toEqual(
+      expect.objectContaining({ passengers: 15, scanned: 5, incidents: 2 }),
+    );
   });
 
   it('filtre par jour, et par gare pour un responsable', async () => {
