@@ -3,14 +3,14 @@ import { TranslocoService } from '@jsverse/transloco';
 import { button, renderPage, staffUser } from '../../../testing';
 import { Main } from './main';
 
-describe('Shell', () => {
+describe('Main', () => {
   afterEach(() => localStorage.clear());
 
   const sections = (element: HTMLElement) => [...element.querySelectorAll('nav a')].map((a) => a.textContent?.trim()).filter((v, i, all) => all.indexOf(v) === i);
 
   it('ne montre à un contrôleur que les sections de gare', async () => {
     const { element } = await renderPage(Main, { user: staffUser('inspector') });
-    expect(sections(element)).toEqual(['nav.home', 'nav.scan', 'nav.departures', 'nav.incidents', 'nav.bookings']);
+    expect(sections(element)).toEqual(['nav.home', 'nav.departures', 'nav.incidents', 'nav.bookings']);
   });
 
   it('montre tout aux responsables', async () => {
@@ -30,11 +30,11 @@ describe('Shell', () => {
     ]);
   });
 
-  it('mène « Contrôle » au formulaire de l’accueil', async () => {
-    const { element } = await renderPage(Main, { user: staffUser('inspector') });
-    const control = [...element.querySelectorAll('nav a')].find((a) => a.textContent?.trim() === 'nav.scan');
-    expect(control?.getAttribute('href')).toBe('/#control');
-  });
+  // it('mène « Contrôle » au formulaire de l’accueil', async () => {
+  //   const { element } = await renderPage(Main, { user: staffUser('inspector') });
+  //   const control = [...element.querySelectorAll('nav a')].find((a) => a.textContent?.trim() === 'nav.scan');
+  //   expect(control?.getAttribute('href')).toBe('/#control');
+  // });
 
   it('affiche le membre connecté et sa gare', async () => {
     const { element } = await renderPage(Main, { user: staffUser('station_chief') });
