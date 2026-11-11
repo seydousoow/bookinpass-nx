@@ -99,4 +99,21 @@ describe('ActivityImages', () => {
     await stable();
     expect(fixture.componentInstance.images()).toEqual([{ url: 'https://cdn.bookinpass.com/activities/a.jpg', alt: 'Gorée' }]);
   });
+
+  it('supprime de S3 une photo déposée ici puis retirée, pas une photo déjà là', async () => {
+    const api = staffApiMock({ uploadImage: () => of({ url: 'https://cdn.bookinpass.com/activities/new.jpg' }), deleteImage: () => of(undefined) });
+    const { fixture, element, stable } = await render(api);
+    drop(element, [new File(['a'], 'a.jpg', { type: 'image/jpeg' })]);
+    await stable();
+
+    const removeButtons = () => [...element.querySelectorAll('button')].filter((b) => b.textContent?.trim() === 'activity.remove');
+    removeButtons()[1].click();
+    await stable();
+    expect(api.deleteImage).toHaveBeenCalledWith('https://cdn.bookinpass.com/activities/new.jpg');
+
+    removeButtons()[0].click();
+    await stable();
+    expect(api.deleteImage).toHaveBeenCalledTimes(1);
+    expect(fixture.componentInstance.images()).toEqual([]);
+  });
 });

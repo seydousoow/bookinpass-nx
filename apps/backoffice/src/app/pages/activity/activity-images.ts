@@ -19,6 +19,9 @@ type Source = 'file' | 'base64' | 'url';
  * Photos d'une activité : chaque photo est déposée dans S3 et servie par le CDN, qu'elle vienne de l'appareil (choix ou
  * glisser-déposer), d'un texte base64 ou d'une adresse (téléchargée par le serveur). Une photo encore liée à un autre
  * site peut être copiée chez nous. La première est l'image principale.
+ *
+ * Une photo déposée ici puis retirée est supprimée de S3 tout de suite (le serveur la garde si une fiche enregistrée
+ * l'emploie) ; une photo déposée mais jamais enregistrée (page quittée) est supprimée par le serveur au bout d'un jour.
  */
 @Component({
   selector: 'bo-activity-images',
@@ -131,6 +134,8 @@ export class ActivityImages {
   protected readonly busy = signal<string | null>(null);
   protected readonly error = signal<string | null>(null);
   private readonly api = inject(StaffApi);
+  /** Photos déposées depuis cette page. */
+  private readonly uploaded = new Set<string>();
 
   protected validUrl(): boolean {
     return /^https:\/\/\S+$/.test((this.url() ?? '').trim());
@@ -141,7 +146,12 @@ export class ActivityImages {
   }
 
   protected remove(index: number): void {
+    const url = this.images()[index]?.url;
     this.imagesChange.emit(this.images().filter((_, i) => i !== index));
+    if (url && this.uploaded.delete(url)) {
+      // Au mieux : un échec laisse la photo à la tâche de nettoyage du serveur.
+      this.api.deleteImage(url).subscribe({ error: () => undefined });
+    }
   }
 
   /** La première photo est l'image principale : la remonter ou la descendre change l'ordre. */
@@ -199,10 +209,16 @@ export class ActivityImages {
   /** Photo liée à un autre site : copiée dans S3, son adresse devient celle du CDN (inchangée si elle y est déjà). */
   protected rehost(index: number): void {
     const image = this.images()[index];
-    this.send(`rehost-${index}`, this.api.importImage({ url: image.url }), ({ url }) => this.patch(index, { url }));
+    this.send(`rehost-${index}`, this.api.importImage({ url: image.url }), ({ url }) => {
+      if (url !== image.url) {
+        this.uploaded.add(url);
+      }
+      this.patch(index, { url });
+    });
   }
 
   private add(urls: string[]): void {
+    urls.forEach((url) => this.uploaded.add(url));
     this.imagesChange.emit([...this.images(), ...urls.map((url) => ({ url, alt: null }))]);
   }
 

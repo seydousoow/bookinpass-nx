@@ -211,6 +211,11 @@ export class StaffApi {
     return this.http.post<{ url: string }>(`${this.url}/activity-images`, source);
   }
 
+  /** Photo déposée puis retirée avant d'enregistrer : supprimée de S3 (sans effet si une fiche l'emploie). */
+  deleteImage(url: string): Observable<void> {
+    return this.http.delete<void>(`${this.url}/activity-images`, { params: { url } });
+  }
+
   addOption(activityId: number, form: ActivityOptionForm): Observable<ActivityDetail> {
     return this.http.post<ActivityDetail>(`${this.url}/activities/${activityId}/options`, form);
   }
