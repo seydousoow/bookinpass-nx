@@ -1,8 +1,12 @@
 import { ActivityDetail, ActivityForm, ItineraryStop } from '../../core/models';
 
 /** Listes de textes de la fiche, saisies une ligne par élément. */
-export const LIST_KEYS = ['highlights', 'includes', 'excludes', 'not_allowed', 'know_before'] as const;
+export const LIST_KEYS = ['highlights', 'includes', 'excludes', 'not_allowed', 'to_bring', 'know_before'] as const;
 export type ListKey = (typeof LIST_KEYS)[number];
+/** « À savoir avant de partir » : deux sous-listes, « À emporter » et « Bon à savoir ». */
+export const KNOW_BEFORE_KEYS: readonly ListKey[] = ['to_bring', 'know_before'];
+/** Les autres listes, en grille. */
+export const GENERAL_LIST_KEYS: readonly ListKey[] = LIST_KEYS.filter((key) => !KNOW_BEFORE_KEYS.includes(key));
 
 export function emptyActivity(): ActivityForm {
   return {
@@ -17,6 +21,7 @@ export function emptyActivity(): ActivityForm {
     includes: [],
     excludes: [],
     not_allowed: [],
+    to_bring: [],
     know_before: [],
     itinerary: [],
     images: [],
@@ -44,6 +49,7 @@ export function activityForm(activity: ActivityDetail): ActivityForm {
     includes: [...activity.includes],
     excludes: [...activity.excludes],
     not_allowed: [...activity.not_allowed],
+    to_bring: [...(activity.to_bring ?? [])],
     know_before: [...activity.know_before],
     itinerary: activity.itinerary.map((stop) => ({ ...stop })),
     images: activity.images.map((image) => ({ ...image })),

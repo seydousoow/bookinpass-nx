@@ -16,7 +16,6 @@ import {
   ActivitySlotsForm,
   ActivityStatus,
   ActivitySummary,
-  Page,
   Departure,
   DepartureDetail,
   DeskBooking,
@@ -25,6 +24,7 @@ import {
   Luggage,
   LuggageForm,
   Network,
+  Page,
   Refund,
   Route,
   StaffUser,
@@ -112,6 +112,11 @@ export class StaffApi {
     return this.http.post<Incident>(`${this.url}/incidents`, report);
   }
 
+  /** Derniers incidents clos, les plus récents d'abord. */
+  resolvedIncidents(limit: number, stationId: number | null): Observable<Incident[]> {
+    return this.http.get<Incident[]>(`${this.url}/incidents/resolved`, { params: withStation({ limit: String(limit) }, stationId) });
+  }
+
   resolveIncident(id: number, resolution: string): Observable<Incident> {
     return this.http.post<Incident>(`${this.url}/incidents/${id}/resolve`, { resolution });
   }
@@ -192,6 +197,23 @@ export class StaffApi {
 
   activityStatus(id: number, status: ActivityStatus): Observable<ActivityDetail> {
     return this.http.post<ActivityDetail>(`${this.url}/activities/${id}/status`, { status });
+  }
+
+  /** Photo envoyée depuis l'appareil : déposée dans S3, rend son adresse sur le CDN. */
+  uploadImage(file: File): Observable<{ url: string }> {
+    const body = new FormData();
+    body.append('file', file);
+    return this.http.post<{ url: string }>(`${this.url}/activity-images`, body);
+  }
+
+  /** Photo en base64 ou par son adresse (téléchargée par le serveur) : déposée dans S3, rend son adresse sur le CDN. */
+  importImage(source: { data: string } | { url: string }): Observable<{ url: string }> {
+    return this.http.post<{ url: string }>(`${this.url}/activity-images`, source);
+  }
+
+  /** Photo déposée puis retirée avant d'enregistrer : supprimée de S3 (sans effet si une fiche l'emploie). */
+  deleteImage(url: string): Observable<void> {
+    return this.http.delete<void>(`${this.url}/activity-images`, { params: { url } });
   }
 
   addOption(activityId: number, form: ActivityOptionForm): Observable<ActivityDetail> {

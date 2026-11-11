@@ -1,4 +1,4 @@
-import { Component, computed, input, model, signal } from '@angular/core';
+import { booleanAttribute, Component, computed, input, model, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { LangDefinition, TranslocoDirective } from '@jsverse/transloco';
 import { ICurrencyOption } from 'models';
@@ -11,6 +11,8 @@ import { NgOptimizedImage } from '@angular/common';
 export interface NavEntry {
   readonly labelKey: string;
   readonly route: string;
+  /** Ancre dans la page (`/#control`). */
+  readonly fragment?: string;
   readonly disabled?: boolean;
 }
 
@@ -30,6 +32,9 @@ export class Header {
   readonly currencies = input<readonly ICurrencyOption[]>([]);
   readonly entries = input<readonly NavEntry[]>([]);
   readonly cartCount = input(0);
+  /** Beaucoup d'entrées (back-office) : logo plus petit, menu sur plusieurs lignes au besoin. */
+  readonly compact = input(false, { transform: booleanAttribute });
+  readonly full = input(false, { transform: booleanAttribute });
   protected readonly mobileOpen = signal(false);
 
   protected readonly langs = computed(() => this.languages().map((language) => (typeof language === 'string' ? language : language.label)));

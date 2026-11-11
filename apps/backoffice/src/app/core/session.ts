@@ -1,23 +1,29 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { CanActivateFn, Router } from '@angular/router';
-import { catchError, firstValueFrom, map, Observable, of, tap, throwError } from 'rxjs';
+import { catchError, firstValueFrom, map, Observable, of, tap, throwError, timeout } from 'rxjs';
 import { StaffApi } from './api';
 import { StaffRole, StaffUser } from './models';
+
+/** Lecture de session : au-delà, le serveur est tenu pour injoignable (la connexion s'affiche et réessaie). */
+export const SESSION_CHECK_MS = 8000;
 
 /** Membre du personnel connecté ; `undefined` tant que la session n'a pas été lue. */
 @Injectable({ providedIn: 'root' })
 export class Session {
-  /** Admin et manager : toutes les gares, réseau et personnel. */
-  readonly manager = computed(() => this.role() === 'admin' || this.role() === 'manager');
-  /** Chef de gare ou responsable : départs, bagages, incidents. */
-  readonly chief = computed(() => this.manager() || this.role() === 'station_chief');
   private readonly api = inject(StaffApi);
   private readonly current = signal<StaffUser | null | undefined>(undefined);
   readonly user = this.current.asReadonly();
   readonly role = computed(() => this.current()?.role ?? null);
+  /** Admin et manager : toutes les gares, réseau et personnel. */
+  readonly manager = computed(() => this.role() === 'admin' || this.role() === 'manager');
+  /** Chef de gare ou responsable : départs, bagages, incidents. */
+  readonly chief = computed(() => this.manager() || this.role() === 'station_chief');
 
-  /** Lit la session une fois (cookie HttpOnly : seul le serveur sait si elle est valable). */
+  /**
+   * Lit la session une fois (cookie HttpOnly : seul le serveur sait si elle est valable). Serveur muet ou en erreur :
+   * pas de session, la page de connexion s'affiche et vérifie le serveur elle-même.
+   */
   load(): Promise<StaffUser | null> {
     const known = this.current();
     if (known !== undefined) {
@@ -25,6 +31,7 @@ export class Session {
     }
     return firstValueFrom(
       this.api.me().pipe(
+        timeout(SESSION_CHECK_MS),
         catchError(() => of(null)),
         tap((user) => this.current.set(user)),
       ),

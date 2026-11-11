@@ -101,17 +101,34 @@
       </div>
 
       <div class="grid gap-3 md:grid-cols-2">
-        @for (key of listKeys; track key) {
+        @for (key of generalKeys; track key) {
           <bip-textarea
             (valueChange)="setList(key, $event)"
+            [label]="'activity.lists.' + key"
             [maxLength]="3000"
+            [name]="key"
             [rows]="4"
             [value]="listText()[key]"
-            hint="activity.one-per-line"
-            [label]="'activity.lists.' + key"
-            [name]="key" />
+            hint="activity.one-per-line" />
         }
       </div>
+
+      <!-- À savoir avant de partir : « À emporter » et « Bon à savoir » -->
+      <fieldset class="space-y-2 border-t border-border-subtle pt-3">
+        <legend class="font-semibold">{{ t('activity.know-before') }}</legend>
+        <div class="grid gap-3 md:grid-cols-2">
+          @for (key of knowBeforeKeys; track key) {
+            <bip-textarea
+              (valueChange)="setList(key, $event)"
+              [label]="'activity.lists.' + key"
+              [maxLength]="3000"
+              [name]="key"
+              [rows]="4"
+              [value]="listText()[key]"
+              hint="activity.one-per-line" />
+          }
+        </div>
+      </fieldset>
 
       <fieldset class="space-y-2 border-t border-border-subtle pt-3">
         <legend class="font-semibold">{{ t('activity.itinerary') }}</legend>
@@ -149,41 +166,7 @@
         <button (clicked)="addStop()" bipButton size="sm" type="button" variant="outline">{{ t('activity.add-stop') }}</button>
       </fieldset>
 
-      <fieldset class="space-y-2 border-t border-border-subtle pt-3">
-        <legend class="font-semibold">{{ t('activity.images') }}</legend>
-        <p class="text-xs text-muted">{{ t('activity.images-hint') }}</p>
-        @for (image of form().images; track $index; let i = $index, first = $first, last = $last) {
-          <div class="grid items-end gap-2 md:grid-cols-[4rem_2fr_1fr_auto]">
-            <span class="size-16 overflow-hidden rounded-card bg-surface-muted">
-              @if (image.url) {
-                <img [src]="image.url" alt="" class="size-full object-cover" />
-              }
-            </span>
-            <bip-input (valueChange)="patchImage(i, { url: $event ?? '' })" [name]="'image-url-' + i" [value]="image.url" label="activity.image.url" type="text" />
-            <bip-input (valueChange)="patchImage(i, { alt: $event })" [name]="'image-alt-' + i" [value]="image.alt" label="activity.image.alt" />
-            <span class="flex gap-1">
-              <button
-                (click)="moveImage(i, -1)"
-                [attr.aria-label]="t('activity.up')"
-                [disabled]="first"
-                class="bip-focusable size-11 rounded-button border border-border-subtle"
-                type="button">
-                ↑
-              </button>
-              <button
-                (click)="moveImage(i, 1)"
-                [attr.aria-label]="t('activity.down')"
-                [disabled]="last"
-                class="bip-focusable size-11 rounded-button border border-border-subtle"
-                type="button">
-                ↓
-              </button>
-              <button (clicked)="removeImage(i)" bipButton size="sm" type="button" variant="ghost">{{ t('activity.remove') }}</button>
-            </span>
-          </div>
-        }
-        <button (clicked)="addImage()" bipButton size="sm" type="button" variant="outline">{{ t('activity.add-image') }}</button>
-      </fieldset>
+      <bo-activity-images (imagesChange)="patch({ images: $event })" [images]="form().images" />
 
       <fieldset class="grid gap-3 border-t border-border-subtle pt-3 md:grid-cols-4">
         <legend class="font-semibold">{{ t('activity.practical') }}</legend>

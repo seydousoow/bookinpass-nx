@@ -105,6 +105,9 @@ export interface IActivityDetail {
   readonly includes: readonly string[];
   readonly excludes: readonly string[];
   readonly not_allowed: readonly string[];
+  /** « À emporter » ; absent d'un serveur antérieur à cette liste. */
+  readonly to_bring?: readonly string[];
+  /** « Bon à savoir ». */
   readonly know_before: readonly string[];
   readonly itinerary: readonly IActivityItineraryStop[];
   readonly images: readonly IActivityImage[];

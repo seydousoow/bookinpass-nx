@@ -1,21 +1,29 @@
 <header *transloco="let t" class="sticky top-0 z-20 border-b border-border-subtle bg-surface-card/95 backdrop-blur">
-  <div class="mx-auto flex min-h-16 max-w-7xl items-center gap-3">
-    <a class="relative min-h-16 w-64" routerLink="/">
+  <div
+    [class.justify-center]="full()"
+    [class.max-w-7xl]="!full()"
+    [class.mx-3]="full()"
+    [class.mx-auto]="!full()"
+    class="flex min-h-16 items-center {{ full() ? 'gap-5' : 'gap-3' }}">
+    <a [class]="compact() ? 'w-36 xl:w-44' : 'w-64'" class="relative min-h-16 shrink-0" routerLink="/">
       <img alt="Book In Pass" fill ngSrc="/images/bip-transparent-logo.png" priority />
     </a>
 
-    <nav [attr.aria-label]="t('nav.main')" class="ml-2 hidden flex-1 items-center gap-1 lg:flex">
-      @for (entry of entries(); track entry.route) {
+    <nav [attr.aria-label]="t('nav.main')" [class.flex-1]="!full()" [class.flex-wrap]="compact()" class="ml-2 hidden min-w-0 items-center gap-1 py-1 lg:flex">
+      @for (entry of entries(); track entry.labelKey) {
         @if (entry.disabled) {
           <span aria-disabled="true" class="flex min-h-11 cursor-not-allowed items-center rounded-button px-3 text-sm font-medium text-muted opacity-40">
             {{ t(entry.labelKey) }}
           </span>
         } @else {
           <a
-            [routerLinkActiveOptions]="{ exact: entry.route === '/' }"
+            [class.px-2]="compact()"
+            [class.px-3]="!compact()"
+            [fragment]="entry.fragment"
+            [routerLinkActiveOptions]="entry.fragment ? { paths: 'exact', queryParams: 'ignored', fragment: 'exact', matrixParams: 'ignored' } : { exact: entry.route === '/' }"
             [routerLink]="entry.route"
-            class="bip-focusable flex min-h-11 items-center rounded-button px-3 text-sm font-medium text-muted hover:bg-brand-soft hover:text-brand-dark"
             ariaCurrentWhenActive="page"
+            class="bip-focusable flex min-h-11 items-center rounded-button text-sm font-medium whitespace-nowrap text-muted hover:bg-brand-soft hover:text-brand-dark"
             routerLinkActive="bg-brand-soft text-brand-dark">
             {{ t(entry.labelKey) }}
           </a>
@@ -23,7 +31,7 @@
       }
     </nav>
 
-    <div class="ml-auto flex items-center gap-2">
+    <div [class.ml-auto]="!full()" class="flex items-center gap-2">
       <div class="hidden items-center rounded-pill border border-border-subtle p-0.5 sm:flex">
         @for (lang of langs(); track lang) {
           @let active = lang === currentLang();
@@ -42,7 +50,7 @@
       <ng-content select="[headerActions]" />
 
       @if (currencies().length) {
-        <bip-currency-selector [(selected)]="currentCurrency" [currencies]="currencies()" class="hidden sm:block" />
+        <bip-currency-selector (selectedChange)="currentCurrency.set($event)" [currencies]="currencies()" [selected]="currentCurrency()" class="hidden sm:block" />
       }
 
       <bip-button (clicked)="mobileOpen.set(!mobileOpen())" [expanded]="mobileOpen()" class="lg:hidden" size="sm" type="button" variant="ghost">
@@ -54,7 +62,7 @@
 
   @if (mobileOpen()) {
     <nav [attr.aria-label]="t('nav.main')" class="border-t border-border-subtle px-4 py-2 lg:hidden">
-      @for (entry of entries(); track entry.route) {
+      @for (entry of entries(); track entry.labelKey) {
         @if (entry.disabled) {
           <span aria-disabled="true" class="flex min-h-11 cursor-not-allowed items-center rounded-button px-3 text-sm font-medium text-muted opacity-40">
             {{ t(entry.labelKey) }}
@@ -62,10 +70,11 @@
         } @else {
           <a
             (click)="mobileOpen.set(false)"
-            [routerLinkActiveOptions]="{ exact: entry.route === '/' }"
+            [fragment]="entry.fragment"
+            [routerLinkActiveOptions]="entry.fragment ? { paths: 'exact', queryParams: 'ignored', fragment: 'exact', matrixParams: 'ignored' } : { exact: entry.route === '/' }"
             [routerLink]="entry.route"
-            class="bip-focusable flex min-h-11 items-center rounded-button px-3 text-sm font-medium text-ink"
             ariaCurrentWhenActive="page"
+            class="bip-focusable flex min-h-11 items-center rounded-button px-3 text-sm font-medium text-ink"
             routerLinkActive="text-brand-dark bg-brand-soft">
             {{ t(entry.labelKey) }}
           </a>
@@ -93,7 +102,7 @@
         @if (currencies().length) {
           <div class="flex items-center gap-2">
             <span class="text-xs font-semibold text-muted">{{ t('nav.currency') }}</span>
-            <bip-currency-selector [(selected)]="currentCurrency" [currencies]="currencies()" />
+            <bip-currency-selector (selectedChange)="currentCurrency.set($event)" [currencies]="currencies()" [selected]="currentCurrency()" />
           </div>
         }
       </div>

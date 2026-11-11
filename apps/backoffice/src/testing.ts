@@ -17,6 +17,7 @@ const LISTS: readonly (keyof StaffApi)[] = [
   'departures',
   'luggage',
   'incidents',
+  'resolvedIncidents',
   'routes',
   'users',
   'searchBookings',

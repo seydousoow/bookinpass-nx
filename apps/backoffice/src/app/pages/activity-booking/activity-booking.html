@@ -82,9 +82,9 @@
       <h2 class="font-bold">{{ t('activity-booking.refunds') }}</h2>
       @for (r of d.refunds; track r.id) {
         <div class="flex flex-wrap items-center gap-2 border-t border-border-subtle pt-2">
-          <bip-badge [tone]="r.status === 'refunded' ? 'success' : r.status === 'failed' ? 'error' : 'warning'" size="sm">{{
-            t('activity-booking.refund-statuses.' + r.status)
-          }}</bip-badge>
+          <bip-badge [tone]="r.status === 'refunded' ? 'success' : r.status === 'failed' ? 'error' : 'warning'" size="sm"
+            >{{ t('activity-booking.refund-statuses.' + r.status) }}
+          </bip-badge>
           <span class="font-semibold">{{ r.amount }} {{ r.currency }}</span>
           <span>· {{ t('activity-bookings.methods.' + r.method) }} · {{ r.reason }}</span>
           <span class="text-muted">· {{ r.requested_by ?? t('activity-booking.by-customer') }} · {{ dateTime(r.created_at) }}</span>

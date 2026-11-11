@@ -1,6 +1,6 @@
 import { Component, computed, inject, input, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TranslocoDirective } from '@jsverse/transloco';
 import { Badge, BadgeTone } from 'components/badge/badge';
 import { Button } from 'components/button/button';
@@ -18,6 +18,10 @@ import { ActivityReview, REVIEW_STATUSES, ReviewStatus } from '../../core/models
 
 const PAGE_SIZE = 20;
 const VERDICT_TONES: Readonly<Record<string, BadgeTone>> = { approve: 'success', reject: 'error', review: 'warning' };
+function initialStatus(wanted: string | null): ReviewStatus {
+  return REVIEW_STATUSES.includes(wanted as ReviewStatus) ? (wanted as ReviewStatus) : 'pending';
+}
+
 const STATUS_TONES: Readonly<Record<ReviewStatus, BadgeTone>> = { pending: 'warning', approved: 'success', rejected: 'error' };
 
 /**
@@ -39,7 +43,8 @@ export class ActivityReviewsPage {
   protected readonly pageSize = PAGE_SIZE;
   protected readonly dateTime = dakarDateTime;
   protected readonly action = createAction();
-  protected readonly status = signal<ReviewStatus | ''>('pending');
+  /** File choisie à l'arrivée par `?status=approved` (lien depuis l'accueil), sinon les avis en attente. */
+  protected readonly status = signal<ReviewStatus | ''>(initialStatus(inject(ActivatedRoute).snapshot.queryParamMap.get('status')));
   protected readonly page = signal(1);
   protected readonly rejecting = signal<number | null>(null);
   protected readonly reason = signal<string | null>('');
@@ -48,14 +53,14 @@ export class ActivityReviewsPage {
     return Number.isInteger(id) && id > 0 ? id : null;
   });
   private readonly api = inject(StaffApi);
-  private readonly router = inject(Router);
   protected readonly settings = rxResource({ stream: () => this.api.activitySettings() });
-  private readonly activities = rxResource({ stream: () => this.api.activities() });
-  protected readonly activityOptions = computed((): ISelectOption<number>[] => (this.activities.value() ?? []).map((a) => ({ value: a.id, label: a.title })));
   protected readonly list = rxResource({
     params: () => ({ status: this.status(), activity: this.activityId(), page: this.page() - 1 }),
     stream: ({ params }) => this.api.reviews(params.status, params.activity, params.page),
   });
+  private readonly router = inject(Router);
+  private readonly activities = rxResource({ stream: () => this.api.activities() });
+  protected readonly activityOptions = computed((): ISelectOption<number>[] => (this.activities.value() ?? []).map((a) => ({ value: a.id, label: a.title })));
 
   protected show(status: ReviewStatus | ''): void {
     this.status.set(status);

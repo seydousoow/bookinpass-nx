@@ -3,7 +3,8 @@
     "title": "Book In Pass — Gares",
     "other-lang": "English",
     "logout": "Se déconnecter",
-    "nav": "Sections"
+    "nav": "Sections",
+    "loading": "Chargement…"
   },
   "roles": {
     "admin": "Administrateur",
@@ -12,6 +13,7 @@
     "inspector": "Contrôleur"
   },
   "nav": {
+    "home": "Accueil",
     "departures": "Départs",
     "scan": "Contrôle",
     "luggage": "Bagages",
@@ -28,7 +30,26 @@
     "subtitle": "Espace du personnel des gares.",
     "username": "Identifiant",
     "password": "Mot de passe",
-    "submit": "Se connecter"
+    "submit": "Se connecter",
+    "greeting": {
+      "morning": "Bonjour",
+      "afternoon": "Bon après-midi",
+      "evening": "Bonsoir"
+    },
+    "brand": {
+      "kicker": "Back-office Book In Pass",
+      "title": "Tout le réseau, en un coup d’œil.",
+      "control": "Départs du jour et contrôle des billets",
+      "reviews": "Avis des voyageurs modérés avec Claude",
+      "refunds": "Remboursements suivis de bout en bout"
+    },
+    "server": {
+      "checking": "Vérification du serveur…",
+      "online": "Serveur disponible",
+      "offline": "Serveur injoignable : nouvel essai automatique.",
+      "retry": "Réessayer"
+    },
+    "lock-hint": "Après 5 essais manqués, le compte est bloqué 15 minutes."
   },
   "password": {
     "title": "Nouveau mot de passe",
@@ -61,7 +82,10 @@
       "planned": "Prévu",
       "departed": "Parti",
       "arrived": "Arrivé"
-    }
+    },
+    "count": "{{count}} départ(s)",
+    "expand-all": "Tout ouvrir",
+    "collapse-all": "Tout fermer"
   },
   "departure": {
     "back": "Départs",
@@ -258,7 +282,13 @@
     "review-not-found": "Avis introuvable.",
     "review-decided": "Cet avis a déjà été décidé.",
     "invalid-request": "Saisie refusée par le serveur : vérifiez les champs.",
-    "payment-provider-error": "Le prestataire de paiement a refusé l'opération."
+    "payment-provider-error": "Le prestataire de paiement a refusé l'opération.",
+    "invalid-image": "Ce fichier n’est pas une image JPEG, PNG, WebP, GIF ou AVIF.",
+    "image-too-large": "Photo trop lourde : 10 Mo au plus.",
+    "invalid-image-url": "Donnez une adresse HTTPS publique.",
+    "image-download-failed": "La photo n’a pas pu être téléchargée depuis cette adresse.",
+    "image-upload-failed": "La photo n’a pas pu être déposée sur le CDN. Réessayez.",
+    "images-unavailable": "Dépôt des photos non configuré sur le serveur."
   },
   "bookings": {
     "title": "Réservations",
@@ -329,7 +359,11 @@
     },
     "options-count": "{{count}} option(s)",
     "no-reviews": "Pas encore d'avis",
-    "updated": "Modifiée le {{time}}"
+    "updated": "Modifiée le {{time}}",
+    "slots-ending": "Créneaux jusqu’au {{time}}",
+    "no-slots": "Aucun créneau ouvert",
+    "upcoming": "{{count}} réservation(s) à venir",
+    "upcoming-label": "à venir"
   },
   "activity": {
     "back": "Toutes les activités",
@@ -365,7 +399,8 @@
       "includes": "Inclus",
       "excludes": "Non inclus",
       "not_allowed": "Non autorisé",
-      "know_before": "À savoir avant de partir"
+      "know_before": "Bon à savoir",
+      "to_bring": "À emporter"
     },
     "itinerary": "Itinéraire",
     "stop": {
@@ -378,10 +413,26 @@
     "remove": "Retirer",
     "add-stop": "Ajouter une étape",
     "images": "Photos",
-    "images-hint": "Adresses HTTPS des photos ; la première est l'image principale.",
+    "images-hint": "Photos déposées sur notre CDN ; la première est l’image principale.",
     "image": {
       "url": "Adresse de la photo (https://…)",
-      "alt": "Description (accessibilité)"
+      "alt": "Description (accessibilité)",
+      "main": "Principale",
+      "rehost": "Copier chez nous",
+      "add": "Ajouter des photos",
+      "source": "Origine de la photo",
+      "sources": {
+        "file": "Depuis l’appareil",
+        "base64": "Base64",
+        "url": "Adresse"
+      },
+      "drop": "Choisissez des photos ou déposez-les ici",
+      "uploading": "Envoi en cours…",
+      "formats": "JPEG, PNG, WebP, GIF ou AVIF · 10 Mo au plus",
+      "base64": "Image en base64",
+      "base64-hint": "Avec ou sans en-tête data:image/…;base64,",
+      "url-hint": "Le serveur télécharge la photo et la dépose sur notre CDN.",
+      "import": "Importer"
     },
     "up": "Monter",
     "down": "Descendre",
@@ -419,7 +470,8 @@
       "meal": "Repas",
       "free_time": "Temps libre",
       "other": "Autre"
-    }
+    },
+    "know-before": "À savoir avant de partir"
   },
   "options": {
     "title": "Options et prix",
@@ -448,7 +500,7 @@
     "capacity": "Places",
     "capacity-hint": "Vide : celles de l'option.",
     "open-button": "Ouvrir",
-    "open-hint": "Les créneaux déjà ouverts sont gardés ; les dates passées sont ignorées.",
+    "open-hint": "Les créneaux déjà ouverts sont gardés ; les dates passées sont ignorées. Jusqu’au {{date}} au plus (deux ans).",
     "none": "Aucun créneau sur cette période.",
     "counts": "{{sold}} vendues, {{held}} en cours de paiement, {{capacity}} places",
     "cancelled": "Annulé : {{reason}}",
@@ -457,7 +509,22 @@
     "confirm-cancel": "Annuler et rembourser ({{count}} place(s) vendue(s))",
     "cancel": "Annuler le créneau",
     "opened": "Créneaux ouverts : {{count}}",
-    "bookings-cancelled": "Créneau annulé, réservations remboursées : {{count}}"
+    "bookings-cancelled": "Créneau annulé, réservations remboursées : {{count}}",
+    "span": "Durée",
+    "spans": {
+      "1": "1 mois",
+      "3": "3 mois",
+      "6": "6 mois",
+      "12": "1 an",
+      "24": "2 ans"
+    },
+    "previous": "Mois précédent",
+    "next": "Mois suivant",
+    "today": "Aujourd’hui",
+    "cell": "{{date}} : {{count}} créneau(x)",
+    "day-title": "Créneaux du {{date}}",
+    "close-day": "Fermer",
+    "none-day": "Aucun créneau ce jour-là."
   },
   "activity-bookings": {
     "title": "Réservations d'activités",
@@ -566,5 +633,67 @@
     "reject": "Rejeter",
     "reason": "Motif du rejet (interne)",
     "ask-ai": "Redemander à Claude"
+  },
+  "dashboard": {
+    "hello": "Bonjour {{name}}",
+    "subtitle": "Ce qui demande votre attention aujourd’hui.",
+    "tiles": {
+      "pending-reviews": "Avis en attente de validation",
+      "auto-approved": "Avis validés automatiquement par Claude",
+      "refunds": "Remboursements demandés ou en cours",
+      "slots-ending": "Activités dont les créneaux finissent dans moins d’un mois"
+    },
+    "reviews": {
+      "title": "Avis à valider",
+      "moderate": "Modérer",
+      "auto-on": "Modération automatique active : {{count}} avis publiés par Claude.",
+      "auto-off": "Modération automatique coupée ; {{count}} avis publiés par Claude jusqu’ici.",
+      "none": "Aucun avis en attente.",
+      "rating": "{{rating}} sur 5",
+      "more": "Voir les {{count}} autres avis en attente"
+    },
+    "incidents": {
+      "title": "Incidents",
+      "all": "Tous les incidents",
+      "ongoing": "En cours ({{count}})",
+      "expected": "Prévus ({{count}})",
+      "none": "Aucun.",
+      "resolved": "10 derniers incidents clos",
+      "none-resolved": "Aucun incident clos.",
+      "resolved-at": "clos le {{time}}"
+    },
+    "refunds": {
+      "title": "Remboursements demandés ou en cours",
+      "all": "Tous les remboursements",
+      "none": "Aucun remboursement à suivre."
+    },
+    "refund-states": {
+      "requested": "Demandé par le client",
+      "in-progress": "En cours",
+      "failed": "Échec",
+      "to-refund": "À rembourser"
+    },
+    "slots": {
+      "title": "Créneaux bientôt épuisés",
+      "all": "Toutes les activités",
+      "hint": "Activités publiées dont le dernier créneau est dans moins d’un mois : ouvrez-en d’autres pour continuer à vendre.",
+      "none": "Toutes les activités publiées ont des créneaux pour plus d’un mois."
+    }
+  },
+  "calendar": {
+    "months": {
+      "1": "Janvier",
+      "2": "Février",
+      "3": "Mars",
+      "4": "Avril",
+      "5": "Mai",
+      "6": "Juin",
+      "7": "Juillet",
+      "8": "Août",
+      "9": "Septembre",
+      "10": "Octobre",
+      "11": "Novembre",
+      "12": "Décembre"
+    }
   }
 }

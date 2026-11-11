@@ -15,10 +15,11 @@ import { Textarea } from 'components/textarea/textarea';
 import { createAction } from '../../core/action';
 import { StaffApi } from '../../core/api';
 import { dakarDateTime } from '../../core/dakar';
-import { ACTIVITY_CATEGORIES, ActivityCity, ActivityDetail, ActivityForm, ActivityImage, ActivityStatus, ItineraryStop, STOP_KINDS } from '../../core/models';
+import { ACTIVITY_CATEGORIES, ActivityCity, ActivityDetail, ActivityForm, ActivityStatus, ItineraryStop, STOP_KINDS } from '../../core/models';
 import { translatedOptions } from '../../core/options';
 import { STATUS_TONES } from '../activities/activities';
-import { activityForm, emptyActivity, emptyStop, LIST_KEYS, ListKey, lines, missing, payload } from './activity-form';
+import { activityForm, emptyActivity, emptyStop, GENERAL_LIST_KEYS, KNOW_BEFORE_KEYS, lines, LIST_KEYS, ListKey, missing, payload } from './activity-form';
+import { ActivityImages } from './activity-images';
 import { ActivityOptions } from './activity-options';
 import { ActivitySlots } from './activity-slots';
 
@@ -28,32 +29,33 @@ import { ActivitySlots } from './activity-slots';
  */
 @Component({
   selector: 'bo-activity',
-  imports: [RouterLink, TranslocoDirective, Badge, Button, Checkbox, Input, Select, Spinner, SystemState, Textarea, ActivityOptions, ActivitySlots],
+  imports: [RouterLink, TranslocoDirective, Badge, Button, Checkbox, Input, Select, Spinner, SystemState, Textarea, ActivityImages, ActivityOptions, ActivitySlots],
   templateUrl: './activity.html',
 })
 export class ActivityPage {
   readonly id = input.required<string>();
 
   protected readonly action = createAction();
-  protected readonly listKeys = LIST_KEYS;
+  protected readonly generalKeys = GENERAL_LIST_KEYS;
+  protected readonly knowBeforeKeys = KNOW_BEFORE_KEYS;
   protected readonly tones = STATUS_TONES;
   protected readonly dateTime = dakarDateTime;
   protected readonly categories = translatedOptions(ACTIVITY_CATEGORIES, 'activities.categories.');
   protected readonly stopKinds = translatedOptions(STOP_KINDS, 'activity.stop-kinds.');
   protected readonly isNew = computed(() => this.id() === 'new');
-  private readonly api = inject(StaffApi);
-  private readonly router = inject(Router);
-  protected readonly saved = rxResource({
-    params: () => (this.isNew() ? undefined : Number(this.id())),
-    stream: ({ params }) => this.api.activity(params),
-  });
-
   /** Saisie en cours ; repart de la fiche enregistrée à chaque chargement ou enregistrement. */
   protected readonly form = signal<ActivityForm>(emptyActivity());
   /** Zones de texte des listes, une ligne par élément. */
   protected readonly listText = signal<Readonly<Record<ListKey, string>>>(listTexts(emptyActivity()));
   protected readonly city = signal<ActivityCity | null>(null);
   protected readonly cityQuery = signal<string | null>('');
+  protected readonly problems = signal<readonly string[]>([]);
+  protected readonly savedAt = signal<string | null>(null);
+  private readonly api = inject(StaffApi);
+  protected readonly saved = rxResource({
+    params: () => (this.isNew() ? undefined : Number(this.id())),
+    stream: ({ params }) => this.api.activity(params),
+  });
   protected readonly cities = toSignal(
     toObservable(this.cityQuery).pipe(
       debounceTime(250),
@@ -61,8 +63,7 @@ export class ActivityPage {
     ),
     { initialValue: [] },
   );
-  protected readonly problems = signal<readonly string[]>([]);
-  protected readonly savedAt = signal<string | null>(null);
+  private readonly router = inject(Router);
 
   constructor() {
     effect(() => {
@@ -97,29 +98,6 @@ export class ActivityPage {
 
   protected removeStop(index: number): void {
     this.patch({ itinerary: this.form().itinerary.filter((_, i) => i !== index) });
-  }
-
-  protected patchImage(index: number, patch: Partial<ActivityImage>): void {
-    this.patch({ images: this.form().images.map((image, i) => (i === index ? { ...image, ...patch } : image)) });
-  }
-
-  protected addImage(): void {
-    this.patch({ images: [...this.form().images, { url: '', alt: null }] });
-  }
-
-  protected removeImage(index: number): void {
-    this.patch({ images: this.form().images.filter((_, i) => i !== index) });
-  }
-
-  /** La première photo est l'image principale : la remonter ou la descendre change l'ordre. */
-  protected moveImage(index: number, step: -1 | 1): void {
-    const images = [...this.form().images];
-    const target = index + step;
-    if (target < 0 || target >= images.length) {
-      return;
-    }
-    [images[index], images[target]] = [images[target], images[index]];
-    this.patch({ images });
   }
 
   protected save(): void {

@@ -4,7 +4,7 @@ import { RouterLink } from '@angular/router';
 import { form, FormField, FormRoot, maxLength, min, required, validate } from '@angular/forms/signals';
 import { TranslocoDirective } from '@jsverse/transloco';
 import { Observable } from 'rxjs';
-import { Spinner, Badge, Button, Input, PhoneInput, Select, SystemState } from 'components';
+import { Badge, Button, Input, PhoneInput, Select, Spinner, SystemState } from 'components';
 import { createAction } from '../../core/action';
 import { StaffApi } from '../../core/api';
 import { Session } from '../../core/session';

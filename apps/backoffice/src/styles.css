@@ -8,3 +8,52 @@
 @utility bo-card {
   @apply rounded-card border border-border-subtle bg-surface-card p-4;
 }
+
+/* Connexion : la ligne du réseau défile, les gares pulsent, un car la parcourt. Mouvement réduit : tout est fixe. */
+.bo-route {
+  animation: bo-route-flow 1.6s linear infinite;
+}
+.bo-pulse {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: bo-pulse 2.4s ease-out infinite;
+}
+@keyframes bo-route-flow {
+  to {
+    stroke-dashoffset: -32;
+  }
+}
+@keyframes bo-pulse {
+  0% {
+    opacity: 0.8;
+    transform: scale(0.6);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.6);
+  }
+}
+
+/* Barre de chargement en haut de l'écran pendant une navigation. */
+.bo-progress {
+  animation: bo-progress 1.2s ease-in-out infinite;
+}
+@keyframes bo-progress {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(300%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bo-route,
+  .bo-pulse,
+  .bo-progress {
+    animation: none;
+  }
+  .bo-bus {
+    display: none;
+  }
+}

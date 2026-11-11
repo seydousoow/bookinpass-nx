@@ -182,7 +182,8 @@
               </dd>
             </div>
 
-            @if (a.not_allowed.length || a.know_before.length) {
+            @let toBring = a.to_bring ?? [];
+            @if (a.not_allowed.length || toBring.length || a.know_before.length) {
               <div class="grid gap-3 py-6 md:grid-cols-[14rem_1fr]">
                 <dt class="text-xl font-bold">{{ t('important') }}</dt>
                 <dd class="space-y-5">
@@ -198,19 +199,36 @@
                       </ul>
                     </div>
                   }
-                  @if (a.know_before.length) {
-                    <div>
+                  @if (toBring.length || a.know_before.length) {
+                    <div class="space-y-3">
                       <p class="font-semibold">{{ t('know-before') }}</p>
-                      <ul class="mt-1 list-disc space-y-1 pl-5">
-                        @for (item of a.know_before; track $index) {
-                          @if (infoOpen() || $index < folded) {
-                            <li>{{ item }}</li>
-                          }
-                        }
-                      </ul>
+                      @if (toBring.length) {
+                        <div>
+                          <p class="text-sm font-semibold text-muted">{{ t('to-bring') }}</p>
+                          <ul class="mt-1 list-disc space-y-1 pl-5">
+                            @for (item of toBring; track $index) {
+                              @if (infoOpen() || $index < folded) {
+                                <li>{{ item }}</li>
+                              }
+                            }
+                          </ul>
+                        </div>
+                      }
+                      @if (a.know_before.length) {
+                        <div>
+                          <p class="text-sm font-semibold text-muted">{{ t('good-to-know') }}</p>
+                          <ul class="mt-1 list-disc space-y-1 pl-5">
+                            @for (item of a.know_before; track $index) {
+                              @if (infoOpen() || $index < folded) {
+                                <li>{{ item }}</li>
+                              }
+                            }
+                          </ul>
+                        </div>
+                      }
                     </div>
                   }
-                  @if (a.not_allowed.length > folded || a.know_before.length > folded) {
+                  @if (a.not_allowed.length > folded || toBring.length > folded || a.know_before.length > folded) {
                     <button (click)="infoOpen.set(!infoOpen())" [attr.aria-expanded]="infoOpen()" class="font-semibold underline" type="button">
                       {{ t(infoOpen() ? 'see-less' : 'see-more') }}
                     </button>
