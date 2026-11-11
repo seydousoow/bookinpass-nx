@@ -6,6 +6,8 @@ import { button, renderPage, staffApiMock, staffUser, type } from '../../../test
 import { LoginPage } from './login';
 
 describe('LoginPage', () => {
+  afterEach(() => jest.useRealTimers());
+
   const fields = (element: HTMLElement) => [...element.querySelectorAll<HTMLInputElement>('input')];
 
   it('connecte le membre et ouvre les départs', async () => {
@@ -53,5 +55,27 @@ describe('LoginPage', () => {
     button(element, 'login.submit').click();
     await stable();
     expect(element.querySelector('[role="alert"]')?.textContent).toContain('errors.invalid-credentials');
+  });
+
+  it('s’affiche même serveur injoignable, le signale et réessaie', async () => {
+    let calls = 0;
+    const api = staffApiMock({
+      me: () => (++calls === 1 ? throwError(() => new HttpErrorResponse({ status: 0 })) : throwError(() => new HttpErrorResponse({ status: 401 }))),
+    });
+    const { element, stable } = await renderPage(LoginPage, { user: null, api });
+    expect(element.querySelector('input[autocomplete="username"]')).not.toBeNull();
+    expect(element.querySelector('[role="status"]')?.textContent).toContain('login.server.offline');
+
+    button(element, 'login.server.retry').click();
+    await stable();
+    expect(api.me).toHaveBeenCalledTimes(2);
+    expect(element.querySelector('[role="status"]')?.textContent).toContain('login.server.online');
+  });
+
+  it('entre directement si la session est encore ouverte', async () => {
+    const api = staffApiMock({ me: () => of(staffUser('manager')) });
+    const { navigate } = await renderPage(LoginPage, { user: null, api });
+    expect(navigate).toHaveBeenCalledWith(['/']);
+    expect(TestBed.inject(Session).user()?.role).toBe('manager');
   });
 });

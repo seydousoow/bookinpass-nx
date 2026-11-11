@@ -1,17 +1,92 @@
-<main *transloco="let t" class="flex min-h-screen items-center justify-center p-4">
-  <bip-card class="w-full max-w-sm" padding="lg">
-    <form [formRoot]="loginForm" class="space-y-4" novalidate>
-      <img alt="Book In Pass" class="h-12 w-auto" height="512" ngSrc="/images/bip-transparent-logo.png" priority width="2112" />
-      <div>
-        <h1 class="text-xl font-bold">{{ t('app.title') }}</h1>
-        <p class="text-sm text-muted">{{ t('login.subtitle') }}</p>
-      </div>
-      <bip-input [formField]="loginForm.username" autocapitalize="none" autocomplete="username" label="login.username" />
-      <bip-input [formField]="loginForm.password" autocomplete="current-password" label="login.password" type="password" />
-      @if (action.error(); as code) {
-        <p class="text-sm text-state-error" role="alert">{{ t('errors.' + code) }}</p>
-      }
-      <button [loading]="action.busy()" bipButton block loadingLabel="login.submit" type="submit">{{ t('login.submit') }}</button>
-    </form>
-  </bip-card>
+<main *transloco="let t" class="grid min-h-screen lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
+  <!-- Panneau de marque : le réseau qui s'anime, ce que l'on fait au back-office. Décoratif sur petit écran : masqué. -->
+  <aside class="relative hidden overflow-hidden bg-linear-to-br from-brand-primary to-brand-dark p-10 text-onbrand lg:flex lg:flex-col lg:justify-between">
+    <div aria-hidden="true" class="pointer-events-none absolute -top-24 -right-24 size-96 rounded-full bg-white/10 blur-2xl"></div>
+    <div aria-hidden="true" class="pointer-events-none absolute -bottom-32 -left-16 size-96 rounded-full bg-white/5 blur-2xl"></div>
+
+    <p class="relative text-sm font-semibold tracking-widest text-white/80 uppercase">{{ t('login.brand.kicker') }}</p>
+
+    <figure class="relative">
+      <svg aria-hidden="true" class="w-full max-w-lg" fill="none" viewBox="0 0 400 240">
+        <path
+          class="bo-route"
+          d="M30 200 L140 150 L250 110 L370 40"
+          stroke="currentColor"
+          stroke-dasharray="6 10"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-opacity="0.7"
+          stroke-width="3" />
+        @for (stop of stops; track stop.name) {
+          <circle [attr.cx]="stop.x" [attr.cy]="stop.y" fill="currentColor" r="7" />
+          <circle [attr.cx]="stop.x" [attr.cy]="stop.y" class="bo-pulse" fill="none" r="12" stroke="currentColor" stroke-opacity="0.5" stroke-width="2" />
+          <text [attr.x]="stop.x" [attr.y]="stop.y + 28" class="text-[13px] font-semibold" fill="currentColor" text-anchor="middle">{{ stop.name }}</text>
+        }
+        <g class="bo-bus">
+          <rect fill="white" height="14" rx="4" width="24" x="-12" y="-7" />
+          <rect class="fill-brand-primary" height="5" rx="1" width="16" x="-8" y="-4" />
+          <animateMotion dur="9s" path="M30 200 L140 150 L250 110 L370 40" repeatCount="indefinite" rotate="auto" />
+        </g>
+      </svg>
+    </figure>
+
+    <div class="relative space-y-6">
+      <h2 class="max-w-md text-3xl leading-tight font-bold">{{ t('login.brand.title') }}</h2>
+      <ul class="grid gap-3 text-sm">
+        <li class="flex items-center gap-3">
+          <span class="grid size-9 place-items-center rounded-full bg-white/15"><ng-icon aria-hidden="true" name="heroQrCode" size="18" /></span>
+          {{ t('login.brand.control') }}
+        </li>
+        <li class="flex items-center gap-3">
+          <span class="grid size-9 place-items-center rounded-full bg-white/15"><ng-icon aria-hidden="true" name="heroChatBubbleLeftRight" size="18" /></span>
+          {{ t('login.brand.reviews') }}
+        </li>
+        <li class="flex items-center gap-3">
+          <span class="grid size-9 place-items-center rounded-full bg-white/15"><ng-icon aria-hidden="true" name="heroBanknotes" size="18" /></span>
+          {{ t('login.brand.refunds') }}
+        </li>
+      </ul>
+    </div>
+  </aside>
+
+  <!-- Connexion -->
+  <div class="flex items-center justify-center bg-surface-muted p-4 sm:p-8">
+    <bip-card class="w-full max-w-sm" padding="lg">
+      <form [formRoot]="loginForm" class="space-y-5" novalidate>
+        <img alt="Book In Pass" class="h-12 w-auto" height="512" ngSrc="/images/bip-transparent-logo.png" priority width="2112" />
+        <div>
+          <p class="text-sm font-semibold text-brand-primary">{{ t('login.greeting.' + greeting) }}</p>
+          <h1 class="text-2xl font-bold">{{ t('app.title') }}</h1>
+          <p class="text-sm text-muted">{{ t('login.subtitle') }}</p>
+        </div>
+
+        <!-- État du serveur : vérifié en arrière-plan, la page n'attend pas. -->
+        <div aria-live="polite" class="flex min-h-11 items-center gap-2 rounded-pill border border-border-subtle px-3 text-xs" role="status">
+          @switch (server()) {
+            @case ('checking') {
+              <bip-spinner label="login.server.checking" />
+              <span>{{ t('login.server.checking') }}</span>
+            }
+            @case ('online') {
+              <span aria-hidden="true" class="size-2.5 rounded-full bg-state-success"></span>
+              <span>{{ t('login.server.online') }}</span>
+            }
+            @case ('offline') {
+              <span aria-hidden="true" class="size-2.5 animate-pulse rounded-full bg-state-error"></span>
+              <span class="flex-1">{{ t('login.server.offline') }}</span>
+              <button (click)="checkServer()" class="font-semibold text-brand-primary underline" type="button">{{ t('login.server.retry') }}</button>
+            }
+          }
+        </div>
+
+        <bip-input [formField]="loginForm.username" autocapitalize="none" autocomplete="username" label="login.username" />
+        <bip-input [formField]="loginForm.password" autocomplete="current-password" label="login.password" type="password" />
+        @if (action.error(); as code) {
+          <p class="text-sm text-state-error" role="alert">{{ t('errors.' + code) }}</p>
+        }
+        <button [loading]="action.busy()" bipButton block loadingLabel="login.submit" type="submit">{{ t('login.submit') }}</button>
+        <p class="text-center text-xs text-muted">{{ t('login.lock-hint') }}</p>
+      </form>
+    </bip-card>
+  </div>
 </main>
