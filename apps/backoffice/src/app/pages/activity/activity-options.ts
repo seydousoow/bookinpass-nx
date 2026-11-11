@@ -27,6 +27,7 @@ const EMPTY: ActivityOptionForm = { title: '', description: null, price: 0, orig
  */
 @Component({
   selector: 'bo-activity-options',
+  host: { class: 'block' },
   imports: [TranslocoDirective, Button, Checkbox, Input],
   template: `
     <section *transloco="let t" class="space-y-3 bo-card">

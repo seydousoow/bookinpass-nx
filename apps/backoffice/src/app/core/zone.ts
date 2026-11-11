@@ -30,3 +30,10 @@ export function addDays(day: string, days: number): string {
   date.setUTCDate(date.getUTCDate() + days);
   return date.toISOString().slice(0, 10);
 }
+
+/** Jour `day` (`AAAA-MM-JJ`) décalé de `years` ans ; un 29 février devient le 28 si l'année n'est pas bissextile. */
+export function addYears(day: string, years: number): string {
+  const [year, month, date] = day.split('-').map(Number);
+  const lastDay = new Date(Date.UTC(year + years, month, 0)).getUTCDate();
+  return new Date(Date.UTC(year + years, month - 1, Math.min(date, lastDay))).toISOString().slice(0, 10);
+}

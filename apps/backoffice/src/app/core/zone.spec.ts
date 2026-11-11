@@ -1,4 +1,4 @@
-import { addDays, zonedDateTime, zonedDay } from './zone';
+import { addDays, addYears, zonedDateTime, zonedDay } from './zone';
 
 describe('zone', () => {
   it('formats an instant in the activity time zone', () => {
@@ -11,5 +11,10 @@ describe('zone', () => {
   it('shifts a civil day across months', () => {
     expect(addDays('2026-10-31', 1)).toBe('2026-11-01');
     expect(addDays('2026-03-01', -1)).toBe('2026-02-28');
+  });
+
+  it('shifts a civil day by years, keeping the end of February', () => {
+    expect(addYears('2026-11-11', 2)).toBe('2028-11-11');
+    expect(addYears('2028-02-29', 1)).toBe('2029-02-28');
   });
 });
