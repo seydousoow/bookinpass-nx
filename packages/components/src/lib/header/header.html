@@ -1,20 +1,23 @@
 <header *transloco="let t" class="sticky top-0 z-20 border-b border-border-subtle bg-surface-card/95 backdrop-blur">
   <div class="mx-auto flex min-h-16 max-w-7xl items-center gap-3">
-    <a class="relative min-h-16 w-64" routerLink="/">
+    <a [class]="compact() ? 'w-36 xl:w-44' : 'w-64'" class="relative min-h-16 shrink-0" routerLink="/">
       <img alt="Book In Pass" fill ngSrc="/images/bip-transparent-logo.png" priority />
     </a>
 
-    <nav [attr.aria-label]="t('nav.main')" class="ml-2 hidden flex-1 items-center gap-1 lg:flex">
-      @for (entry of entries(); track entry.route) {
+    <nav [attr.aria-label]="t('nav.main')" [class.flex-wrap]="compact()" class="ml-2 hidden min-w-0 flex-1 items-center gap-1 py-1 lg:flex">
+      @for (entry of entries(); track entry.labelKey) {
         @if (entry.disabled) {
           <span aria-disabled="true" class="flex min-h-11 cursor-not-allowed items-center rounded-button px-3 text-sm font-medium text-muted opacity-40">
             {{ t(entry.labelKey) }}
           </span>
         } @else {
           <a
-            [routerLinkActiveOptions]="{ exact: entry.route === '/' }"
+            [class.px-2]="compact()"
+            [class.px-3]="!compact()"
+            [fragment]="entry.fragment"
+            [routerLinkActiveOptions]="entry.fragment ? { paths: 'exact', queryParams: 'ignored', fragment: 'exact', matrixParams: 'ignored' } : { exact: entry.route === '/' }"
             [routerLink]="entry.route"
-            class="bip-focusable flex min-h-11 items-center rounded-button px-3 text-sm font-medium text-muted hover:bg-brand-soft hover:text-brand-dark"
+            class="bip-focusable flex min-h-11 items-center rounded-button text-sm font-medium whitespace-nowrap text-muted hover:bg-brand-soft hover:text-brand-dark"
             ariaCurrentWhenActive="page"
             routerLinkActive="bg-brand-soft text-brand-dark">
             {{ t(entry.labelKey) }}
@@ -54,7 +57,7 @@
 
   @if (mobileOpen()) {
     <nav [attr.aria-label]="t('nav.main')" class="border-t border-border-subtle px-4 py-2 lg:hidden">
-      @for (entry of entries(); track entry.route) {
+      @for (entry of entries(); track entry.labelKey) {
         @if (entry.disabled) {
           <span aria-disabled="true" class="flex min-h-11 cursor-not-allowed items-center rounded-button px-3 text-sm font-medium text-muted opacity-40">
             {{ t(entry.labelKey) }}
@@ -62,7 +65,8 @@
         } @else {
           <a
             (click)="mobileOpen.set(false)"
-            [routerLinkActiveOptions]="{ exact: entry.route === '/' }"
+            [fragment]="entry.fragment"
+            [routerLinkActiveOptions]="entry.fragment ? { paths: 'exact', queryParams: 'ignored', fragment: 'exact', matrixParams: 'ignored' } : { exact: entry.route === '/' }"
             [routerLink]="entry.route"
             class="bip-focusable flex min-h-11 items-center rounded-button px-3 text-sm font-medium text-ink"
             ariaCurrentWhenActive="page"
