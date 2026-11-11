@@ -12,7 +12,7 @@ describe('DeparturesPage', () => {
     const links = [...element.querySelectorAll('a')];
     expect(links.map((a) => a.getAttribute('href'))).toEqual(['/departures/3', '/departures/4']);
     expect(links[0].textContent).toContain('07:00');
-    expect(links[0].querySelector('bip-badge')?.textContent?.trim()).toBe('departures.status.planned');
+    expect(links[0].querySelector('bo-status')?.textContent?.trim()).toBe('departures.status.planned');
     expect(links[1].textContent).toContain('departures.status.departed');
     expect(links[1].textContent).toContain('departures.incidents');
   });
@@ -57,7 +57,7 @@ describe('DeparturesPage', () => {
 
   it('annonce une journée sans départ', async () => {
     const { element } = await renderPage(DeparturesPage);
-    expect(element.querySelector('bip-system-state')?.textContent).toContain('departures.empty');
+    expect(element.querySelector('bo-empty')?.textContent).toContain('departures.empty');
   });
 
   it('propose de réessayer si l’API échoue', async () => {

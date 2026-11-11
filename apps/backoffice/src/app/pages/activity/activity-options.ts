@@ -31,7 +31,7 @@ const EMPTY: ActivityOptionForm = { title: '', description: null, price: 0, orig
   imports: [TranslocoDirective, Button, Checkbox, Input],
   template: `
     <section *transloco="let t" class="space-y-3 bo-card">
-      <h2 class="font-bold">{{ t('options.title') }}</h2>
+      <h2 class="bo-section-title">{{ t('options.title') }}</h2>
       <p class="text-xs text-muted">{{ t('options.hint', { currency: activity().currency }) }}</p>
       @if (action.error(); as code) {
         <p class="text-state-error" role="alert">{{ t('errors.' + code) }}</p>

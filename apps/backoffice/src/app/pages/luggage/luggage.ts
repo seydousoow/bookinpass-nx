@@ -2,11 +2,11 @@ import { Component, inject, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { NgTemplateOutlet } from '@angular/common';
 import { TranslocoDirective } from '@jsverse/transloco';
-import { Badge } from 'components/badge/badge';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { heroBriefcase, heroMagnifyingGlass } from '@ng-icons/heroicons/outline';
 import { Button } from 'components/button/button';
 import { Input } from 'components/input/input';
 import { Select } from 'components/select/select';
-import { Spinner } from 'components/spinner/spinner';
 import { SystemState } from 'components/system-state/system-state';
 import { createAction } from '../../core/action';
 import { StaffApi } from '../../core/api';
@@ -14,6 +14,7 @@ import { Session } from '../../core/session';
 import { dakarDateTime, dakarToday } from '../../core/dakar';
 import { Luggage } from '../../core/models';
 import { injectStations, stationOptions } from '../../core/stations';
+import { EmptyState, PageHeader, StatusBadge } from '../../ui';
 
 /** Code d'étiquette d'un bagage : 8 caractères. */
 const LUGGAGE_CODE_LENGTH = 8;
@@ -21,7 +22,8 @@ const LUGGAGE_CODE_LENGTH = 8;
 /** Bagages d'un jour (partant de la gare ou y arrivant) ; recherche par code d'étiquette et remise au destinataire. */
 @Component({
   selector: 'bo-luggage',
-  imports: [NgTemplateOutlet, TranslocoDirective, Badge, Button, Input, Select, Spinner, SystemState],
+  imports: [NgTemplateOutlet, TranslocoDirective, NgIcon, Button, Input, Select, SystemState, EmptyState, PageHeader, StatusBadge],
+  providers: [provideIcons({ heroBriefcase, heroMagnifyingGlass })],
   templateUrl: './luggage.html',
 })
 export class LuggagePage {
@@ -33,6 +35,8 @@ export class LuggagePage {
   protected readonly stations = stationOptions(injectStations(), { all: true });
   protected readonly found = signal<Luggage | null>(null);
   protected readonly code = signal<string | null>('');
+  /** Dernier code cherché, pour « aucun bagage ne correspond à … ». */
+  protected readonly searched = signal('');
   protected readonly dateTime = dakarDateTime;
   private readonly api = inject(StaffApi);
   protected readonly list = rxResource({
@@ -49,6 +53,7 @@ export class LuggagePage {
       return;
     }
     this.found.set(null);
+    this.searched.set(this.searchCode());
     this.action.run(this.api.findLuggage(this.searchCode()), (item) => this.found.set(item));
   }
 

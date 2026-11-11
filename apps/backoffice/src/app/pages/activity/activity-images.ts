@@ -28,8 +28,8 @@ type Source = 'file' | 'base64' | 'url';
   imports: [TranslocoDirective, Button, Input, Textarea],
   host: { class: 'block' },
   template: `
-    <fieldset *transloco="let t" class="space-y-3 border-t border-border-subtle pt-3">
-      <legend class="font-semibold">{{ t('activity.images') }}</legend>
+    <fieldset *transloco="let t" class="space-y-3">
+      <legend class="text-base font-semibold text-ink">{{ t('activity.images') }}</legend>
       <p class="text-xs text-muted">{{ t('activity.images-hint') }}</p>
 
       @if (images().length) {

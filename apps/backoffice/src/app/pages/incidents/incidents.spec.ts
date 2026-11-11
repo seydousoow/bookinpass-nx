@@ -38,7 +38,7 @@ describe('IncidentsPage', () => {
     const { element, stable } = await renderPage(IncidentsPage, { api, user: staffUser('inspector') });
     expect(api.incidents).toHaveBeenLastCalledWith(true, null);
     expect(element.textContent).toContain('Retard de 20 minutes');
-    get<HTMLInputElement>(element, 'input[type="checkbox"]').click();
+    button(element, 'common.all').click();
     await stable();
     expect(api.incidents).toHaveBeenLastCalledWith(false, null);
   });
@@ -46,7 +46,9 @@ describe('IncidentsPage', () => {
   it('clôt un incident (chef de gare)', async () => {
     const api = staffApiMock({ incidents: () => of([INCIDENT]), resolveIncident: () => of({ ...INCIDENT, resolved_at: '2026-10-25T08:00:00Z' }) });
     const { element, stable } = await renderPage(IncidentsPage, { api, user: staffUser('station_chief') });
-    type(get<HTMLInputElement>(element, 'input[name="resolution-8"]'), ' Car de remplacement ');
+    get<HTMLElement>(element, 'tbody tr').click();
+    await stable();
+    type(get<HTMLInputElement>(element, 'textarea[name="resolution-8"]'), ' Car de remplacement ');
     await stable();
     button(element, 'incidents.resolve').click();
     await stable();
@@ -55,22 +57,38 @@ describe('IncidentsPage', () => {
 
   it('ne laisse pas un contrôleur clore ni signaler sur une ligne', async () => {
     const api = staffApiMock({ incidents: () => of([INCIDENT]) });
-    const { element } = await renderPage(IncidentsPage, { api, user: staffUser('inspector') });
+    const { element, stable } = await renderPage(IncidentsPage, { api, user: staffUser('inspector') });
+    get<HTMLElement>(element, 'tbody tr').click();
+    await stable();
+    expect(element.textContent).toContain('Retard de 20 minutes');
     expect(element.textContent).not.toContain('incidents.resolve');
-    expect(element.textContent).not.toContain('incidents.report');
+    expect(element.textContent).not.toContain('incidents.new');
   });
 
   it('signale un incident sur une ligne (responsable)', async () => {
     const api = staffApiMock({ routes: () => of([ROUTE]), reportIncident: () => of(INCIDENT) });
     const { element, fixture, stable } = await renderPage(IncidentsPage, { api, user: staffUser('manager') });
+    button(element, 'incidents.new').click();
+    await stable();
     expect(button(element, 'incidents.report').hasAttribute('disabled')).toBe(true);
-    // Sélecteurs : gare (0), ligne (1), type (2).
-    pick(fixture, 1, 9);
-    pick(fixture, 2, 'breakdown');
-    type(get<HTMLInputElement>(element, 'input[name="description"]'), 'Car en panne');
+    // Sélecteurs : filtre de type (0), gare (1), puis dans le tiroir : ligne (2), type (3).
+    pick(fixture, 2, 9);
+    pick(fixture, 3, 'breakdown');
+    type(get<HTMLInputElement>(element, 'textarea[name="description"]'), 'Car en panne');
     await stable();
     button(element, 'incidents.report').click();
     await stable();
     expect(api.reportIncident).toHaveBeenCalledWith({ departure_id: null, route_id: 9, type: 'breakdown', description: 'Car en panne' });
+    expect(element.querySelector('textarea[name="description"]')).toBeNull();
+  });
+
+  it('filtre par type sans rappeler le serveur', async () => {
+    const api = staffApiMock({ incidents: () => of([INCIDENT, { ...INCIDENT, id: 9, type: 'breakdown', description: 'Pneu' }]) });
+    const { element, fixture, stable } = await renderPage(IncidentsPage, { api, user: staffUser('inspector') });
+    expect(element.querySelectorAll('tbody tr')).toHaveLength(2);
+    pick(fixture, 0, 'breakdown');
+    await stable();
+    expect(element.querySelectorAll('tbody tr')).toHaveLength(1);
+    expect(api.incidents).toHaveBeenCalledTimes(1);
   });
 });

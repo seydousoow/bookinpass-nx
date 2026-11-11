@@ -4,7 +4,13 @@
     "other-lang": "Français",
     "logout": "Sign out",
     "nav": "Sections",
-    "loading": "Loading…"
+    "loading": "Loading…",
+    "skip": "Skip to content",
+    "open-menu": "Open menu",
+    "close-menu": "Close menu",
+    "expand-menu": "Expand menu",
+    "collapse-menu": "Collapse menu",
+    "language": "Language"
   },
   "roles": {
     "admin": "Administrator",
@@ -18,13 +24,19 @@
     "scan": "Check tickets",
     "luggage": "Luggage",
     "incidents": "Incidents",
-    "routes": "Routes",
+    "routes": "Routes & fares",
     "staff": "Staff",
     "bookings": "Bookings",
     "refunds": "Refunds",
     "activities": "Activities",
     "activity-bookings": "Activity bookings",
-    "activity-reviews": "Reviews"
+    "activity-reviews": "Reviews",
+    "groups": {
+      "workspace": "Operations",
+      "sales": "Sales & customers",
+      "tourism": "Tourism activities",
+      "configuration": "Configuration"
+    }
   },
   "login": {
     "subtitle": "Station staff area.",
@@ -67,7 +79,17 @@
     "dakar-time": "Dakar time (GMT).",
     "loading": "Loading…",
     "save": "Save",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "reset-filters": "Reset",
+    "close": "Close",
+    "open": "Open",
+    "details": "Details",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "confirm": "Confirm",
+    "saved": "Changes saved.",
+    "all": "All"
   },
   "departures": {
     "title": "Departures",
@@ -79,16 +101,26 @@
     "luggage": "Luggage: {{count}}",
     "incidents": "Incidents: {{count}}",
     "status": {
-      "planned": "Planned",
-      "departed": "Departed",
+      "planned": "Upcoming",
+      "departed": "On the road",
       "arrived": "Arrived"
     },
     "count": "{{count}} departure(s)",
     "expand-all": "Expand all",
-    "collapse-all": "Collapse all"
+    "collapse-all": "Collapse all",
+    "subtitle": "Today's departures by station: times, ticket checks and incidents.",
+    "empty-hint": "Pick another day or another station.",
+    "by-station": "By departure station",
+    "seats-short": "{{sold}} / {{capacity}} seats sold",
+    "held": "{{count}} awaiting payment",
+    "summary": {
+      "departures": "Departures",
+      "checked": "Tickets checked",
+      "incidents": "Open incidents"
+    }
   },
   "departure": {
-    "back": "Departures",
+    "back": "All departures",
     "departed-at": "Left at {{time}}",
     "arrived-at": "Arrived at {{time}}",
     "mark-departed": "Bus left",
@@ -102,7 +134,14 @@
     "phone": "Phone",
     "check": "Checked",
     "luggage": "Luggage ({{count}})",
-    "incidents": "Incidents ({{count}})"
+    "incidents": "Incidents ({{count}})",
+    "not-departed": "Not departed yet.",
+    "no-incidents": "No incidents on this departure.",
+    "facts": {
+      "time": "Departure",
+      "seats": "Seats sold",
+      "progress": "Tracking"
+    }
   },
   "luggage": {
     "title": "Luggage",
@@ -126,7 +165,23 @@
     "price": "Price paid (CFA F)",
     "register": "Register the luggage",
     "label-code": "Code to write on the label:",
-    "phone-invalid": "Invalid phone number."
+    "phone-invalid": "Invalid phone number.",
+    "new": "Register luggage",
+    "subtitle": "Find a piece of luggage by its label code and hand it over to the recipient.",
+    "search-hint": "8 characters, written on the label.",
+    "no-match": "No luggage matches \"{{code}}\"",
+    "no-match-hint": "Check the code on the label: 8 letters and digits.",
+    "of-day": "Today's luggage",
+    "empty-hint": "No luggage was registered on this day's departures.",
+    "code": "Label",
+    "departure": "Departure",
+    "state": "Status",
+    "actions": "Actions",
+    "track": {
+      "registered": "Registered on the {{route}} departure of {{time}}",
+      "delivered": "Handed over to the recipient on {{time}}",
+      "waiting": "Waiting to be handed over."
+    }
   },
   "incidents": {
     "title": "Incidents",
@@ -146,7 +201,24 @@
       "passenger": "Passenger",
       "luggage": "Luggage",
       "other": "Other"
-    }
+    },
+    "subtitle": "Delays, breakdowns and other events on the routes: follow them until they are closed.",
+    "new": "Report an incident",
+    "new-hint": "Incident on a route, not tied to a departure. For a departure, report it from its page.",
+    "state": "Status",
+    "open": "Open",
+    "resolved": "Closed",
+    "reported": "Reported",
+    "open-detail": "View incident {{route}}",
+    "empty-open": "No open incidents",
+    "empty-open-hint": "Everything is in order on your routes.",
+    "empty-hint": "No incidents match these filters.",
+    "history": "History",
+    "reported-by": "Reported by {{name}}",
+    "closed": "Closed",
+    "resolution-hint": "What was done: replacement bus, travellers informed…",
+    "reported-done": "Incident reported.",
+    "resolved-done": "Incident closed."
   },
   "scan": {
     "title": "Ticket check",
@@ -166,10 +238,12 @@
       "wrong_day": "Not for today",
       "other_station": "Departure from another station",
       "unknown": "Unknown ticket"
-    }
+    },
+    "subtitle": "Scan the ticket's QR code or type its code.",
+    "or": "or"
   },
   "routes": {
-    "title": "Routes",
+    "title": "Routes & fares",
     "hint": "Operator's price per passenger; Book In Pass fees are added. A new price applies to later bookings. Dakar time.",
     "new": "New route",
     "origin": "From",
@@ -190,7 +264,20 @@
     "days": "Days",
     "departs-at": "Departure",
     "last-departure": "Last departure (continuous service)",
-    "add-schedule": "Add the schedule"
+    "add-schedule": "Add the schedule",
+    "subtitle": "Price, seats, sales and timetable of each route.",
+    "none": "No routes",
+    "none-hint": "Create a route between two stations to put it on sale.",
+    "route": "Route",
+    "schedules": "Timetable",
+    "sales": "Sales",
+    "off-sale": "Not on sale",
+    "open": "Open route {{route}}",
+    "slots-count": "{{count}} departure time(s)",
+    "pricing": "Price and seats",
+    "timetable": "Timetable (Dakar time)",
+    "new-hint": "Route between two stations; then add its timetable.",
+    "price-hint": "Operator price, before Book In Pass fees."
   },
   "days": {
     "1": "Mon",
@@ -217,7 +304,21 @@
     "reset": "New temporary password",
     "yourself": "your account",
     "phone-invalid": "Invalid phone number.",
-    "username-format": "Lowercase letters, digits, dot, hyphen or underscore."
+    "username-format": "Lowercase letters, digits, dot, hyphen or underscore.",
+    "subtitle": "Staff accounts: roles, stations, access.",
+    "issued-done": "Got it",
+    "none": "No other accounts",
+    "none-hint": "Create accounts for station chiefs and inspectors.",
+    "state": "Status",
+    "inactive": "Disabled",
+    "last-login-column": "Last login",
+    "open": "Edit {{name}}'s account",
+    "password": "Password",
+    "reset-hint": "The current password stops working; the new temporary one must be changed at first login.",
+    "reset-confirm": "Issue a new password",
+    "reset-message": "{{name}}'s current password will stop working. A temporary password will be shown once, to pass on to them.",
+    "new-hint": "A temporary password is created and shown only once.",
+    "password-hint": "The temporary password is shown after creation: pass it on in person."
   },
   "errors": {
     "invalid-credentials": "Wrong username or password.",
@@ -291,10 +392,10 @@
     "images-unavailable": "Photo storage is not configured on the server."
   },
   "bookings": {
-    "title": "Bookings",
+    "title": "Transport bookings",
     "query": "Reference, phone or a passenger's last name",
     "search": "Search",
-    "none": "No booking found (routes of your station).",
+    "none": "No bookings found",
     "status": {
       "held": "Awaiting payment",
       "confirmed": "Paid",
@@ -318,23 +419,79 @@
       "completed": "paid",
       "cancelled": "cancelled",
       "refund_needed": "to refund"
-    }
+    },
+    "subtitle": "Find a traveller's booking at the desk: tickets, payment, resending tickets.",
+    "none-hint": "Only your station's routes are searched. Check the reference, the phone number or the spelling of the name.",
+    "start": "Search for a booking",
+    "start-hint": "Type at least 2 characters: reference, phone or a passenger's name.",
+    "count": "{{count}} booking(s)",
+    "reference": "Reference",
+    "passenger": "Passenger",
+    "trip": "Trip",
+    "travellers": "Travellers",
+    "amount": "Amount",
+    "state": "Status",
+    "open": "View booking {{reference}}",
+    "departure": "Departure",
+    "email": "Email",
+    "phone": "Phone",
+    "tickets": "Tickets ({{count}})",
+    "scanned-at": "Checked at {{time}}"
   },
   "refunds": {
     "title": "Refunds",
     "show-done": "Also show completed refunds",
     "hint": "Wave / Orange Money payments received after the seats were resold: the customer has no ticket. Refund them from the PayDunya account or the operator, then record it here.",
-    "none": "No refund pending.",
+    "none": "No refunds to process",
     "paid-at": "Paid on {{time}}",
     "receipt": "PayDunya receipt",
     "note": "How: operator, number, transaction reference",
     "mark": "Refund done",
     "done": "Refunded on {{time}} by {{name}}",
     "activities": "Activities",
-    "activities-hint": "Refunds of activity bookings paid by mobile money: do them by hand, then record them here. With \"already done\", card refunds too."
+    "activities-hint": "Refunds of activity bookings paid by mobile money: do them by hand, then record them here. With \"already done\", card refunds too.",
+    "subtitle": "Mobile money payments to return by hand: refund the customer, then record it here.",
+    "kind": "Refund type",
+    "kinds": {
+      "transport": "Transport",
+      "activities": "Activities"
+    },
+    "view-label": "View",
+    "view": {
+      "pending": "To process",
+      "history": "History"
+    },
+    "steps": {
+      "transport": {
+        "1": "The customer paid with Wave or Orange Money after the seats were resold: they have no ticket.",
+        "2": "Refund them from the PayDunya account or through the operator (receipt and reference in the row).",
+        "3": "Record the refund here: operator, number, transaction reference."
+      },
+      "activities": {
+        "1": "Activity booking paid by mobile money and cancelled: the refund is not sent automatically.",
+        "2": "Refund the customer from the operator account.",
+        "3": "Record it here. Card refunds go through Stripe and appear in the history."
+      }
+    },
+    "none-hint": "Payments to return will show up here.",
+    "no-history": "No refunds recorded",
+    "no-history-hint": "Recorded refunds will show up here.",
+    "customer": "Customer",
+    "paid": "Paid",
+    "activity": "Activity",
+    "states": {
+      "to-refund": "To refund",
+      "refunded": "Refunded",
+      "failed": "Failed"
+    },
+    "confirm-title": "Record the refund",
+    "confirm-message": "Confirm that {{customer}} was refunded {{amount}} (booking {{reference}}). This cannot be undone.",
+    "confirm": "Confirm refund",
+    "note-hint": "Example: Wave, 77 123 45 67, TX 42.",
+    "marked": "Refund {{reference}} recorded."
   },
   "activities": {
-    "title": "Activities",
+    "title": "Activity catalogue",
     "new": "New activity",
     "hint": "Tourist activities: content, options and prices, time slots, publication. Only published activities show on the site.",
     "search": "Search (title, city)",
@@ -345,7 +502,7 @@
       "published": "Published",
       "archived": "Archived"
     },
-    "none": "No activities",
+    "none": "No activities yet",
     "categories": {
       "tour": "Guided tour",
       "cruise": "Cruise",
@@ -363,7 +520,17 @@
     "slots-ending": "Time slots until {{time}}",
     "no-slots": "No open time slots",
     "upcoming": "{{count}} upcoming booking(s)",
-    "upcoming-label": "upcoming"
+    "upcoming-label": "upcoming",
+    "none-hint": "Create a first listing: content, photos, prices and time slots. It stays a draft until you publish it.",
+    "no-match": "No matching activities",
+    "no-match-hint": "Try another title, city or status.",
+    "columns": {
+      "activity": "Activity",
+      "category": "Category",
+      "availability": "Availability",
+      "rating": "Rating",
+      "updated": "Updated"
+    }
   },
   "activity": {
     "back": "All activities",
@@ -471,7 +638,32 @@
       "free_time": "Free time",
       "other": "Other"
     },
-    "know-before": "Know before you go"
+    "know-before": "Know before you go",
+    "new-hint": "Fill in the four steps; the listing stays a draft until you publish it.",
+    "steps": {
+      "general": "General information",
+      "media": "Media & itinerary",
+      "pricing": "Pricing & availability",
+      "conditions": "Conditions & publication",
+      "general-hint": "What travellers see first on the activity page."
+    },
+    "fix-before-save": "To complete before saving:",
+    "itinerary-hint": "The stops, in the order of the tour.",
+    "no-stops": "No stops: the itinerary won't appear on the page.",
+    "meeting": "Meeting point",
+    "meeting-hint": "Address, and coordinates for the map (both or neither).",
+    "pricing-hint": "Duration, cancellation and price currency.",
+    "options-after-create": "Options (prices) and time slots can be added once the listing is created: click \"Create activity\".",
+    "conditions": "Conditions",
+    "publication": "Publication",
+    "status-hints": {
+      "draft": "Not visible on the site.",
+      "published": "Visible and bookable on the site.",
+      "archived": "Removed from the site, kept here."
+    },
+    "archive-title": "Archive this activity?",
+    "archive-confirm": "It will be removed from the site. Existing bookings are not cancelled.",
+    "step-of": "Step {{step}} of {{total}}"
   },
   "options": {
     "title": "Options and prices",
@@ -548,7 +740,11 @@
     "methods": {
       "card": "Card",
       "mobile_money": "Mobile money"
-    }
+    },
+    "slot": "Time slot",
+    "party": "Participants",
+    "none-hint": "Activity bookings will show up here.",
+    "none-filtered": "No bookings match these filters."
   },
   "activity-booking": {
     "back": "All bookings",
@@ -632,7 +828,13 @@
     "approve": "Publish",
     "reject": "Reject",
     "reason": "Rejection reason (internal)",
-    "ask-ai": "Ask Claude again"
+    "ask-ai": "Ask Claude again",
+    "subtitle": "Moderate reviews before they are published on activity pages.",
+    "none-pending": "No reviews waiting",
+    "none-pending-hint": "All reviews have been handled.",
+    "none-hint": "No reviews match this filter.",
+    "by-auto": "Automated decision",
+    "by-human": "Human decision"
   },
   "dashboard": {
     "hello": "Hello {{name}}",
@@ -650,7 +852,8 @@
       "auto-off": "Automatic moderation off; {{count}} reviews published by Claude so far.",
       "none": "No reviews waiting.",
       "rating": "{{rating}} out of 5",
-      "more": "See the {{count}} other waiting reviews"
+      "more": "See the {{count}} other waiting reviews",
+      "none-hint": "New reviews awaiting approval will show up here."
     },
     "incidents": {
       "title": "Incidents",
@@ -660,7 +863,9 @@
       "none": "None.",
       "resolved": "Last 10 resolved incidents",
       "none-resolved": "No resolved incidents.",
-      "resolved-at": "resolved on {{time}}"
+      "resolved-at": "resolved on {{time}}",
+      "none-open": "No open incidents",
+      "none-open-hint": "Incidents reported on your routes will show up here."
     },
     "refunds": {
       "title": "Refunds requested or in progress",

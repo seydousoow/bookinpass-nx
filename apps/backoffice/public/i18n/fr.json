@@ -4,7 +4,13 @@
     "other-lang": "English",
     "logout": "Se déconnecter",
     "nav": "Sections",
-    "loading": "Chargement…"
+    "loading": "Chargement…",
+    "skip": "Aller au contenu",
+    "open-menu": "Ouvrir le menu",
+    "close-menu": "Fermer le menu",
+    "expand-menu": "Déplier le menu",
+    "collapse-menu": "Replier le menu",
+    "language": "Langue"
   },
   "roles": {
     "admin": "Administrateur",
@@ -18,13 +24,19 @@
     "scan": "Contrôle",
     "luggage": "Bagages",
     "incidents": "Incidents",
-    "routes": "Lignes",
+    "routes": "Lignes et tarifs",
     "staff": "Personnel",
     "bookings": "Réservations",
     "refunds": "Remboursements",
     "activities": "Activités",
     "activity-bookings": "Réservations d'activités",
-    "activity-reviews": "Avis"
+    "activity-reviews": "Avis",
+    "groups": {
+      "workspace": "Exploitation",
+      "sales": "Ventes et clients",
+      "tourism": "Activités touristiques",
+      "configuration": "Configuration"
+    }
   },
   "login": {
     "subtitle": "Espace du personnel des gares.",
@@ -67,7 +79,17 @@
     "dakar-time": "Heures de Dakar (GMT).",
     "loading": "Chargement…",
     "save": "Enregistrer",
-    "cancel": "Annuler"
+    "cancel": "Annuler",
+    "reset-filters": "Réinitialiser",
+    "close": "Fermer",
+    "open": "Ouvrir",
+    "details": "Détails",
+    "back": "Retour",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "confirm": "Confirmer",
+    "saved": "Modifications enregistrées.",
+    "all": "Tous"
   },
   "departures": {
     "title": "Départs",
@@ -79,16 +101,26 @@
     "luggage": "Bagages : {{count}}",
     "incidents": "Incidents : {{count}}",
     "status": {
-      "planned": "Prévu",
-      "departed": "Parti",
+      "planned": "À venir",
+      "departed": "En route",
       "arrived": "Arrivé"
     },
     "count": "{{count}} départ(s)",
     "expand-all": "Tout ouvrir",
-    "collapse-all": "Tout fermer"
+    "collapse-all": "Tout fermer",
+    "subtitle": "Départs du jour par gare : horaires, contrôle des billets et incidents.",
+    "empty-hint": "Choisissez un autre jour ou une autre gare.",
+    "by-station": "Par gare de départ",
+    "seats-short": "{{sold}} / {{capacity}} places vendues",
+    "held": "{{count}} en cours de paiement",
+    "summary": {
+      "departures": "Départs",
+      "checked": "Billets contrôlés",
+      "incidents": "Incidents ouverts"
+    }
   },
   "departure": {
-    "back": "Départs",
+    "back": "Tous les départs",
     "departed-at": "Parti à {{time}}",
     "arrived-at": "Arrivé à {{time}}",
     "mark-departed": "Car parti",
@@ -102,7 +134,14 @@
     "phone": "Téléphone",
     "check": "Contrôle",
     "luggage": "Bagages ({{count}})",
-    "incidents": "Incidents ({{count}})"
+    "incidents": "Incidents ({{count}})",
+    "not-departed": "Pas encore parti.",
+    "no-incidents": "Aucun incident sur ce départ.",
+    "facts": {
+      "time": "Départ",
+      "seats": "Places vendues",
+      "progress": "Suivi"
+    }
   },
   "luggage": {
     "title": "Bagages",
@@ -126,7 +165,23 @@
     "price": "Prix encaissé (F CFA)",
     "register": "Enregistrer le bagage",
     "label-code": "Code à écrire sur l'étiquette :",
-    "phone-invalid": "Numéro de téléphone invalide."
+    "phone-invalid": "Numéro de téléphone invalide.",
+    "new": "Enregistrer un bagage",
+    "subtitle": "Retrouvez un bagage par son code d'étiquette et remettez-le au destinataire.",
+    "search-hint": "8 caractères, écrits sur l'étiquette.",
+    "no-match": "Aucun bagage ne correspond à « {{code}} »",
+    "no-match-hint": "Vérifiez le code sur l'étiquette : 8 lettres et chiffres.",
+    "of-day": "Bagages du jour",
+    "empty-hint": "Aucun bagage n'a été enregistré sur les départs de ce jour.",
+    "code": "Étiquette",
+    "departure": "Départ",
+    "state": "Statut",
+    "actions": "Actions",
+    "track": {
+      "registered": "Enregistré sur le départ {{route}} du {{time}}",
+      "delivered": "Remis au destinataire le {{time}}",
+      "waiting": "En attente de remise au destinataire."
+    }
   },
   "incidents": {
     "title": "Incidents",
@@ -146,7 +201,24 @@
       "passenger": "Passager",
       "luggage": "Bagage",
       "other": "Autre"
-    }
+    },
+    "subtitle": "Retards, pannes et imprévus sur les lignes : suivez-les jusqu'à leur clôture.",
+    "new": "Signaler un incident",
+    "new-hint": "Incident sur une ligne, sans départ précis. Pour un départ, signalez-le depuis sa page.",
+    "state": "État",
+    "open": "Ouvert",
+    "resolved": "Clos",
+    "reported": "Signalé",
+    "open-detail": "Voir l'incident {{route}}",
+    "empty-open": "Aucun incident ouvert",
+    "empty-open-hint": "Tout est en ordre sur vos lignes.",
+    "empty-hint": "Aucun incident ne correspond à ces filtres.",
+    "history": "Historique",
+    "reported-by": "Signalé par {{name}}",
+    "closed": "Clos",
+    "resolution-hint": "Ce qui a été fait : car de remplacement, voyageurs prévenus…",
+    "reported-done": "Incident signalé.",
+    "resolved-done": "Incident clos."
   },
   "scan": {
     "title": "Contrôle des billets",
@@ -166,10 +238,12 @@
       "wrong_day": "Pas pour aujourd'hui",
       "other_station": "Départ d'une autre gare",
       "unknown": "Billet inconnu"
-    }
+    },
+    "subtitle": "Scannez le QR code du billet ou saisissez son code.",
+    "or": "ou"
   },
   "routes": {
-    "title": "Lignes",
+    "title": "Lignes et tarifs",
     "hint": "Prix par passager de l'exploitant ; les frais Book In Pass s'y ajoutent. Un nouveau prix vaut pour les réservations suivantes. Heures de Dakar.",
     "new": "Nouvelle ligne",
     "origin": "Départ",
@@ -190,7 +264,20 @@
     "days": "Jours",
     "departs-at": "Départ",
     "last-departure": "Dernier départ (service continu)",
-    "add-schedule": "Ajouter l'horaire"
+    "add-schedule": "Ajouter l'horaire",
+    "subtitle": "Prix, places, mise en vente et horaires de chaque ligne.",
+    "none": "Aucune ligne",
+    "none-hint": "Créez une ligne entre deux gares pour la mettre en vente.",
+    "route": "Ligne",
+    "schedules": "Horaires",
+    "sales": "Vente",
+    "off-sale": "Hors vente",
+    "open": "Ouvrir la ligne {{route}}",
+    "slots-count": "{{count}} heure(s) de départ",
+    "pricing": "Prix et places",
+    "timetable": "Horaires (heure de Dakar)",
+    "new-hint": "Ligne entre deux gares ; ajoutez ensuite ses horaires.",
+    "price-hint": "Prix exploitant, hors frais Book In Pass."
   },
   "days": {
     "1": "Lun",
@@ -217,7 +304,21 @@
     "reset": "Nouveau mot de passe provisoire",
     "yourself": "votre compte",
     "phone-invalid": "Numéro de téléphone invalide.",
-    "username-format": "Minuscules, chiffres, point, tiret ou tiret bas."
+    "username-format": "Minuscules, chiffres, point, tiret ou tiret bas.",
+    "subtitle": "Comptes du personnel : rôles, gares, accès.",
+    "issued-done": "C'est noté",
+    "none": "Aucun autre compte",
+    "none-hint": "Créez les comptes des chefs de gare et des contrôleurs.",
+    "state": "Statut",
+    "inactive": "Désactivé",
+    "last-login-column": "Dernière connexion",
+    "open": "Modifier le compte de {{name}}",
+    "password": "Mot de passe",
+    "reset-hint": "Le mot de passe actuel cesse de fonctionner ; le nouveau, provisoire, est à changer à la première connexion.",
+    "reset-confirm": "Donner un nouveau mot de passe",
+    "reset-message": "Le mot de passe actuel de {{name}} ne fonctionnera plus. Un mot de passe provisoire s'affichera une seule fois, à lui transmettre.",
+    "new-hint": "Un mot de passe provisoire est créé et affiché une seule fois.",
+    "password-hint": "Le mot de passe provisoire s'affiche après la création : transmettez-le de vive voix."
   },
   "errors": {
     "invalid-credentials": "Identifiant ou mot de passe incorrect.",
@@ -291,10 +392,10 @@
     "images-unavailable": "Dépôt des photos non configuré sur le serveur."
   },
   "bookings": {
-    "title": "Réservations",
+    "title": "Réservations transport",
     "query": "Référence, téléphone ou nom d'un passager",
     "search": "Rechercher",
-    "none": "Aucune réservation trouvée (lignes de votre gare).",
+    "none": "Aucune réservation trouvée",
     "status": {
       "held": "En attente de paiement",
       "confirmed": "Payée",
@@ -318,23 +419,79 @@
       "completed": "payé",
       "cancelled": "annulé",
       "refund_needed": "à rembourser"
-    }
+    },
+    "subtitle": "Retrouvez la réservation d'un voyageur au guichet : billets, paiement, renvoi des billets.",
+    "none-hint": "Seules les lignes de votre gare sont cherchées. Vérifiez la référence, le téléphone ou l'orthographe du nom.",
+    "start": "Cherchez une réservation",
+    "start-hint": "Saisissez au moins 2 caractères : référence, téléphone ou nom d'un passager.",
+    "count": "{{count}} réservation(s)",
+    "reference": "Référence",
+    "passenger": "Passager",
+    "trip": "Trajet",
+    "travellers": "Voyageurs",
+    "amount": "Montant",
+    "state": "Statut",
+    "open": "Voir la réservation {{reference}}",
+    "departure": "Départ",
+    "email": "E-mail",
+    "phone": "Téléphone",
+    "tickets": "Billets ({{count}})",
+    "scanned-at": "Contrôlé à {{time}}"
   },
   "refunds": {
     "title": "Remboursements",
     "show-done": "Afficher aussi les remboursements faits",
     "hint": "Paiements Wave / Orange Money reçus après la revente des places : le client n'a pas de billet. Remboursez-le depuis le compte PayDunya ou l'opérateur, puis notez-le ici.",
-    "none": "Aucun remboursement en attente.",
+    "none": "Aucun remboursement à traiter",
     "paid-at": "Payé le {{time}}",
     "receipt": "Reçu PayDunya",
     "note": "Comment : opérateur, numéro, référence de la transaction",
     "mark": "Remboursement fait",
     "done": "Remboursé le {{time}} par {{name}}",
     "activities": "Activités",
-    "activities-hint": "Remboursements de réservations d'activités payées par mobile money : à faire à la main, puis à noter ici. Avec « déjà faits », aussi ceux par carte."
+    "activities-hint": "Remboursements de réservations d'activités payées par mobile money : à faire à la main, puis à noter ici. Avec « déjà faits », aussi ceux par carte.",
+    "subtitle": "Paiements mobile money à rendre à la main : remboursez le client, puis notez-le ici.",
+    "kind": "Type de remboursement",
+    "kinds": {
+      "transport": "Transport",
+      "activities": "Activités"
+    },
+    "view-label": "Affichage",
+    "view": {
+      "pending": "À traiter",
+      "history": "Historique"
+    },
+    "steps": {
+      "transport": {
+        "1": "Le client a payé par Wave ou Orange Money après la revente des places : il n'a pas de billet.",
+        "2": "Remboursez-le depuis le compte PayDunya ou chez l'opérateur (reçu et référence dans la ligne).",
+        "3": "Notez ici le remboursement : opérateur, numéro, référence de la transaction."
+      },
+      "activities": {
+        "1": "Réservation d'activité payée par mobile money et annulée : le remboursement ne part pas tout seul.",
+        "2": "Remboursez le client depuis le compte de l'opérateur.",
+        "3": "Notez-le ici. Les remboursements par carte passent par Stripe et figurent dans l'historique."
+      }
+    },
+    "none-hint": "Les paiements à rendre apparaîtront ici.",
+    "no-history": "Aucun remboursement fait",
+    "no-history-hint": "Les remboursements notés apparaîtront ici.",
+    "customer": "Client",
+    "paid": "Payé",
+    "activity": "Activité",
+    "states": {
+      "to-refund": "À rembourser",
+      "refunded": "Remboursé",
+      "failed": "Échec"
+    },
+    "confirm-title": "Noter le remboursement",
+    "confirm-message": "Confirmez que {{customer}} a bien été remboursé de {{amount}} (réservation {{reference}}). Cette action ne se défait pas.",
+    "confirm": "Confirmer le remboursement",
+    "note-hint": "Exemple : Wave, 77 123 45 67, TX 42.",
+    "marked": "Remboursement {{reference}} noté."
   },
   "activities": {
-    "title": "Activités",
+    "title": "Catalogue d'activités",
     "new": "Nouvelle activité",
     "hint": "Fiches des activités touristiques : contenu, options et prix, créneaux, mise en vente. Seules les activités publiées sont visibles sur le site.",
     "search": "Chercher (titre, ville)",
@@ -345,7 +502,7 @@
       "published": "Publiée",
       "archived": "Archivée"
     },
-    "none": "Aucune activité",
+    "none": "Aucune activité pour l'instant",
     "categories": {
       "tour": "Visite guidée",
       "cruise": "Croisière",
@@ -363,7 +520,17 @@
     "slots-ending": "Créneaux jusqu’au {{time}}",
     "no-slots": "Aucun créneau ouvert",
     "upcoming": "{{count}} réservation(s) à venir",
-    "upcoming-label": "à venir"
+    "upcoming-label": "à venir",
+    "none-hint": "Créez une première fiche : contenu, photos, prix et créneaux. Elle reste en brouillon jusqu'à sa publication.",
+    "no-match": "Aucune activité ne correspond",
+    "no-match-hint": "Essayez un autre titre, une autre ville ou un autre statut.",
+    "columns": {
+      "activity": "Activité",
+      "category": "Catégorie",
+      "availability": "Disponibilités",
+      "rating": "Note",
+      "updated": "Mise à jour"
+    }
   },
   "activity": {
     "back": "Toutes les activités",
@@ -471,7 +638,32 @@
       "free_time": "Temps libre",
       "other": "Autre"
     },
-    "know-before": "À savoir avant de partir"
+    "know-before": "À savoir avant de partir",
+    "new-hint": "Remplissez les quatre étapes ; la fiche reste en brouillon jusqu'à sa publication.",
+    "steps": {
+      "general": "Informations générales",
+      "media": "Médias et itinéraire",
+      "pricing": "Prix et disponibilités",
+      "conditions": "Conditions et publication",
+      "general-hint": "Ce que les voyageurs voient en premier sur la page de l'activité."
+    },
+    "fix-before-save": "À compléter avant d'enregistrer :",
+    "itinerary-hint": "Les étapes, dans l'ordre du parcours.",
+    "no-stops": "Aucune étape : l'itinéraire n'apparaîtra pas sur la page.",
+    "meeting": "Point de rendez-vous",
+    "meeting-hint": "Adresse, et coordonnées pour la carte (les deux ou aucune).",
+    "pricing-hint": "Durée, annulation et devise des prix.",
+    "options-after-create": "Les options (prix) et les créneaux s'ajoutent une fois la fiche créée : cliquez sur « Créer la fiche ».",
+    "conditions": "Conditions",
+    "publication": "Publication",
+    "status-hints": {
+      "draft": "Invisible sur le site.",
+      "published": "Visible et réservable sur le site.",
+      "archived": "Retirée du site, conservée ici."
+    },
+    "archive-title": "Archiver l'activité ?",
+    "archive-confirm": "Elle sera retirée du site. Les réservations déjà faites ne sont pas annulées.",
+    "step-of": "Étape {{step}} sur {{total}}"
   },
   "options": {
     "title": "Options et prix",
@@ -548,7 +740,11 @@
     "methods": {
       "card": "Carte",
       "mobile_money": "Mobile money"
-    }
+    },
+    "slot": "Créneau",
+    "party": "Participants",
+    "none-hint": "Les réservations d'activités apparaîtront ici.",
+    "none-filtered": "Aucune réservation ne correspond à ces filtres."
   },
   "activity-booking": {
     "back": "Toutes les réservations",
@@ -632,7 +828,13 @@
     "approve": "Publier",
     "reject": "Rejeter",
     "reason": "Motif du rejet (interne)",
-    "ask-ai": "Redemander à Claude"
+    "ask-ai": "Redemander à Claude",
+    "subtitle": "Modérez les avis avant leur publication sur les pages d'activités.",
+    "none-pending": "Aucun avis en attente",
+    "none-pending-hint": "Tous les avis ont été traités.",
+    "none-hint": "Aucun avis ne correspond à ce filtre.",
+    "by-auto": "Décision automatique",
+    "by-human": "Décision humaine"
   },
   "dashboard": {
     "hello": "Bonjour {{name}}",
@@ -650,7 +852,8 @@
       "auto-off": "Modération automatique coupée ; {{count}} avis publiés par Claude jusqu’ici.",
       "none": "Aucun avis en attente.",
       "rating": "{{rating}} sur 5",
-      "more": "Voir les {{count}} autres avis en attente"
+      "more": "Voir les {{count}} autres avis en attente",
+      "none-hint": "Les nouveaux avis à valider apparaîtront ici."
     },
     "incidents": {
       "title": "Incidents",
@@ -660,7 +863,9 @@
       "none": "Aucun.",
       "resolved": "10 derniers incidents clos",
       "none-resolved": "Aucun incident clos.",
-      "resolved-at": "clos le {{time}}"
+      "resolved-at": "clos le {{time}}",
+      "none-open": "Aucun incident ouvert",
+      "none-open-hint": "Les incidents signalés sur vos lignes apparaîtront ici."
     },
     "refunds": {
       "title": "Remboursements demandés ou en cours",

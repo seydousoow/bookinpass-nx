@@ -5,7 +5,8 @@ import { TranslocoDirective } from '@jsverse/transloco';
 import { Badge } from 'components/badge/badge';
 import { Button } from 'components/button/button';
 import { Input } from 'components/input/input';
-import { Spinner } from 'components/spinner/spinner';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { heroArrowLeft } from '@ng-icons/heroicons/outline';
 import { SystemState } from 'components/system-state/system-state';
 import { createAction } from '../../core/action';
 import { StaffApi } from '../../core/api';
@@ -13,6 +14,7 @@ import { ActivityBookingDetail } from '../../core/models';
 import { zonedDateTime } from '../../core/zone';
 import { dakarDateTime } from '../../core/dakar';
 import { BOOKING_TONES } from '../activity-bookings/activity-bookings';
+import { PageHeader, StatusBadge } from '../../ui';
 
 /**
  * Une réservation d'activité : client, créneau, paiement et remboursements. Un responsable peut l'annuler (places
@@ -21,7 +23,8 @@ import { BOOKING_TONES } from '../activity-bookings/activity-bookings';
  */
 @Component({
   selector: 'bo-activity-booking',
-  imports: [RouterLink, TranslocoDirective, Badge, Button, Input, Spinner, SystemState],
+  imports: [RouterLink, TranslocoDirective, NgIcon, Badge, Button, Input, SystemState, PageHeader, StatusBadge],
+  providers: [provideIcons({ heroArrowLeft })],
   templateUrl: './activity-booking.html',
 })
 export class ActivityBookingPage {

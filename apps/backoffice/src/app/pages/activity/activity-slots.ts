@@ -36,7 +36,7 @@ const SPANS = [1, 3, 6, 12, 24] as const;
   template: `
     <section *transloco="let t" class="space-y-3 bo-card">
       <div class="flex flex-wrap items-center gap-3">
-        <h2 class="mr-auto font-bold">{{ t('slots.title') }}</h2>
+        <h2 class="mr-auto bo-section-title">{{ t('slots.title') }}</h2>
         @if (activity().options.length) {
           <bip-select
             (valueChange)="option.set($event[0] ?? null)"

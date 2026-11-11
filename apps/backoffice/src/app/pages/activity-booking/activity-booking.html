@@ -1,22 +1,23 @@
-<section *transloco="let t" class="space-y-4">
-  <a class="text-sm text-brand-primary underline" routerLink="/activity-bookings">← {{ t('activity-booking.back') }}</a>
+<section *transloco="let t" class="space-y-6">
   @if (detail.isLoading() && !detail.hasValue()) {
-    <bip-spinner class="py-8" label="common.loading" showLabel />
+    <bip-system-state [skeletonCount]="3" [skeletonHeight]="120" status="loading" />
   } @else if (detail.error()) {
     <bip-system-state (retry)="detail.reload()" message="errors.unexpected" status="error" />
   } @else if (detail.value(); as d) {
     @let b = d.booking;
-    <div class="flex flex-wrap items-center gap-3">
-      <h1 class="font-mono text-2xl font-bold">{{ b.reference }}</h1>
-      <bip-badge [tone]="tones[b.status]">{{ t('activity-bookings.statuses.' + b.status) }}</bip-badge>
-    </div>
+    <bo-page-header [subtitle]="b.activity_title + ' · ' + when(b.starts_at, b.timezone)" [title]="b.reference">
+      <a class="mb-1 inline-flex items-center gap-1 bo-link" eyebrow routerLink="/activity-bookings">
+        <ng-icon aria-hidden="true" name="heroArrowLeft" size="16" />{{ t('activity-booking.back') }}
+      </a>
+      <bo-status [tone]="tones[b.status]" actions>{{ t('activity-bookings.statuses.' + b.status) }}</bo-status>
+    </bo-page-header>
     @if (action.error(); as code) {
-      <p class="text-state-error" role="alert">{{ t('errors.' + code) }}</p>
+      <p class="rounded-card bg-state-error-soft p-3 text-sm text-state-error" role="alert">{{ t('errors.' + code) }}</p>
     }
 
     <div class="grid gap-4 md:grid-cols-2">
       <div class="space-y-1 bo-card text-sm">
-        <h2 class="font-bold">{{ t('activity-booking.activity') }}</h2>
+        <h2 class="bo-section-title">{{ t('activity-booking.activity') }}</h2>
         <p class="font-semibold">{{ b.activity_title }}</p>
         <p>{{ b.option_title }}</p>
         <p>
@@ -27,16 +28,16 @@
           {{ t('activity-booking.prices', { adult: d.adult_price, child: d.child_price ?? '—', currency: b.currency }) }}
         </p>
         <p class="text-lg font-bold">{{ b.total }} {{ b.currency }}</p>
-        <a [routerLink]="['/activities', b.activity_id]" class="text-brand-primary underline">{{ t('activity-booking.open-activity') }}</a>
+        <a [routerLink]="['/activities', b.activity_id]" class="bo-link">{{ t('activity-booking.open-activity') }}</a>
       </div>
       <div class="space-y-1 bo-card text-sm">
-        <h2 class="font-bold">{{ t('activity-booking.customer') }}</h2>
+        <h2 class="bo-section-title">{{ t('activity-booking.customer') }}</h2>
         <p class="font-semibold">{{ b.given_name }} {{ b.family_name }}</p>
         <p>
-          <a [href]="'mailto:' + b.email" class="underline">{{ b.email }}</a>
+          <a [href]="'mailto:' + b.email" class="text-brand-primary hover:underline">{{ b.email }}</a>
         </p>
         <p>
-          <a [href]="'tel:' + b.phone" class="underline">{{ b.phone }}</a>
+          <a [href]="'tel:' + b.phone" class="text-brand-primary hover:underline">{{ b.phone }}</a>
         </p>
         <p class="text-muted">{{ t('activity-booking.lang', { lang: d.lang }) }}</p>
         <p class="text-muted">{{ t('activity-booking.created', { time: dateTime(b.created_at) }) }}</p>
@@ -58,7 +59,7 @@
     </div>
 
     <div class="space-y-2 bo-card text-sm">
-      <h2 class="font-bold">{{ t('activity-booking.payment') }}</h2>
+      <h2 class="bo-section-title">{{ t('activity-booking.payment') }}</h2>
       @if (d.payment; as p) {
         <p>
           {{ t('activity-bookings.methods.' + p.method) }} · {{ p.status }}
@@ -70,7 +71,7 @@
           <p class="font-mono text-xs text-muted">{{ p.reference }}</p>
         }
         @if (p.receipt_url) {
-          <a [href]="p.receipt_url" class="text-brand-primary underline" rel="noopener" target="_blank">{{ t('refunds.receipt') }}</a>
+          <a [href]="p.receipt_url" class="bo-link" rel="noopener" target="_blank">{{ t('refunds.receipt') }}</a>
         }
       } @else {
         <p class="text-muted">{{ t('activity-booking.unpaid') }}</p>
@@ -79,7 +80,7 @@
     </div>
 
     <div class="space-y-2 bo-card text-sm">
-      <h2 class="font-bold">{{ t('activity-booking.refunds') }}</h2>
+      <h2 class="bo-section-title">{{ t('activity-booking.refunds') }}</h2>
       @for (r of d.refunds; track r.id) {
         <div class="flex flex-wrap items-center gap-2 border-t border-border-subtle pt-2">
           <bip-badge [tone]="r.status === 'refunded' ? 'success' : r.status === 'failed' ? 'error' : 'warning'" size="sm"
@@ -98,7 +99,7 @@
             <button (clicked)="retry(r.id)" [loading]="action.busy()" bipButton size="sm" variant="outline">{{ t('activity-booking.retry') }}</button>
           }
           @if (r.status === 'pending' && r.method === 'mobile_money') {
-            <a class="text-brand-primary underline" routerLink="/refunds">{{ t('activity-booking.to-refunds') }}</a>
+            <a class="bo-link" routerLink="/refunds">{{ t('activity-booking.to-refunds') }}</a>
           }
         </div>
       } @empty {
@@ -109,7 +110,7 @@
     @if (d.review; as review) {
       <p class="bo-card text-sm">
         {{ t('activity-booking.review', { rating: review.rating }) }} · {{ t('reviews.statuses.' + review.status) }}
-        <a [queryParams]="{ activity: b.activity_id }" class="text-brand-primary underline" routerLink="/activity-reviews">{{ t('activity-booking.see-review') }}</a>
+        <a [queryParams]="{ activity: b.activity_id }" class="bo-link" routerLink="/activity-reviews">{{ t('activity-booking.see-review') }}</a>
       </p>
     }
 

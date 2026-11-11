@@ -2,16 +2,33 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { TranslocoDirective } from '@jsverse/transloco';
-import { Badge, BadgeTone, Input, Select, Spinner, SystemState } from 'components';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { heroCalendarDays, heroChevronRight, heroClock, heroExclamationTriangle, heroTicket } from '@ng-icons/heroicons/outline';
+import { BadgeTone, Input, Select, SystemState } from 'components';
 import { StaffApi } from '../../core/api';
 import { Session } from '../../core/session';
 import { dakarTime, dakarToday } from '../../core/dakar';
 import { Departure, Station } from '../../core/models';
 import { injectStations, stationOptions } from '../../core/stations';
+import { EmptyState, FilterToolbar, PageHeader, StatCard, StatusBadge } from '../../ui';
 
 type DepartureStatus = 'arrived' | 'departed' | 'planned';
 
 const STATUS_TONE: Record<DepartureStatus, BadgeTone> = { arrived: 'success', departed: 'info', planned: 'neutral' };
+
+/** État d'un départ : arrivé, en route, ou à venir. */
+export function departureStatus(d: Departure): DepartureStatus {
+  return d.arrived_at ? 'arrived' : d.departed_at ? 'departed' : 'planned';
+}
+
+export function departureTone(d: Departure): BadgeTone {
+  return STATUS_TONE[departureStatus(d)];
+}
+
+/** Part contrôlée, en pour cent entier ; 0 sans voyageur. */
+export function percent(part: number, total: number): number {
+  return total > 0 ? Math.round((part / total) * 100) : 0;
+}
 
 /** Départs d'une gare de départ, avec ses totaux pour l'en-tête de l'accordéon. */
 export interface StationDepartures {
@@ -42,7 +59,8 @@ export function byOrigin(departures: readonly Departure[]): StationDepartures[] 
 /** Départs d'un jour au départ de sa gare (responsables : gare au choix, ou toutes), en accordéon par gare de départ. */
 @Component({
   selector: 'bo-departures',
-  imports: [RouterLink, TranslocoDirective, Badge, Input, Select, Spinner, SystemState],
+  imports: [RouterLink, TranslocoDirective, NgIcon, Input, Select, SystemState, EmptyState, FilterToolbar, PageHeader, StatCard, StatusBadge],
+  providers: [provideIcons({ heroCalendarDays, heroChevronRight, heroClock, heroExclamationTriangle, heroTicket })],
   templateUrl: './departures.html',
 })
 export class DeparturesPage {
@@ -51,7 +69,20 @@ export class DeparturesPage {
   protected readonly station = signal<number | null>(null);
   protected readonly stations = stationOptions(injectStations(), { all: true });
   protected readonly time = dakarTime;
+  protected readonly percent = percent;
   protected readonly groups = computed(() => byOrigin(this.departures.value() ?? []));
+  /** Totaux de la journée, sur les départs affichés (gare choisie ou toutes). */
+  protected readonly summary = computed(() =>
+    this.groups().reduce(
+      (sum, g) => ({
+        departures: sum.departures + g.departures.length,
+        passengers: sum.passengers + g.passengers,
+        scanned: sum.scanned + g.scanned,
+        incidents: sum.incidents + g.incidents,
+      }),
+      { departures: 0, passengers: 0, scanned: 0, incidents: 0 },
+    ),
+  );
   private readonly api = inject(StaffApi);
   protected readonly departures = rxResource({
     // Champ de date vidé : on revient au jour même plutôt que d'appeler l'API sans date.
@@ -81,11 +112,6 @@ export class DeparturesPage {
     this.opened.set(new Set(open ? this.groups().map((g) => g.station.id) : []));
   }
 
-  protected status(d: Departure): DepartureStatus {
-    return d.arrived_at ? 'arrived' : d.departed_at ? 'departed' : 'planned';
-  }
-
-  protected tone(d: Departure): BadgeTone {
-    return STATUS_TONE[this.status(d)];
-  }
+  protected readonly status = departureStatus;
+  protected readonly tone = departureTone;
 }

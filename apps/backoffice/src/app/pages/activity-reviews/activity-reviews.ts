@@ -2,19 +2,21 @@ import { Component, computed, inject, input, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslocoDirective } from '@jsverse/transloco';
-import { Badge, BadgeTone } from 'components/badge/badge';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { heroChatBubbleLeftRight, heroSparkles, heroUser } from '@ng-icons/heroicons/outline';
+import { BadgeTone } from 'components/badge/badge';
 import { Button } from 'components/button/button';
 import { Checkbox } from 'components/checkbox/checkbox';
 import { Input } from 'components/input/input';
 import { Pagination } from 'components/pagination/pagination';
 import { Select } from 'components/select/select';
-import { Spinner } from 'components/spinner/spinner';
 import { SystemState } from 'components/system-state/system-state';
 import { ISelectOption } from 'models';
 import { createAction } from '../../core/action';
 import { StaffApi } from '../../core/api';
 import { dakarDateTime } from '../../core/dakar';
 import { ActivityReview, REVIEW_STATUSES, ReviewStatus } from '../../core/models';
+import { EmptyState, PageHeader, StatusBadge } from '../../ui';
 
 const PAGE_SIZE = 20;
 const VERDICT_TONES: Readonly<Record<string, BadgeTone>> = { approve: 'success', reject: 'error', review: 'warning' };
@@ -30,14 +32,16 @@ const STATUS_TONES: Readonly<Record<ReviewStatus, BadgeTone>> = { pending: 'warn
  */
 @Component({
   selector: 'bo-activity-reviews',
-  imports: [TranslocoDirective, Badge, Button, Checkbox, Input, Pagination, Select, Spinner, SystemState],
+  imports: [TranslocoDirective, NgIcon, Button, Checkbox, Input, Pagination, Select, SystemState, EmptyState, PageHeader, StatusBadge],
+  providers: [provideIcons({ heroChatBubbleLeftRight, heroSparkles, heroUser })],
   templateUrl: './activity-reviews.html',
 })
 export class ActivityReviewsPage {
   /** `?activity=` : avis d'une seule activité (lien depuis sa fiche). */
   readonly activity = input<string>();
 
-  protected readonly statuses = REVIEW_STATUSES;
+  /** Onglets : les statuts, puis tous (`''`). */
+  protected readonly tabs: readonly (ReviewStatus | '')[] = [...REVIEW_STATUSES, ''];
   protected readonly verdictTones = VERDICT_TONES;
   protected readonly statusTones = STATUS_TONES;
   protected readonly pageSize = PAGE_SIZE;
