@@ -1,7 +1,10 @@
 <section *transloco="let t" class="space-y-6">
   <bo-page-header [subtitle]="t('incidents.subtitle')" [title]="t('incidents.title')">
     @if (session.manager()) {
-      <button (clicked)="reporting.set(true)" actions bipButton><ng-icon aria-hidden="true" name="heroPlus" size="18" />{{ t('incidents.new') }}</button>
+      <button (clicked)="reporting.set(true)" actions bipButton>
+        <ng-icon aria-hidden="true" name="heroPlus" size="18" />
+        {{ t('incidents.new') }}
+      </button>
     }
     <bo-filter-toolbar (cleared)="resetFilters()" [active]="activeFilters()" [resetLabel]="t('common.reset-filters')">
       <div [attr.aria-label]="t('incidents.state')" class="flex gap-1.5 sm:mb-1" role="group">
@@ -137,10 +140,10 @@
         <bip-select
           (valueChange)="routeId.set($event[0] ?? null)"
           [options]="routeOptions()"
+          [required]="true"
           [value]="routeId() === null ? [] : [routeId()!]"
           label="incidents.route"
-          name="route"
-          [required]="true" />
+          name="route" />
         <bip-select (valueChange)="type.set($event[0] ?? 'delay')" [options]="types()" [value]="[type()]" label="incidents.type" name="type" />
         <bip-textarea
           (valueChange)="description.set($event)"

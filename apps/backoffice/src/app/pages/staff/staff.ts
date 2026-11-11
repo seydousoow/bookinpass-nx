@@ -69,8 +69,6 @@ export class StaffPage {
   protected readonly dateTime = dakarDateTime;
   protected readonly newRole = signal<StaffRole>('inspector');
   protected readonly newStation = signal<number | null>(null);
-  private readonly api = inject(StaffApi);
-  protected readonly list = rxResource({ stream: () => this.api.users() });
   /** Le compte connecté, montré à part ; les autres dans le tableau. */
   protected readonly me = computed(() => this.list.value()?.find((u) => u.id === this.session.user()?.id) ?? null);
   protected readonly others = computed(() => (this.list.value() ?? []).filter((u) => u.id !== this.session.user()?.id));
@@ -78,6 +76,8 @@ export class StaffPage {
   protected readonly resetting = signal(false);
   protected readonly selectedId = signal<number | null>(null);
   protected readonly selected = computed(() => this.others().find((u) => u.id === this.selectedId()) ?? null);
+  private readonly api = inject(StaffApi);
+  protected readonly list = rxResource({ stream: () => this.api.users() });
   private readonly newUser = signal({ username: '', full_name: '', phone: '' });
   protected readonly createForm = form(
     this.newUser,

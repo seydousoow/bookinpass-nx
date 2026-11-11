@@ -7,7 +7,8 @@
     @let b = d.booking;
     <bo-page-header [subtitle]="b.activity_title + ' · ' + when(b.starts_at, b.timezone)" [title]="b.reference">
       <a class="mb-1 inline-flex items-center gap-1 bo-link" eyebrow routerLink="/activity-bookings">
-        <ng-icon aria-hidden="true" name="heroArrowLeft" size="16" />{{ t('activity-booking.back') }}
+        <ng-icon aria-hidden="true" name="heroArrowLeft" size="16" />
+        {{ t('activity-booking.back') }}
       </a>
       <bo-status [tone]="tones[b.status]" actions>{{ t('activity-bookings.statuses.' + b.status) }}</bo-status>
     </bo-page-header>

@@ -1,6 +1,9 @@
 <section *transloco="let t" class="space-y-6">
   <bo-page-header [subtitle]="t('staff.subtitle')" [title]="t('staff.title')">
-    <button (clicked)="creating.set(true)" actions bipButton><ng-icon aria-hidden="true" name="heroUserPlus" size="18" />{{ t('staff.new') }}</button>
+    <button (clicked)="creating.set(true)" actions bipButton>
+      <ng-icon aria-hidden="true" name="heroUserPlus" size="18" />
+      {{ t('staff.new') }}
+    </button>
   </bo-page-header>
 
   @if (action.error(); as code) {
@@ -98,9 +101,9 @@
             (valueChange)="patch(u, { station_id: $event[0] ?? null })"
             [name]="'station-' + u.id"
             [options]="stations()"
+            [required]="true"
             [value]="draft.station_id === null ? [] : [draft.station_id]"
-            label="common.station"
-            [required]="true" />
+            label="common.station" />
         }
         <bip-checkbox (checkedChange)="patch(u, { active: $event })" [checked]="draft.active" [label]="t('staff.active')" [name]="'active-' + u.id" />
         <p class="text-xs text-muted">{{ u.last_login_at ? t('staff.last-login', { time: dateTime(u.last_login_at) }) : t('staff.never') }}</p>
@@ -136,10 +139,10 @@
         <bip-select
           (valueChange)="newStation.set($event[0] ?? null)"
           [options]="stations()"
+          [required]="true"
           [value]="newStation() === null ? [] : [newStation()!]"
           label="common.station"
-          name="station"
-          [required]="true" />
+          name="station" />
       }
       <p class="text-xs text-muted">{{ t('staff.password-hint') }}</p>
     </form>

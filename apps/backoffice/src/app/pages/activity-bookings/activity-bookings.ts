@@ -48,6 +48,9 @@ export class ActivityBookingsPage {
   protected readonly from = signal<string | null>(null);
   protected readonly to = signal<string | null>(null);
   protected readonly page = signal(1);
+  protected readonly activeFilters = computed(
+    () => Number(!!this.query()?.trim()) + Number(this.status() !== null) + Number(this.activityId() !== null) + Number(!!this.from()) + Number(!!this.to()),
+  );
   private readonly api = inject(StaffApi);
   private readonly activities = rxResource({ stream: () => this.api.activities() });
   protected readonly activityOptions = computed((): ISelectOption<number>[] => (this.activities.value() ?? []).map((a) => ({ value: a.id, label: a.title })));
@@ -64,10 +67,6 @@ export class ActivityBookingsPage {
     }),
     stream: ({ params }) => this.api.activityBookings(params),
   });
-
-  protected readonly activeFilters = computed(
-    () => Number(!!this.query()?.trim()) + Number(this.status() !== null) + Number(this.activityId() !== null) + Number(!!this.from()) + Number(!!this.to()),
-  );
   private readonly router = inject(Router);
 
   protected open(reference: string): void {

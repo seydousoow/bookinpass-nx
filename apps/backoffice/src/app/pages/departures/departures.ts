@@ -70,7 +70,6 @@ export class DeparturesPage {
   protected readonly stations = stationOptions(injectStations(), { all: true });
   protected readonly time = dakarTime;
   protected readonly percent = percent;
-  protected readonly groups = computed(() => byOrigin(this.departures.value() ?? []));
   /** Totaux de la journée, sur les départs affichés (gare choisie ou toutes). */
   protected readonly summary = computed(() =>
     this.groups().reduce(
@@ -83,12 +82,15 @@ export class DeparturesPage {
       { departures: 0, passengers: 0, scanned: 0, incidents: 0 },
     ),
   );
+  protected readonly status = departureStatus;
+  protected readonly tone = departureTone;
   private readonly api = inject(StaffApi);
   protected readonly departures = rxResource({
     // Champ de date vidé : on revient au jour même plutôt que d'appeler l'API sans date.
     params: () => ({ date: this.date() || dakarToday(), station: this.station() }),
     stream: ({ params }) => this.api.departures(params.date, params.station),
   });
+  protected readonly groups = computed(() => byOrigin(this.departures.value() ?? []));
   /** Gares ouvertes dans l'accordéon ; une seule gare : ouverte d'office. */
   private readonly opened = signal<ReadonlySet<number>>(new Set());
 
@@ -111,7 +113,4 @@ export class DeparturesPage {
   protected setAll(open: boolean): void {
     this.opened.set(new Set(open ? this.groups().map((g) => g.station.id) : []));
   }
-
-  protected readonly status = departureStatus;
-  protected readonly tone = departureTone;
 }

@@ -7,7 +7,8 @@
     @let d = v.departure;
     <bo-page-header [subtitle]="d.origin.name + ' → ' + d.destination.name" [title]="d.origin.place + ' → ' + d.destination.place">
       <a class="mb-1 inline-flex items-center gap-1 bo-link" eyebrow routerLink="/departures">
-        <ng-icon aria-hidden="true" name="heroArrowLeft" size="16" />{{ t('departure.back') }}
+        <ng-icon aria-hidden="true" name="heroArrowLeft" size="16" />
+        {{ t('departure.back') }}
       </a>
       <ng-container actions>
         <bo-status [tone]="statusTone(d)">{{ t('departures.status.' + status(d)) }}</bo-status>

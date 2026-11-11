@@ -45,6 +45,8 @@ export class RefundsPage {
   protected readonly note = signal<string | null>('');
   /** L'historique demande aussi les remboursements faits. */
   private readonly all = computed(() => this.view() === 'history');
+  protected readonly transportRows = computed(() => (this.list.value() ?? []).filter((r) => (r.status === 'refunded') === this.all()));
+  protected readonly activityRows = computed(() => (this.activityList.value() ?? []).filter((r) => (r.status === 'refunded') === this.all()));
   private readonly api = inject(StaffApi);
   protected readonly list = rxResource({
     params: () => this.all(),
@@ -55,8 +57,6 @@ export class RefundsPage {
     params: () => this.all(),
     stream: ({ params }) => this.api.activityRefunds(params),
   });
-  protected readonly transportRows = computed(() => (this.list.value() ?? []).filter((r) => (r.status === 'refunded') === this.all()));
-  protected readonly activityRows = computed(() => (this.activityList.value() ?? []).filter((r) => (r.status === 'refunded') === this.all()));
   private readonly toasts = inject(Toasts);
   private readonly transloco = inject(TranslocoService);
 

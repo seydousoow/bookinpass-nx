@@ -7,7 +7,8 @@
     @let current = saved.value();
     <bo-page-header [subtitle]="current ? t('activity.address', { slug: current.slug }) : t('activity.new-hint')" [title]="isNew() ? t('activity.new') : (current?.title ?? '')">
       <a class="mb-1 inline-flex items-center gap-1 bo-link" eyebrow routerLink="/activities">
-        <ng-icon aria-hidden="true" name="heroArrowLeft" size="16" />{{ t('activity.back') }}
+        <ng-icon aria-hidden="true" name="heroArrowLeft" size="16" />
+        {{ t('activity.back') }}
       </a>
       @if (current) {
         <ng-container actions>
@@ -157,7 +158,8 @@
           }
           <div>
             <button (clicked)="addStop()" bipButton size="sm" type="button" variant="outline">
-              <ng-icon aria-hidden="true" name="heroPlus" size="16" />{{ t('activity.add-stop') }}
+              <ng-icon aria-hidden="true" name="heroPlus" size="16" />
+              {{ t('activity.add-stop') }}
             </button>
           </div>
         </bo-form-section>
@@ -278,7 +280,10 @@
             <p class="text-sm text-muted">{{ t('activities.no-reviews') }}</p>
           }
           <div class="rounded-card bg-surface-muted p-3 text-sm">
-            <p class="flex items-center gap-1.5 font-semibold"><ng-icon aria-hidden="true" name="heroSparkles" size="16" />{{ t('activity.summary-title') }}</p>
+            <p class="flex items-center gap-1.5 font-semibold">
+              <ng-icon aria-hidden="true" name="heroSparkles" size="16" />
+              {{ t('activity.summary-title') }}
+            </p>
             @if (current.review_summary) {
               <p class="mt-1">{{ current.review_summary }}</p>
               <p class="mt-1 text-xs text-muted">{{ t('activity.summary-meta', { count: current.review_summary_count, time: dateTime(current.review_summary_at) }) }}</p>
@@ -309,18 +314,20 @@
     <div class="sticky bottom-0 z-20 -mx-4 -mb-6 border-t border-border-subtle bg-surface-card/95 backdrop-blur sm:-mx-6 lg:-mx-8 lg:-mb-8">
       <div class="flex flex-wrap items-center gap-2 px-4 py-3 sm:px-6 lg:px-8">
         <button (clicked)="step.set(step() - 1)" [disabled]="step() === 0" bipButton type="button" variant="ghost">
-          <ng-icon aria-hidden="true" name="heroArrowLeft" size="16" /><span class="max-sm:sr-only">{{ t('common.previous') }}</span>
+          <ng-icon aria-hidden="true" name="heroArrowLeft" size="16" />
+          <span class="max-sm:sr-only">{{ t('common.previous') }}</span>
         </button>
         <span class="text-sm text-muted">{{ t('activity.step-of', { step: step() + 1, total: steps().length }) }}</span>
         <span class="ml-auto flex items-center gap-2">
           @if (savedAt()) {
             <span class="hidden items-center gap-1 text-sm text-state-success sm:flex" role="status"
-              ><ng-icon aria-hidden="true" name="heroCheck" size="16" />{{ t('activity.saved') }}</span
+              ><ng-icon aria-hidden="true" name="heroCheck" size="16" /> {{ t('activity.saved') }}</span
             >
           }
           @if (step() < steps().length - 1) {
             <button (clicked)="step.set(step() + 1)" bipButton type="button" variant="outline">
-              {{ t('common.next') }}<ng-icon aria-hidden="true" name="heroArrowRight" size="16" />
+              {{ t('common.next') }}
+              <ng-icon aria-hidden="true" name="heroArrowRight" size="16" />
             </button>
           }
           <button [loading]="action.busy()" bipButton form="activity-form" type="submit">{{ isNew() ? t('activity.create') : t('common.save') }}</button>

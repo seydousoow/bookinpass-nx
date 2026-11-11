@@ -1,6 +1,9 @@
 <section *transloco="let t" class="space-y-6">
   <bo-page-header [subtitle]="t('activities.hint')" [title]="t('activities.title')">
-    <a actions bipButton routerLink="/activities/new"><ng-icon aria-hidden="true" name="heroPlus" size="18" />{{ t('activities.new') }}</a>
+    <a actions bipButton routerLink="/activities/new">
+      <ng-icon aria-hidden="true" name="heroPlus" size="18" />
+      {{ t('activities.new') }}</a
+    >
     <bo-filter-toolbar (cleared)="query.set(''); status.set(null)" [active]="(query()?.trim() ? 1 : 0) + (status() ? 1 : 0)" [resetLabel]="t('common.reset-filters')">
       <bip-input [(value)]="query" class="sm:min-w-72 sm:flex-1" label="activities.search" name="activity-search" type="search" />
       <div [attr.aria-label]="t('activities.status')" class="flex flex-wrap gap-1.5 sm:mb-1" role="group">
@@ -24,7 +27,10 @@
     } @else if (!shown().length) {
       @if (!list.value()?.length) {
         <bo-empty [message]="t('activities.none-hint')" [title]="t('activities.none')" icon="heroMap">
-          <a bipButton routerLink="/activities/new"><ng-icon aria-hidden="true" name="heroPlus" size="18" />{{ t('activities.new') }}</a>
+          <a bipButton routerLink="/activities/new">
+            <ng-icon aria-hidden="true" name="heroPlus" size="18" />
+            {{ t('activities.new') }}</a
+          >
         </bo-empty>
       } @else {
         <bo-empty [message]="t('activities.no-match-hint')" [title]="t('activities.no-match')" icon="heroMagnifyingGlass">
@@ -81,7 +87,7 @@
               </td>
               <td [attr.data-label]="t('activities.columns.rating')" class="bo-num whitespace-nowrap">
                 @if (a.rating !== null) {
-                  <span class="text-brand-accent" aria-hidden="true">★</span> {{ a.rating }} <span class="text-xs text-muted">({{ a.review_count }})</span>
+                  <span aria-hidden="true" class="text-brand-accent">★</span> {{ a.rating }} <span class="text-xs text-muted">({{ a.review_count }})</span>
                 } @else {
                   <span class="text-xs text-muted">{{ t('activities.no-reviews') }}</span>
                 }

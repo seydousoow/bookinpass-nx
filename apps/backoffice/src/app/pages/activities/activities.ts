@@ -33,17 +33,17 @@ export class ActivitiesPage {
   protected readonly endingSoon = slotsEndingSoon;
   protected readonly status = signal<ActivityStatus | null>(null);
   protected readonly query = signal<string | null>('');
-  protected readonly shown = computed(() => {
-    const text = (this.query() ?? '').trim().toLowerCase();
-    const status = this.status();
-    return (this.list.value() ?? []).filter((a) => (!status || a.status === status) && (!text || a.title.toLowerCase().includes(text) || a.city.name.toLowerCase().includes(text)));
-  });
-  private readonly api = inject(StaffApi);
-  protected readonly list = rxResource({ stream: () => this.api.activities() });
   /** Nombre de fiches par statut, pour les filtres. */
   protected readonly counts = computed(() => {
     const all = this.list.value() ?? [];
     return { all: all.length, ...Object.fromEntries(ACTIVITY_STATUSES.map((s) => [s, all.filter((a) => a.status === s).length])) } as Record<ActivityStatus | 'all', number>;
+  });
+  private readonly api = inject(StaffApi);
+  protected readonly list = rxResource({ stream: () => this.api.activities() });
+  protected readonly shown = computed(() => {
+    const text = (this.query() ?? '').trim().toLowerCase();
+    const status = this.status();
+    return (this.list.value() ?? []).filter((a) => (!status || a.status === status) && (!text || a.title.toLowerCase().includes(text) || a.city.name.toLowerCase().includes(text)));
   });
   private readonly router = inject(Router);
 

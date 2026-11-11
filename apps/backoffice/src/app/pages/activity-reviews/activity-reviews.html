@@ -65,7 +65,7 @@
             <div class="min-w-0">
               <p class="flex flex-wrap items-center gap-2">
                 <span class="font-semibold text-ink">{{ r.activity_title }}</span>
-                <span class="text-brand-accent" aria-hidden="true"
+                <span aria-hidden="true" class="text-brand-accent"
                   >{{ '★'.repeat(r.rating) }}<span class="text-border-strong">{{ '★'.repeat(5 - r.rating) }}</span></span
                 >
                 <span class="sr-only">{{ t('dashboard.reviews.rating', { rating: r.rating }) }}</span>
@@ -139,7 +139,8 @@
             }
             @if (r.status === 'pending' && settings.value()?.ai_enabled) {
               <button (clicked)="moderate(r)" [loading]="action.busy()" bipButton class="ml-auto" size="sm" variant="ghost">
-                <ng-icon aria-hidden="true" name="heroSparkles" size="16" />{{ t('reviews.ask-ai') }}
+                <ng-icon aria-hidden="true" name="heroSparkles" size="16" />
+                {{ t('reviews.ask-ai') }}
               </button>
             }
           </div>

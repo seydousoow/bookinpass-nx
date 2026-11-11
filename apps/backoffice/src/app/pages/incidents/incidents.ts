@@ -48,17 +48,17 @@ export class IncidentsPage {
   /** Résolution en cours de saisie, par incident. */
   protected readonly resolutions = signal<Readonly<Record<number, string>>>({});
   protected readonly dateTime = dakarDateTime;
-  private readonly api = inject(StaffApi);
-  protected readonly list = rxResource({
-    params: () => ({ open: this.openOnly(), station: this.station() }),
-    stream: ({ params }) => this.api.incidents(params.open, params.station),
-  });
   protected readonly shown = computed(() => {
     const type = this.typeFilter();
     return (this.list.value() ?? []).filter((i) => !type || i.type === type);
   });
   protected readonly selected = computed(() => this.list.value()?.find((i) => i.id === this.selectedId()) ?? null);
   protected readonly activeFilters = computed(() => Number(!this.openOnly()) + Number(this.typeFilter() !== null) + Number(this.station() !== null));
+  private readonly api = inject(StaffApi);
+  protected readonly list = rxResource({
+    params: () => ({ open: this.openOnly(), station: this.station() }),
+    stream: ({ params }) => this.api.incidents(params.open, params.station),
+  });
   private readonly toasts = inject(Toasts);
   private readonly transloco = inject(TranslocoService);
   private readonly routes = toSignal(this.session.manager() ? this.api.routes().pipe(catchError(() => of([] as Route[]))) : of([] as Route[]), {

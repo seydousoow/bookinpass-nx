@@ -100,6 +100,11 @@ export class ActivityPage {
   protected readonly cityQuery = signal<string | null>('');
   protected readonly problems = signal<readonly string[]>([]);
   protected readonly savedAt = signal<string | null>(null);
+  /** Étapes avec leur état : à corriger (après un essai d'enregistrement), ou déjà enregistrée. */
+  protected readonly steps = computed((): StepItem[] => {
+    const invalid = new Set(this.problems().map(problemStep));
+    return STEPS.map((key, index) => ({ label: `activity.steps.${key}`, invalid: invalid.has(index), done: !!this.saved.value() && !invalid.has(index) }));
+  });
   private readonly api = inject(StaffApi);
   protected readonly saved = rxResource({
     params: () => (this.isNew() ? undefined : Number(this.id())),
@@ -115,11 +120,6 @@ export class ActivityPage {
   private readonly router = inject(Router);
   private readonly toasts = inject(Toasts);
   private readonly transloco = inject(TranslocoService);
-  /** Étapes avec leur état : à corriger (après un essai d'enregistrement), ou déjà enregistrée. */
-  protected readonly steps = computed((): StepItem[] => {
-    const invalid = new Set(this.problems().map(problemStep));
-    return STEPS.map((key, index) => ({ label: `activity.steps.${key}`, invalid: invalid.has(index), done: !!this.saved.value() && !invalid.has(index) }));
-  });
 
   constructor() {
     effect(() => {

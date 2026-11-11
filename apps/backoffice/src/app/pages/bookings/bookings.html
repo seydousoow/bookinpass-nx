@@ -3,7 +3,8 @@
     <form (submit)="$event.preventDefault(); search()" class="flex flex-col gap-3 rounded-card border border-border-subtle bg-surface-card p-3 sm:flex-row sm:items-end">
       <bip-input [(value)]="query" [maxLength]="50" autocomplete="off" class="flex-1" label="bookings.query" name="q" type="search" />
       <button [disabled]="trimmed().length < minQuery" [loading]="action.busy()" bipButton type="submit">
-        <ng-icon aria-hidden="true" name="heroMagnifyingGlass" size="18" />{{ t('bookings.search') }}
+        <ng-icon aria-hidden="true" name="heroMagnifyingGlass" size="18" />
+        {{ t('bookings.search') }}
       </button>
     </form>
   </bo-page-header>
@@ -125,7 +126,8 @@
     @if (session.chief() && selected()?.status === 'confirmed') {
       <ng-container drawerFooter>
         <button (clicked)="resend(selected()!)" [loading]="action.busy()" bipButton variant="outline">
-          <ng-icon aria-hidden="true" name="heroEnvelope" size="18" />{{ t('bookings.resend') }}
+          <ng-icon aria-hidden="true" name="heroEnvelope" size="18" />
+          {{ t('bookings.resend') }}
         </button>
       </ng-container>
     }

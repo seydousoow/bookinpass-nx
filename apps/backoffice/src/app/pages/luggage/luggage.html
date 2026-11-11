@@ -15,7 +15,8 @@
         name="code"
         size="lg" />
       <button [disabled]="searchCode().length !== codeLength" [loading]="action.busy()" bipButton class="sm:mb-5" size="lg" type="submit">
-        <ng-icon aria-hidden="true" name="heroMagnifyingGlass" size="18" />{{ t('luggage.find') }}
+        <ng-icon aria-hidden="true" name="heroMagnifyingGlass" size="18" />
+        {{ t('luggage.find') }}
       </button>
     </div>
 

@@ -138,6 +138,14 @@ export class Main {
   /** Tiroir du menu, sur mobile et tablette. */
   protected readonly menuOpen = signal(false);
   protected readonly leaving = signal(false);
+  protected readonly initials = computed(() =>
+    (this.session.user()?.full_name ?? '')
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((word) => word[0].toUpperCase())
+      .join(''),
+  );
   private readonly router = inject(Router);
   private readonly url = toSignal(
     this.router.events.pipe(
@@ -156,14 +164,6 @@ export class Main {
     const group = section && groups.find((g) => g.sections.includes(section));
     return section && group ? { section, group } : null;
   });
-  protected readonly initials = computed(() =>
-    (this.session.user()?.full_name ?? '')
-      .split(/\s+/)
-      .filter(Boolean)
-      .slice(0, 2)
-      .map((word) => word[0].toUpperCase())
-      .join(''),
-  );
   private readonly transloco = inject(TranslocoService);
   protected readonly lang = signal(this.transloco.getActiveLang());
 

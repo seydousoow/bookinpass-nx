@@ -1,6 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { TranslocoDirective } from '@jsverse/transloco';
+import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { Observable } from 'rxjs';
 import { Button } from 'components/button/button';
 import { Checkbox } from 'components/checkbox/checkbox';
@@ -15,7 +15,6 @@ import { Network, NETWORKS, Route, Schedule } from '../../core/models';
 import { translatedOptions } from '../../core/options';
 import { injectStations, stationOptions } from '../../core/stations';
 import { Drawer, EmptyState, PageHeader, StatusBadge, Toasts } from '../../ui';
-import { TranslocoService } from '@jsverse/transloco';
 
 interface RouteDraft {
   readonly price: number | null;
@@ -76,24 +75,23 @@ export class RoutesPage {
   protected readonly stations = stationOptions(injectStations());
   protected readonly networks = translatedOptions(NETWORKS, 'routes.networks.');
   protected readonly list = rxResource({ stream: () => this.api.routes() });
-  protected readonly grouped = (route: Route) => groupSchedules(route.schedules);
   /** Tiroir « Nouvelle ligne ». */
   protected readonly creating = signal(false);
   /** Ligne ouverte dans le tiroir. */
   protected readonly selectedId = signal<number | null>(null);
   protected readonly selected = computed(() => this.list.value()?.find((r) => r.id === this.selectedId()) ?? null);
-  private readonly toasts = inject(Toasts);
-  private readonly transloco = inject(TranslocoService);
-
   protected readonly origin = signal<number | null>(null);
   protected readonly destination = signal<number | null>(null);
   protected readonly network = signal<Network>('interurban');
   protected readonly price = signal<number | null>(1000);
   protected readonly capacity = signal<number | null>(50);
-
+  private readonly toasts = inject(Toasts);
+  private readonly transloco = inject(TranslocoService);
   /** Brouillons d'édition par ligne, créés à la première saisie : une saisie en cours n'est pas écrasée au rechargement. */
   private readonly edits = signal<Readonly<Record<number, RouteDraft>>>({});
   private readonly schedules = signal<Readonly<Record<number, ScheduleDraft>>>({});
+
+  protected readonly grouped = (route: Route) => groupSchedules(route.schedules);
 
   /** Premières heures de départ, pour la liste. */
   protected firstTimes(route: Route): string {

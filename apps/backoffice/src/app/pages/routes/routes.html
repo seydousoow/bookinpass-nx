@@ -1,6 +1,9 @@
 <section *transloco="let t" class="space-y-6">
   <bo-page-header [subtitle]="t('routes.subtitle')" [title]="t('routes.title')">
-    <button (clicked)="creating.set(true)" actions bipButton><ng-icon aria-hidden="true" name="heroPlus" size="18" />{{ t('routes.new') }}</button>
+    <button (clicked)="creating.set(true)" actions bipButton>
+      <ng-icon aria-hidden="true" name="heroPlus" size="18" />
+      {{ t('routes.new') }}
+    </button>
   </bo-page-header>
 
   <!-- Règle de prix : le prix de l'exploitant, plus les frais Book In Pass. -->
@@ -157,17 +160,17 @@
       <bip-select
         (valueChange)="origin.set($event[0] ?? null)"
         [options]="stations()"
+        [required]="true"
         [value]="origin() === null ? [] : [origin()!]"
         label="routes.origin"
-        name="origin"
-        [required]="true" />
+        name="origin" />
       <bip-select
         (valueChange)="destination.set($event[0] ?? null)"
         [options]="stations()"
+        [required]="true"
         [value]="destination() === null ? [] : [destination()!]"
         label="routes.destination"
-        name="destination"
-        [required]="true" />
+        name="destination" />
       <bip-select (valueChange)="network.set($event[0] ?? 'interurban')" [options]="networks()" [value]="[network()]" label="routes.network" name="network" />
       <div class="grid grid-cols-2 gap-3">
         <bip-input [(value)]="price" [min]="1" [step]="1" hint="routes.price-hint" label="routes.price" name="price" required type="number" />
