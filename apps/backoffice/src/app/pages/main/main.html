@@ -1,5 +1,5 @@
 <ng-container *transloco="let t">
-  <bip-header compact (currentLangChange)="changeLang($event)" [currentLang]="lang()" [entries]="entries()" [languages]="languages">
+  <bip-header (currentLangChange)="changeLang($event)" [currentLang]="lang()" [entries]="entries()" [languages]="languages" compact full>
     <div class="flex items-center gap-3" headerActions>
       @if (session.user(); as user) {
         <p class="hidden text-right text-xs leading-tight md:block">

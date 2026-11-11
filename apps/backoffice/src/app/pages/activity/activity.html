@@ -104,12 +104,12 @@
         @for (key of generalKeys; track key) {
           <bip-textarea
             (valueChange)="setList(key, $event)"
+            [label]="'activity.lists.' + key"
             [maxLength]="3000"
+            [name]="key"
             [rows]="4"
             [value]="listText()[key]"
-            hint="activity.one-per-line"
-            [label]="'activity.lists.' + key"
-            [name]="key" />
+            hint="activity.one-per-line" />
         }
       </div>
 
@@ -120,12 +120,12 @@
           @for (key of knowBeforeKeys; track key) {
             <bip-textarea
               (valueChange)="setList(key, $event)"
+              [label]="'activity.lists.' + key"
               [maxLength]="3000"
+              [name]="key"
               [rows]="4"
               [value]="listText()[key]"
-              hint="activity.one-per-line"
-              [label]="'activity.lists.' + key"
-              [name]="key" />
+              hint="activity.one-per-line" />
           }
         </div>
       </fieldset>

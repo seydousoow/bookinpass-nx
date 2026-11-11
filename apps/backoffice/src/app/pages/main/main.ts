@@ -19,7 +19,7 @@ interface Section {
 
 const SECTIONS: readonly Section[] = [
   { key: 'home', route: '/' },
-  { key: 'scan', route: '/', fragment: 'control' },
+  // { key: 'scan', route: '/', fragment: 'control' },
   { key: 'departures', route: '/departures' },
   { key: 'luggage', route: '/luggage', roles: CHIEFS },
   { key: 'incidents', route: '/incidents' },
@@ -36,9 +36,9 @@ const SECTIONS: readonly Section[] = [
 @Component({
   selector: 'bo-shell',
   imports: [RouterOutlet, TranslocoDirective, Header, Button],
-  templateUrl: './shell.html',
+  templateUrl: './main.html',
 })
-export class Shell {
+export class Main {
   protected readonly session = inject(Session);
   protected readonly languages: BackofficeLang[] = ['fr', 'en'];
   protected readonly entries = computed<readonly NavEntry[]>(() =>

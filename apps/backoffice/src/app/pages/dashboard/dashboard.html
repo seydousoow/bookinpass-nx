@@ -6,44 +6,55 @@
 
   <!-- Notifications : chiffres du jour, un lien vers la page qui les traite. -->
   @if (session.manager()) {
-    <ul class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-      <li>
-        <a class="bip-focusable flex h-full items-center gap-3 bo-card hover:border-brand-primary" routerLink="/activity-reviews">
-          <ng-icon aria-hidden="true" class="text-brand-primary" name="heroChatBubbleLeftRight" size="28" />
+    <div class="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+      <div>
+        <a class="bip-focusable flex h-full items-center gap-1.5 bo-card px-3 pt-1.5 hover:border-brand-primary" routerLink="/activity-reviews">
+          <p>
+            <ng-icon aria-hidden="true" color="var(--color-brand-primary)" name="heroChatBubbleLeftRight" size="1.5rem" />
+          </p>
           <span>
-            <span class="block text-2xl font-bold">{{ settings.value()?.pending_reviews ?? '–' }}</span>
-            <span class="block text-sm text-muted">{{ t('dashboard.tiles.pending-reviews') }}</span>
+            <span class="block text-xl font-bold">{{ settings.value()?.pending_reviews ?? '–' }}</span>
+            <span class="block text-xs text-muted">{{ t('dashboard.tiles.pending-reviews') }}</span>
           </span>
         </a>
-      </li>
-      <li>
-        <a [queryParams]="{ status: 'approved' }" class="bip-focusable flex h-full items-center gap-3 bo-card hover:border-brand-primary" routerLink="/activity-reviews">
-          <ng-icon aria-hidden="true" class="text-brand-primary" name="heroSparkles" size="28" />
+      </div>
+      <div>
+        <a
+          [queryParams]="{ status: 'approved' }"
+          class="bip-focusable flex h-full items-center gap-1.5 bo-card px-3 pt-1.5 hover:border-brand-primary"
+          routerLink="/activity-reviews">
+          <p>
+            <ng-icon aria-hidden="true" color="var(--color-brand-primary)" name="heroSparkles" size="1.5rem" />
+          </p>
           <span>
-            <span class="block text-2xl font-bold">{{ settings.value()?.auto_approved_reviews ?? '–' }}</span>
-            <span class="block text-sm text-muted">{{ t('dashboard.tiles.auto-approved') }}</span>
+            <span class="block text-xl font-bold">{{ settings.value()?.auto_approved_reviews ?? '–' }}</span>
+            <span class="block text-xs text-muted">{{ t('dashboard.tiles.auto-approved') }}</span>
           </span>
         </a>
-      </li>
-      <li>
-        <a class="bip-focusable flex h-full items-center gap-3 bo-card hover:border-brand-primary" routerLink="/refunds">
-          <ng-icon aria-hidden="true" class="text-brand-primary" name="heroBanknotes" size="28" />
+      </div>
+      <div>
+        <a class="bip-focusable flex h-full items-center gap-1.5 bo-card px-3 pt-1.5 hover:border-brand-primary" routerLink="/refunds">
+          <p>
+            <ng-icon aria-hidden="true" color="var(--color-brand-primary)" name="heroBanknotes" size="1.5rem" />
+          </p>
           <span>
-            <span class="block text-2xl font-bold">{{ refundsLoading() ? '–' : refunds().length }}</span>
-            <span class="block text-sm text-muted">{{ t('dashboard.tiles.refunds') }}</span>
+            <span class="block text-xl font-bold">{{ refundsLoading() ? '–' : refunds().length }}</span>
+            <span class="block text-xs text-muted">{{ t('dashboard.tiles.refunds') }}</span>
           </span>
         </a>
-      </li>
-      <li>
-        <a class="bip-focusable flex h-full items-center gap-3 bo-card hover:border-brand-primary" routerLink="/activities">
-          <ng-icon aria-hidden="true" [class]="endingActivities().length ? 'text-state-warning' : 'text-brand-primary'" name="heroCalendarDays" size="28" />
+      </div>
+      <div>
+        <a class="bip-focusable flex h-full items-center gap-1.5 bo-card px-3 pt-1.5 hover:border-brand-primary" routerLink="/activities">
+          <p>
+            <ng-icon [color]="endingActivities().length ? 'var(--color-state-warning)' : 'var(--color-brand-primary)'" aria-hidden="true" name="heroCalendarDays" size="1.5rem" />
+          </p>
           <span>
-            <span class="block text-2xl font-bold">{{ activitiesLoading() ? '–' : endingActivities().length }}</span>
-            <span class="block text-sm text-muted">{{ t('dashboard.tiles.slots-ending') }}</span>
+            <span class="block text-xl font-bold">{{ activitiesLoading() ? '–' : endingActivities().length }}</span>
+            <span class="block text-xs text-muted">{{ t('dashboard.tiles.slots-ending') }}</span>
           </span>
         </a>
-      </li>
-    </ul>
+      </div>
+    </div>
   }
 
   <div class="grid items-start gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">

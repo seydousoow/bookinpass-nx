@@ -33,11 +33,11 @@ export class ActivitiesPage {
   protected readonly endingSoon = slotsEndingSoon;
   protected readonly status = signal<ActivityStatus | null>(null);
   protected readonly query = signal<string | null>('');
-  private readonly api = inject(StaffApi);
-  protected readonly list = rxResource({ stream: () => this.api.activities() });
   protected readonly shown = computed(() => {
     const text = (this.query() ?? '').trim().toLowerCase();
     const status = this.status();
     return (this.list.value() ?? []).filter((a) => (!status || a.status === status) && (!text || a.title.toLowerCase().includes(text) || a.city.name.toLowerCase().includes(text)));
   });
+  private readonly api = inject(StaffApi);
+  protected readonly list = rxResource({ stream: () => this.api.activities() });
 }

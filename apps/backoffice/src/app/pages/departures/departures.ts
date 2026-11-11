@@ -51,13 +51,13 @@ export class DeparturesPage {
   protected readonly station = signal<number | null>(null);
   protected readonly stations = stationOptions(injectStations(), { all: true });
   protected readonly time = dakarTime;
+  protected readonly groups = computed(() => byOrigin(this.departures.value() ?? []));
   private readonly api = inject(StaffApi);
   protected readonly departures = rxResource({
     // Champ de date vidé : on revient au jour même plutôt que d'appeler l'API sans date.
     params: () => ({ date: this.date() || dakarToday(), station: this.station() }),
     stream: ({ params }) => this.api.departures(params.date, params.station),
   });
-  protected readonly groups = computed(() => byOrigin(this.departures.value() ?? []));
   /** Gares ouvertes dans l'accordéon ; une seule gare : ouverte d'office. */
   private readonly opened = signal<ReadonlySet<number>>(new Set());
 

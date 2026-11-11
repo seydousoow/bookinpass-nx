@@ -29,7 +29,9 @@
   } @else {
     <ul class="grid gap-2">
       @for (l of list.value(); track l.code) {
-        <li class="bo-card"><ng-container *ngTemplateOutlet="item; context: { $implicit: l }" /></li>
+        <li class="bo-card">
+          <ng-container *ngTemplateOutlet="item; context: { $implicit: l }" />
+        </li>
       }
     </ul>
   }

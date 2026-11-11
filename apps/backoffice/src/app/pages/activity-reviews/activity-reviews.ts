@@ -53,14 +53,14 @@ export class ActivityReviewsPage {
     return Number.isInteger(id) && id > 0 ? id : null;
   });
   private readonly api = inject(StaffApi);
-  private readonly router = inject(Router);
   protected readonly settings = rxResource({ stream: () => this.api.activitySettings() });
-  private readonly activities = rxResource({ stream: () => this.api.activities() });
-  protected readonly activityOptions = computed((): ISelectOption<number>[] => (this.activities.value() ?? []).map((a) => ({ value: a.id, label: a.title })));
   protected readonly list = rxResource({
     params: () => ({ status: this.status(), activity: this.activityId(), page: this.page() - 1 }),
     stream: ({ params }) => this.api.reviews(params.status, params.activity, params.page),
   });
+  private readonly router = inject(Router);
+  private readonly activities = rxResource({ stream: () => this.api.activities() });
+  protected readonly activityOptions = computed((): ISelectOption<number>[] => (this.activities.value() ?? []).map((a) => ({ value: a.id, label: a.title })));
 
   protected show(status: ReviewStatus | ''): void {
     this.status.set(status);

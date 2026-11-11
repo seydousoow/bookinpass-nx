@@ -1,8 +1,8 @@
 import { Component, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router, RouterOutlet } from '@angular/router';
-import { TranslocoDirective } from '@jsverse/transloco';
 import { Spinner } from 'components/spinner/spinner';
+import { NgOptimizedImage } from '@angular/common';
 
 /**
  * Racine : la page de la route courante. Pendant une navigation (chargement d'une page, lecture de la session), une
@@ -11,7 +11,7 @@ import { Spinner } from 'components/spinner/spinner';
  */
 @Component({
   selector: 'bo-root',
-  imports: [RouterOutlet, TranslocoDirective, Spinner],
+  imports: [RouterOutlet, Spinner, NgOptimizedImage],
   template: `
     @if (navigating()) {
       <div aria-hidden="true" class="fixed inset-x-0 top-0 z-50 h-1 overflow-hidden bg-brand-soft">
@@ -19,8 +19,10 @@ import { Spinner } from 'components/spinner/spinner';
       </div>
     }
     @if (navigating() && !shown()) {
-      <div *transloco="let t" class="flex min-h-screen flex-col items-center justify-center gap-4 p-4">
-        <img alt="Book In Pass" class="h-12 w-auto" src="/images/bip-transparent-logo.png" />
+      <div class="flex min-h-screen flex-col items-center justify-center gap-4 p-4">
+        <div class="relative h-12">
+          <img alt="Book In Pass" fill ngSrc="/images/bip-transparent-logo.png" />
+        </div>
         <bip-spinner label="app.loading" showLabel />
       </div>
     }

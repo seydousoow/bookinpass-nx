@@ -17,21 +17,59 @@ export const appRoutes: Route[] = [
   {
     path: '',
     canActivate: [signedInGuard],
-    loadComponent: () => import('./pages/shell/shell').then((m) => m.Shell),
+    loadComponent: () => import('./pages/main/main').then((m) => m.Main),
     children: [
       { path: '', pathMatch: 'full', loadComponent: () => import('./pages/dashboard/dashboard').then((m) => m.DashboardPage) },
       { path: 'departures', loadComponent: () => import('./pages/departures/departures').then((m) => m.DeparturesPage) },
       { path: 'departures/:id', loadComponent: () => import('./pages/departure/departure').then((m) => m.DeparturePage) },
-      // Le contrôle des billets est sur l'accueil.
-      { path: 'scan', redirectTo: () => inject(Router).createUrlTree(['/'], { fragment: 'control' }) },
-      { path: 'luggage', canActivate: [roleGuard], data: { roles: CHIEFS }, loadComponent: () => import('./pages/luggage/luggage').then((m) => m.LuggagePage) },
-      { path: 'incidents', loadComponent: () => import('./pages/incidents/incidents').then((m) => m.IncidentsPage) },
-      { path: 'bookings', loadComponent: () => import('./pages/bookings/bookings').then((m) => m.BookingsPage) },
-      { path: 'refunds', canActivate: [roleGuard], data: { roles: MANAGERS }, loadComponent: () => import('./pages/refunds/refunds').then((m) => m.RefundsPage) },
-      { path: 'routes', canActivate: [roleGuard], data: { roles: MANAGERS }, loadComponent: () => import('./pages/routes/routes').then((m) => m.RoutesPage) },
-      { path: 'staff', canActivate: [roleGuard], data: { roles: MANAGERS }, loadComponent: () => import('./pages/staff/staff').then((m) => m.StaffPage) },
-      { path: 'activities', canActivate: [roleGuard], data: { roles: MANAGERS }, loadComponent: () => import('./pages/activities/activities').then((m) => m.ActivitiesPage) },
-      { path: 'activities/:id', canActivate: [roleGuard], data: { roles: MANAGERS }, loadComponent: () => import('./pages/activity/activity').then((m) => m.ActivityPage) },
+      {
+        path: 'scan',
+        redirectTo: () => inject(Router).createUrlTree(['/'], { fragment: 'control' }),
+      },
+      {
+        path: 'incidents',
+        loadComponent: () => import('./pages/incidents/incidents').then((m) => m.IncidentsPage),
+      },
+      {
+        path: 'bookings',
+        loadComponent: () => import('./pages/bookings/bookings').then((m) => m.BookingsPage),
+      },
+      {
+        path: 'luggage',
+        canActivate: [roleGuard],
+        data: { roles: CHIEFS },
+        loadComponent: () => import('./pages/luggage/luggage').then((m) => m.LuggagePage),
+      },
+      {
+        path: 'refunds',
+        canActivate: [roleGuard],
+        data: { roles: MANAGERS },
+        loadComponent: () => import('./pages/refunds/refunds').then((m) => m.RefundsPage),
+      },
+      {
+        path: 'routes',
+        canActivate: [roleGuard],
+        data: { roles: MANAGERS },
+        loadComponent: () => import('./pages/routes/routes').then((m) => m.RoutesPage),
+      },
+      {
+        path: 'staff',
+        canActivate: [roleGuard],
+        data: { roles: MANAGERS },
+        loadComponent: () => import('./pages/staff/staff').then((m) => m.StaffPage),
+      },
+      {
+        path: 'activities',
+        canActivate: [roleGuard],
+        data: { roles: MANAGERS },
+        loadComponent: () => import('./pages/activities/activities').then((m) => m.ActivitiesPage),
+      },
+      {
+        path: 'activities/:id',
+        canActivate: [roleGuard],
+        data: { roles: MANAGERS },
+        loadComponent: () => import('./pages/activity/activity').then((m) => m.ActivityPage),
+      },
       {
         path: 'activity-bookings',
         canActivate: [roleGuard],

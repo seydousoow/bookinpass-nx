@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { TranslocoService } from '@jsverse/transloco';
 import { button, renderPage, staffUser } from '../../../testing';
-import { Shell } from './shell';
+import { Main } from './main';
 
 describe('Shell', () => {
   afterEach(() => localStorage.clear());
@@ -9,12 +9,12 @@ describe('Shell', () => {
   const sections = (element: HTMLElement) => [...element.querySelectorAll('nav a')].map((a) => a.textContent?.trim()).filter((v, i, all) => all.indexOf(v) === i);
 
   it('ne montre à un contrôleur que les sections de gare', async () => {
-    const { element } = await renderPage(Shell, { user: staffUser('inspector') });
+    const { element } = await renderPage(Main, { user: staffUser('inspector') });
     expect(sections(element)).toEqual(['nav.home', 'nav.scan', 'nav.departures', 'nav.incidents', 'nav.bookings']);
   });
 
   it('montre tout aux responsables', async () => {
-    const { element } = await renderPage(Shell, { user: staffUser('manager') });
+    const { element } = await renderPage(Main, { user: staffUser('manager') });
     expect(sections(element)).toEqual([
       'nav.home',
       'nav.scan',
@@ -32,20 +32,20 @@ describe('Shell', () => {
   });
 
   it('mène « Contrôle » au formulaire de l’accueil', async () => {
-    const { element } = await renderPage(Shell, { user: staffUser('inspector') });
+    const { element } = await renderPage(Main, { user: staffUser('inspector') });
     const control = [...element.querySelectorAll('nav a')].find((a) => a.textContent?.trim() === 'nav.scan');
     expect(control?.getAttribute('href')).toBe('/#control');
   });
 
   it('affiche le membre connecté et sa gare', async () => {
-    const { element } = await renderPage(Shell, { user: staffUser('station_chief') });
+    const { element } = await renderPage(Main, { user: staffUser('station_chief') });
     expect(element.textContent).toContain('Awa Diop');
     expect(element.textContent).toContain('roles.station_chief');
     expect(element.textContent).toContain('Gare des Baux maraîchers');
   });
 
   it('change de langue et la retient sur l’appareil', async () => {
-    const { element, stable } = await renderPage(Shell);
+    const { element, stable } = await renderPage(Main);
     button(element, 'en').click();
     await stable();
     expect(TestBed.inject(TranslocoService).getActiveLang()).toBe('en');
@@ -53,7 +53,7 @@ describe('Shell', () => {
   });
 
   it('déconnecte puis revient à la connexion', async () => {
-    const { element, stable, api, navigate } = await renderPage(Shell);
+    const { element, stable, api, navigate } = await renderPage(Main);
     button(element, 'app.logout').click();
     await stable();
     expect(api.logout).toHaveBeenCalled();

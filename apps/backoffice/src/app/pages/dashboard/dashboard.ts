@@ -63,14 +63,13 @@ export class DashboardPage {
   protected readonly dateTime = dakarDateTime;
   protected readonly timing = incidentTiming;
   protected readonly refundTones = REFUND_TONES;
-  private readonly api = inject(StaffApi);
-  private readonly manager = computed(() => this.session.manager());
-
-  protected readonly openIncidents = rxResource({ stream: () => this.api.incidents(true, null) });
-  protected readonly resolvedIncidents = rxResource({ stream: () => this.api.resolvedIncidents(RESOLVED_INCIDENTS, null) });
   protected readonly ongoing = computed(() => (this.openIncidents.value() ?? []).filter((i) => incidentTiming(i) === 'ongoing'));
   protected readonly expected = computed(() => (this.openIncidents.value() ?? []).filter((i) => incidentTiming(i) === 'expected'));
-
+  protected readonly shownReviews = computed(() => (this.pendingReviews.value()?.items ?? []).slice(0, PENDING_REVIEWS_SHOWN));
+  private readonly api = inject(StaffApi);
+  protected readonly openIncidents = rxResource({ stream: () => this.api.incidents(true, null) });
+  protected readonly resolvedIncidents = rxResource({ stream: () => this.api.resolvedIncidents(RESOLVED_INCIDENTS, null) });
+  private readonly manager = computed(() => this.session.manager());
   protected readonly settings = rxResource({
     params: () => this.manager() || undefined,
     stream: () => this.api.activitySettings(),
@@ -79,8 +78,6 @@ export class DashboardPage {
     params: () => this.manager() || undefined,
     stream: () => this.api.reviews('pending', null, 0),
   });
-  protected readonly shownReviews = computed(() => (this.pendingReviews.value()?.items ?? []).slice(0, PENDING_REVIEWS_SHOWN));
-
   private readonly busRefunds = rxResource({
     params: () => this.manager() || undefined,
     stream: () => this.api.refunds(false),

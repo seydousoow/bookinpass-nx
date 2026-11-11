@@ -1,7 +1,7 @@
 <section *transloco="let t" class="space-y-4">
   <div class="flex flex-wrap items-end gap-3">
     <h1 class="mr-auto text-xl font-bold">{{ t('departures.title') }}</h1>
-    <bip-input [value]="date()" (valueChange)="date.set($event)" class="w-44" label="common.date" name="date" type="date" />
+    <bip-input (valueChange)="date.set($event)" [value]="date()" class="w-44" label="common.date" name="date" type="date" />
     @if (session.manager()) {
       <bip-select (valueChange)="station.set($event[0] ?? null)" [options]="stations()" [value]="[station()]" class="w-64" label="common.station" name="station" />
     }

@@ -18,7 +18,7 @@ import { dakarDateTime } from '../../core/dakar';
 import { ACTIVITY_CATEGORIES, ActivityCity, ActivityDetail, ActivityForm, ActivityStatus, ItineraryStop, STOP_KINDS } from '../../core/models';
 import { translatedOptions } from '../../core/options';
 import { STATUS_TONES } from '../activities/activities';
-import { activityForm, emptyActivity, emptyStop, GENERAL_LIST_KEYS, KNOW_BEFORE_KEYS, LIST_KEYS, ListKey, lines, missing, payload } from './activity-form';
+import { activityForm, emptyActivity, emptyStop, GENERAL_LIST_KEYS, KNOW_BEFORE_KEYS, lines, LIST_KEYS, ListKey, missing, payload } from './activity-form';
 import { ActivityImages } from './activity-images';
 import { ActivityOptions } from './activity-options';
 import { ActivitySlots } from './activity-slots';
@@ -43,19 +43,19 @@ export class ActivityPage {
   protected readonly categories = translatedOptions(ACTIVITY_CATEGORIES, 'activities.categories.');
   protected readonly stopKinds = translatedOptions(STOP_KINDS, 'activity.stop-kinds.');
   protected readonly isNew = computed(() => this.id() === 'new');
-  private readonly api = inject(StaffApi);
-  private readonly router = inject(Router);
-  protected readonly saved = rxResource({
-    params: () => (this.isNew() ? undefined : Number(this.id())),
-    stream: ({ params }) => this.api.activity(params),
-  });
-
   /** Saisie en cours ; repart de la fiche enregistrée à chaque chargement ou enregistrement. */
   protected readonly form = signal<ActivityForm>(emptyActivity());
   /** Zones de texte des listes, une ligne par élément. */
   protected readonly listText = signal<Readonly<Record<ListKey, string>>>(listTexts(emptyActivity()));
   protected readonly city = signal<ActivityCity | null>(null);
   protected readonly cityQuery = signal<string | null>('');
+  protected readonly problems = signal<readonly string[]>([]);
+  protected readonly savedAt = signal<string | null>(null);
+  private readonly api = inject(StaffApi);
+  protected readonly saved = rxResource({
+    params: () => (this.isNew() ? undefined : Number(this.id())),
+    stream: ({ params }) => this.api.activity(params),
+  });
   protected readonly cities = toSignal(
     toObservable(this.cityQuery).pipe(
       debounceTime(250),
@@ -63,8 +63,7 @@ export class ActivityPage {
     ),
     { initialValue: [] },
   );
-  protected readonly problems = signal<readonly string[]>([]);
-  protected readonly savedAt = signal<string | null>(null);
+  private readonly router = inject(Router);
 
   constructor() {
     effect(() => {

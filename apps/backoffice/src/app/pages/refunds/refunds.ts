@@ -28,6 +28,7 @@ export class RefundsPage {
   /** Note de remboursement en cours de saisie, par paiement. */
   protected readonly notes = signal<Readonly<Record<number, string>>>({});
   protected readonly dateTime = dakarDateTime;
+  protected readonly activityNotes = signal<Readonly<Record<number, string>>>({});
   private readonly api = inject(StaffApi);
   protected readonly list = rxResource({
     params: () => this.all(),
@@ -38,7 +39,6 @@ export class RefundsPage {
     params: () => this.all(),
     stream: ({ params }) => this.api.activityRefunds(params),
   });
-  protected readonly activityNotes = signal<Readonly<Record<number, string>>>({});
 
   protected setNote(id: number, text: string | null): void {
     this.notes.update((all) => ({ ...all, [id]: text ?? '' }));

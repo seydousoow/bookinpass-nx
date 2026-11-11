@@ -34,6 +34,7 @@ export class Header {
   readonly cartCount = input(0);
   /** Beaucoup d'entrées (back-office) : logo plus petit, menu sur plusieurs lignes au besoin. */
   readonly compact = input(false, { transform: booleanAttribute });
+  readonly full = input(false, { transform: booleanAttribute });
   protected readonly mobileOpen = signal(false);
 
   protected readonly langs = computed(() => this.languages().map((language) => (typeof language === 'string' ? language : language.label)));
