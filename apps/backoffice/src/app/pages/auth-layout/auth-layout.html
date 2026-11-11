@@ -1,0 +1,61 @@
+<main *transloco="let t" class="grid min-h-screen lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
+  <!-- Panneau de marque : le réseau qui s'anime, ce que l'on fait au back-office. Décoratif sur petit écran : masqué. -->
+  <aside class="relative hidden overflow-hidden bg-linear-to-br from-brand-primary to-brand-dark p-10 text-onbrand lg:flex lg:flex-col lg:justify-between">
+    <div aria-hidden="true" class="pointer-events-none absolute -top-24 -right-24 size-96 rounded-full bg-white/10 blur-2xl"></div>
+    <div aria-hidden="true" class="pointer-events-none absolute -bottom-32 -left-16 size-96 rounded-full bg-white/5 blur-2xl"></div>
+
+    <p class="relative text-sm font-semibold tracking-widest text-white/80 uppercase">{{ t('login.brand.kicker') }}</p>
+
+    <figure class="relative">
+      <svg aria-hidden="true" class="w-full max-w-lg" fill="none" viewBox="0 0 400 240">
+        <path
+          class="bo-route"
+          d="M30 200 L140 150 L250 110 L370 40"
+          stroke="currentColor"
+          stroke-dasharray="6 10"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-opacity="0.7"
+          stroke-width="3" />
+        @for (stop of stops; track stop.name) {
+          <circle [attr.cx]="stop.x" [attr.cy]="stop.y" fill="currentColor" r="7" />
+          <circle [attr.cx]="stop.x" [attr.cy]="stop.y" class="bo-pulse" fill="none" r="12" stroke="currentColor" stroke-opacity="0.5" stroke-width="2" />
+          <text [attr.x]="stop.x" [attr.y]="stop.y + 28" class="text-[13px] font-semibold" fill="currentColor" text-anchor="middle">{{ stop.name }}</text>
+        }
+        <g class="bo-bus">
+          <rect fill="white" height="14" rx="4" width="24" x="-12" y="-7" />
+          <rect class="fill-brand-primary" height="5" rx="1" width="16" x="-8" y="-4" />
+          <animateMotion dur="9s" path="M30 200 L140 150 L250 110 L370 40" repeatCount="indefinite" rotate="auto" />
+        </g>
+      </svg>
+    </figure>
+
+    <div class="relative space-y-6">
+      <h2 class="max-w-md text-3xl leading-tight font-bold">{{ t('login.brand.title') }}</h2>
+      <ul class="grid gap-3 text-sm">
+        <li class="flex items-center gap-3">
+          <span class="grid size-9 place-items-center rounded-full bg-white/15"><ng-icon aria-hidden="true" name="heroQrCode" size="18" /></span>
+          {{ t('login.brand.control') }}
+        </li>
+        <li class="flex items-center gap-3">
+          <span class="grid size-9 place-items-center rounded-full bg-white/15"><ng-icon aria-hidden="true" name="heroChatBubbleLeftRight" size="18" /></span>
+          {{ t('login.brand.reviews') }}
+        </li>
+        <li class="flex items-center gap-3">
+          <span class="grid size-9 place-items-center rounded-full bg-white/15"><ng-icon aria-hidden="true" name="heroBanknotes" size="18" /></span>
+          {{ t('login.brand.refunds') }}
+        </li>
+      </ul>
+    </div>
+  </aside>
+
+  <!-- Contenu de la page : connexion, changement de mot de passe… -->
+  <div class="flex items-center justify-center bg-surface-muted p-4 sm:p-8">
+    <bip-card class="w-full max-w-sm" padding="lg">
+      <div class="space-y-5">
+        <img alt="Book In Pass" class="h-12 w-auto" height="512" ngSrc="/images/bip-transparent-logo.png" priority width="2112" />
+        <ng-content />
+      </div>
+    </bip-card>
+  </div>
+</main>

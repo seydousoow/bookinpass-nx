@@ -1,13 +1,9 @@
 import { Component, DestroyRef, inject, signal } from '@angular/core';
-import { NgOptimizedImage } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { form, FormField, FormRoot, required } from '@angular/forms/signals';
 import { TranslocoDirective } from '@jsverse/transloco';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import { heroBanknotes, heroChatBubbleLeftRight, heroQrCode } from '@ng-icons/heroicons/outline';
 import { Button } from 'components/button/button';
-import { Card } from 'components/card/card';
 import { Input } from 'components/input/input';
 import { Spinner } from 'components/spinner/spinner';
 import { catchError, map, Observable, of, Subscription, timeout, timer } from 'rxjs';
@@ -15,6 +11,7 @@ import { createAction } from '../../core/action';
 import { StaffApi } from '../../core/api';
 import { StaffUser } from '../../core/models';
 import { Session, SESSION_CHECK_MS } from '../../core/session';
+import { AuthLayout } from '../auth-layout/auth-layout';
 
 /** État du serveur vu par la page : en cours de vérification, joignable, injoignable. */
 export type ServerState = 'checking' | 'online' | 'offline';
@@ -48,21 +45,13 @@ export function serverState(me: Observable<StaffUser>): Observable<{ status: Exc
  */
 @Component({
   selector: 'bo-login',
-  imports: [NgOptimizedImage, TranslocoDirective, NgIcon, FormField, FormRoot, Button, Card, Input, Spinner],
-  providers: [provideIcons({ heroBanknotes, heroChatBubbleLeftRight, heroQrCode })],
+  imports: [TranslocoDirective, FormField, FormRoot, Button, Input, Spinner, AuthLayout],
   templateUrl: './login.html',
 })
 export class LoginPage {
   protected readonly action = createAction();
   protected readonly server = signal<ServerState>('checking');
   protected readonly greeting = greeting();
-  /** Gares du tracé décoratif (noms propres, non traduits), placées sur la ligne du dessin. */
-  protected readonly stops = [
-    { name: 'Dakar', x: 30, y: 200 },
-    { name: 'Thiès', x: 140, y: 150 },
-    { name: 'Touba', x: 250, y: 110 },
-    { name: 'Saint-Louis', x: 370, y: 40 },
-  ] as const;
   private readonly api = inject(StaffApi);
   private readonly session = inject(Session);
   private readonly router = inject(Router);

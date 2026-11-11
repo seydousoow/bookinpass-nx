@@ -3,11 +3,11 @@ import { Router } from '@angular/router';
 import { form, FormField, FormRoot, minLength, required, validate } from '@angular/forms/signals';
 import { TranslocoDirective } from '@jsverse/transloco';
 import { Button } from 'components/button/button';
-import { Card } from 'components/card/card';
 import { Input } from 'components/input/input';
 import { createAction } from '../../core/action';
 import { StaffApi } from '../../core/api';
 import { Session } from '../../core/session';
+import { AuthLayout } from '../auth-layout/auth-layout';
 
 /** Règle du serveur pour un mot de passe : une lettre et un chiffre au moins (la longueur est vérifiée à part). */
 const LETTER_AND_DIGIT = /^(?=.*\p{L})(?=.*\d)/u;
@@ -15,7 +15,7 @@ const LETTER_AND_DIGIT = /^(?=.*\p{L})(?=.*\d)/u;
 /** Nouveau mot de passe : obligatoire après un mot de passe provisoire, possible à tout moment. */
 @Component({
   selector: 'bo-password',
-  imports: [TranslocoDirective, FormField, FormRoot, Button, Card, Input],
+  imports: [TranslocoDirective, FormField, FormRoot, Button, Input, AuthLayout],
   templateUrl: './password.html',
 })
 export class PasswordPage {
