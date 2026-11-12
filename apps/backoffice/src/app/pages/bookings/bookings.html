@@ -1,54 +1,135 @@
-<section *transloco="let t" class="space-y-4">
-  <h1 class="text-xl font-bold">{{ t('bookings.title') }}</h1>
-  <form (submit)="$event.preventDefault(); search()" class="flex flex-wrap items-end gap-2 bo-card">
-    <bip-input [(value)]="query" [maxLength]="50" autocomplete="off" class="min-w-64 flex-1" label="bookings.query" name="q" type="search" />
-    <button [disabled]="trimmed().length < minQuery" [loading]="action.busy()" bipButton type="submit">{{ t('bookings.search') }}</button>
-  </form>
+<section *transloco="let t" class="space-y-6">
+  <bo-page-header [subtitle]="t('bookings.subtitle')" [title]="t('bookings.title')">
+    <form (submit)="$event.preventDefault(); search()" class="flex flex-col gap-3 rounded-card border border-border-subtle bg-surface-card p-3 sm:flex-row sm:items-end">
+      <bip-input [(value)]="query" [maxLength]="50" autocomplete="off" class="flex-1" label="bookings.query" name="q" type="search" />
+      <button [disabled]="trimmed().length < minQuery" [loading]="action.busy()" bipButton type="submit">
+        <ng-icon aria-hidden="true" name="heroMagnifyingGlass" size="18" />
+        {{ t('bookings.search') }}
+      </button>
+    </form>
+  </bo-page-header>
+
   @if (action.error(); as code) {
-    <p class="text-state-error" role="alert">{{ t('errors.' + code) }}</p>
+    <p class="rounded-card bg-state-error-soft p-3 text-sm text-state-error" role="alert">{{ t('errors.' + code) }}</p>
   }
-  @if (notice(); as text) {
-    <p class="rounded-card bg-state-success-soft p-3 text-sm text-state-success" role="status">{{ text }}</p>
-  }
-  @if (results(); as list) {
-    @if (!list.length) {
-      <bip-system-state status="empty" title="bookings.none" />
-    }
-    <ul class="grid gap-2">
-      @for (b of list; track b.reference) {
-        <li class="space-y-2 bo-card text-sm">
-          <div class="flex flex-wrap items-start justify-between gap-2">
-            <div>
-              <p>
-                <span class="font-mono text-base font-bold">{{ b.reference }}</span> · {{ b.origin }} → {{ b.destination }}
-              </p>
-              <a [routerLink]="['/departures', b.departure_id]" class="text-brand-primary underline">{{ dateTime(b.departs_at) }}</a>
-              <p class="text-muted">
-                {{ b.email }} · <a [href]="'tel:' + b.phone" class="underline">{{ b.phone }}</a>
-              </p>
-            </div>
-            <div class="flex flex-col items-end gap-1">
-              <bip-badge [tone]="b.status === 'confirmed' ? 'success' : 'warning'" size="sm">{{ t('bookings.status.' + b.status) }}</bip-badge>
-              <p>{{ b.total }} {{ b.currency }}</p>
-              @if (b.payment_method) {
-                <p class="text-xs text-muted">{{ t('bookings.method.' + b.payment_method) }} · {{ t('bookings.payment.' + b.payment_status) }}</p>
-              }
-            </div>
-          </div>
-          <ul class="border-t border-border-subtle pt-2">
-            @for (ticket of b.tickets; track $index) {
-              <li class="flex flex-wrap justify-between gap-2">
-                <span>{{ ticket.given_name }} {{ ticket.family_name }}</span>
-                <span class="font-mono">{{ ticket.code ?? '—' }}</span>
-                <span [class.text-state-success]="ticket.scanned_at">{{ ticket.scanned_at ? '✓ ' + time(ticket.scanned_at) : t('bookings.not-scanned') }}</span>
-              </li>
+
+  <div class="overflow-hidden rounded-card border border-border-subtle bg-surface-card">
+    @if (results(); as list) {
+      @if (!list.length) {
+        <bo-empty [message]="t('bookings.none-hint')" [title]="t('bookings.none')" icon="heroMagnifyingGlass" />
+      } @else {
+        <p class="border-b border-border-subtle px-4 py-2.5 text-sm text-muted">{{ t('bookings.count', { count: list.length }) }}</p>
+        <table class="bo-table">
+          <thead>
+            <tr>
+              <th scope="col">{{ t('bookings.reference') }}</th>
+              <th scope="col">{{ t('bookings.passenger') }}</th>
+              <th scope="col">{{ t('bookings.trip') }}</th>
+              <th class="bo-num" scope="col">{{ t('bookings.travellers') }}</th>
+              <th class="bo-num" scope="col">{{ t('bookings.amount') }}</th>
+              <th scope="col">{{ t('bookings.state') }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (b of list; track b.reference) {
+              <tr
+                (click)="selected.set(b)"
+                (keydown.enter)="selected.set(b)"
+                [attr.aria-label]="t('bookings.open', { reference: b.reference })"
+                data-clickable
+                role="button"
+                tabindex="0">
+                <td class="bo-cell-main font-mono font-semibold">{{ b.reference }}</td>
+                <td [attr.data-label]="t('bookings.passenger')">
+                  <span class="block">{{ lead(b) }}</span>
+                  <span class="block text-xs text-muted">{{ b.phone }}</span>
+                </td>
+                <td [attr.data-label]="t('bookings.trip')">
+                  <span class="block">{{ b.origin }} → {{ b.destination }}</span>
+                  <span class="block text-xs text-muted">{{ dateTime(b.departs_at) }}</span>
+                </td>
+                <td [attr.data-label]="t('bookings.travellers')" class="bo-num">{{ b.tickets.length }}</td>
+                <td [attr.data-label]="t('bookings.amount')" class="bo-num">
+                  <span class="block font-semibold whitespace-nowrap">{{ b.total }} {{ b.currency }}</span>
+                  @if (b.payment_method) {
+                    <span class="block text-xs text-muted">{{ t('bookings.method.' + b.payment_method) }}</span>
+                  }
+                </td>
+                <td [attr.data-label]="t('bookings.state')">
+                  <bo-status [tone]="tones[b.status]">{{ t('bookings.status.' + b.status) }}</bo-status>
+                </td>
+              </tr>
             }
-          </ul>
-          @if (session.chief() && b.status === 'confirmed') {
-            <button (clicked)="resend(b)" [loading]="action.busy()" bipButton size="sm" variant="outline">{{ t('bookings.resend') }}</button>
-          }
-        </li>
+          </tbody>
+        </table>
       }
-    </ul>
-  }
+    } @else {
+      <bo-empty [message]="t('bookings.start-hint')" [title]="t('bookings.start')" icon="heroTicket" />
+    }
+  </div>
+
+  <!-- Détail d'une réservation -->
+  <bo-drawer
+    (closed)="selected.set(null); notice.set(null)"
+    [opened]="!!selected()"
+    [subtitle]="selected() ? selected()!.origin + ' → ' + selected()!.destination : ''"
+    [title]="selected()?.reference ?? ''">
+    @if (selected(); as b) {
+      <div class="flex flex-wrap items-center gap-2">
+        <bo-status [tone]="tones[b.status]">{{ t('bookings.status.' + b.status) }}</bo-status>
+        @if (b.payment_status) {
+          <bo-status>{{ t('bookings.method.' + b.payment_method) }} · {{ t('bookings.payment.' + b.payment_status) }}</bo-status>
+        }
+      </div>
+      <dl class="grid grid-cols-2 gap-4 text-sm">
+        <div>
+          <dt class="text-xs text-muted">{{ t('bookings.departure') }}</dt>
+          <dd>
+            <a [routerLink]="['/departures', b.departure_id]" class="bo-link font-normal">{{ dateTime(b.departs_at) }}</a>
+          </dd>
+        </div>
+        <div>
+          <dt class="text-xs text-muted">{{ t('bookings.amount') }}</dt>
+          <dd class="font-semibold">{{ b.total }} {{ b.currency }}</dd>
+        </div>
+        <div>
+          <dt class="text-xs text-muted">{{ t('bookings.email') }}</dt>
+          <dd class="break-all">{{ b.email }}</dd>
+        </div>
+        <div>
+          <dt class="text-xs text-muted">{{ t('bookings.phone') }}</dt>
+          <dd>
+            <a [href]="'tel:' + b.phone" class="bo-link font-normal">{{ b.phone }}</a>
+          </dd>
+        </div>
+      </dl>
+      <div>
+        <h3 class="mb-2 text-sm font-semibold">{{ t('bookings.tickets', { count: b.tickets.length }) }}</h3>
+        <ul class="divide-y divide-border-subtle rounded-card border border-border-subtle">
+          @for (ticket of b.tickets; track $index) {
+            <li class="flex flex-wrap items-center justify-between gap-2 px-3 py-2.5 text-sm">
+              <span class="font-semibold">{{ ticket.given_name }} {{ ticket.family_name }}</span>
+              <span class="font-mono text-muted">{{ ticket.code ?? '—' }}</span>
+              @if (ticket.scanned_at) {
+                <bo-status tone="success">{{ t('bookings.scanned-at', { time: time(ticket.scanned_at) }) }}</bo-status>
+              } @else {
+                <bo-status>{{ t('bookings.not-scanned') }}</bo-status>
+              }
+            </li>
+          }
+        </ul>
+      </div>
+      @if (notice(); as text) {
+        <p class="rounded-card bg-state-success-soft p-3 text-sm text-state-success" role="status">{{ text }}</p>
+      }
+    }
+    @if (session.chief() && selected()?.status === 'confirmed') {
+      <ng-container drawerFooter>
+        <button (clicked)="resend(selected()!)" [loading]="action.busy()" bipButton variant="outline">
+          <ng-icon aria-hidden="true" name="heroEnvelope" size="18" />
+          {{ t('bookings.resend') }}
+        </button>
+      </ng-container>
+    }
+  </bo-drawer>
 </section>

@@ -1,82 +1,102 @@
-<section *transloco="let t" class="space-y-4">
-  <div class="flex flex-wrap items-center gap-3">
-    <h1 class="mr-auto text-xl font-bold">{{ t('activities.title') }}</h1>
-    <a bipButton routerLink="/activities/new">{{ t('activities.new') }}</a>
-  </div>
-  <p class="text-xs text-muted">{{ t('activities.hint') }}</p>
-
-  <div class="flex flex-wrap items-end gap-3">
-    <bip-input [(value)]="query" class="min-w-64 flex-1" label="activities.search" name="activity-search" type="search" />
-    <div [attr.aria-label]="t('activities.status')" class="flex flex-wrap gap-2" role="group">
-      <button
-        (click)="status.set(null)"
-        [attr.aria-pressed]="!status()"
-        [class.bg-surface-muted]="!status()"
-        class="bip-focusable min-h-11 rounded-pill border border-border-subtle px-4 text-sm font-semibold"
-        type="button">
-        {{ t('activities.all') }}
-      </button>
-      @for (s of statuses; track s) {
-        <button
-          (click)="status.set(s)"
-          [attr.aria-pressed]="status() === s"
-          [class.bg-surface-muted]="status() === s"
-          class="bip-focusable min-h-11 rounded-pill border border-border-subtle px-4 text-sm font-semibold"
-          type="button">
-          {{ t('activities.statuses.' + s) }}
+<section *transloco="let t" class="space-y-6">
+  <bo-page-header [subtitle]="t('activities.hint')" [title]="t('activities.title')">
+    <a actions bipButton routerLink="/activities/new">
+      <ng-icon aria-hidden="true" name="heroPlus" size="18" />
+      {{ t('activities.new') }}</a
+    >
+    <bo-filter-toolbar (cleared)="query.set(''); status.set(null)" [active]="(query()?.trim() ? 1 : 0) + (status() ? 1 : 0)" [resetLabel]="t('common.reset-filters')">
+      <bip-input [(value)]="query" class="sm:min-w-72 sm:flex-1" label="activities.search" name="activity-search" type="search" />
+      <div [attr.aria-label]="t('activities.status')" class="flex flex-wrap gap-1.5 sm:mb-1" role="group">
+        <button (click)="status.set(null)" [attr.aria-pressed]="!status()" class="bo-chip" type="button">
+          {{ t('activities.all') }} <span class="text-xs tabular-nums opacity-70">{{ counts().all }}</span>
         </button>
-      }
-    </div>
-  </div>
+        @for (s of statuses; track s) {
+          <button (click)="status.set(s)" [attr.aria-pressed]="status() === s" class="bo-chip" type="button">
+            {{ t('activities.statuses.' + s) }} <span class="text-xs tabular-nums opacity-70">{{ counts()[s] }}</span>
+          </button>
+        }
+      </div>
+    </bo-filter-toolbar>
+  </bo-page-header>
 
-  @if (list.isLoading() && !list.hasValue()) {
-    <bip-spinner class="py-8" label="common.loading" showLabel />
-  } @else if (list.error()) {
-    <bip-system-state (retry)="list.reload()" message="errors.unexpected" status="error" />
-  } @else if (!shown().length) {
-    <bip-system-state status="empty" title="activities.none" />
-  }
-  <ul class="grid gap-2">
-    @for (a of shown(); track a.id) {
-      <li>
-        <a [routerLink]="['/activities', a.id]" class="bip-focusable flex gap-3 bo-card hover:border-brand-primary">
-          <span class="size-20 shrink-0 overflow-hidden rounded-card bg-surface-muted">
-            @if (a.image) {
-              <img [alt]="a.image.alt ?? ''" [src]="a.image.url" class="size-full object-cover" loading="lazy" />
-            }
-          </span>
-          <span class="min-w-0 flex-1">
-            <span class="flex flex-wrap items-center gap-2">
-              <span class="font-bold">{{ a.title }}</span>
-              <bip-badge [tone]="tones[a.status]" size="sm">{{ t('activities.statuses.' + a.status) }}</bip-badge>
-              @if (endingSoon(a)) {
-                <span
-                  [title]="a.last_slot_at ? t('activities.slots-ending', { time: dateTime(a.last_slot_at) }) : t('activities.no-slots')"
-                  class="inline-flex items-center gap-1 rounded-pill bg-state-warning px-2 text-xs font-semibold text-ink">
-                  <ng-icon aria-hidden="true" name="heroExclamationTriangle" />
-                  {{ a.last_slot_at ? t('activities.slots-ending', { time: dateTime(a.last_slot_at) }) : t('activities.no-slots') }}
+  <div class="overflow-hidden rounded-card border border-border-subtle bg-surface-card">
+    @if (list.isLoading() && !list.hasValue()) {
+      <bip-system-state [skeletonCount]="4" [skeletonHeight]="64" class="p-4" status="loading" />
+    } @else if (list.error()) {
+      <bip-system-state (retry)="list.reload()" class="p-4" message="errors.unexpected" status="error" />
+    } @else if (!shown().length) {
+      @if (!list.value()?.length) {
+        <bo-empty [message]="t('activities.none-hint')" [title]="t('activities.none')" icon="heroMap">
+          <a bipButton routerLink="/activities/new">
+            <ng-icon aria-hidden="true" name="heroPlus" size="18" />
+            {{ t('activities.new') }}</a
+          >
+        </bo-empty>
+      } @else {
+        <bo-empty [message]="t('activities.no-match-hint')" [title]="t('activities.no-match')" icon="heroMagnifyingGlass">
+          <button (click)="query.set(''); status.set(null)" bipButton size="sm" variant="outline">{{ t('common.reset-filters') }}</button>
+        </bo-empty>
+      }
+    } @else {
+      <table class="bo-table">
+        <thead>
+          <tr>
+            <th scope="col">{{ t('activities.columns.activity') }}</th>
+            <th scope="col">{{ t('activities.columns.category') }}</th>
+            <th scope="col">{{ t('activities.status') }}</th>
+            <th scope="col">{{ t('activities.columns.availability') }}</th>
+            <th class="bo-num" scope="col">{{ t('activities.columns.rating') }}</th>
+            <th scope="col">{{ t('activities.columns.updated') }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (a of shown(); track a.id) {
+            <tr (click)="open(a.id)" data-clickable>
+              <td class="bo-cell-main">
+                <span class="flex items-center gap-3">
+                  <span class="size-12 shrink-0 overflow-hidden rounded-button bg-surface-muted">
+                    @if (a.image) {
+                      <img [alt]="a.image.alt ?? ''" [src]="a.image.url" class="size-full object-cover" loading="lazy" />
+                    } @else {
+                      <ng-icon aria-hidden="true" class="m-3.5 text-border-strong" name="heroPhoto" size="20" />
+                    }
+                  </span>
+                  <span class="min-w-0">
+                    <a
+                      (click)="$event.stopPropagation()"
+                      [routerLink]="['/activities', a.id]"
+                      class="bip-focusable block truncate rounded-[4px] font-semibold text-ink hover:text-brand-primary"
+                      >{{ a.title }}</a
+                    >
+                    <span class="block text-xs text-muted">{{ a.city.name }} · {{ t('activities.options-count', { count: a.options }) }}</span>
+                  </span>
                 </span>
-              }
-            </span>
-            <span class="block text-sm text-muted"
-              >{{ a.city.name }} · {{ t('activities.categories.' + a.category) }} · {{ t('activities.options-count', { count: a.options }) }}</span
-            >
-            <span class="block text-sm">
-              @if (a.rating !== null) {
-                ★ {{ a.rating }} ({{ a.review_count }})
-              } @else {
-                {{ t('activities.no-reviews') }}
-              }
-            </span>
-            <span class="block text-xs text-muted">{{ t('activities.updated', { time: dateTime(a.updated_at) }) }}</span>
-          </span>
-          <span [title]="t('activities.upcoming', { count: a.upcoming_bookings })" class="flex shrink-0 flex-col items-center justify-center px-2 text-center">
-            <ng-icon aria-hidden="true" class="text-muted" name="heroCalendarDays" size="20" />
-            <span class="text-xl font-bold">{{ a.upcoming_bookings }}</span>
-            <span class="text-xs text-muted">{{ t('activities.upcoming-label') }}</span>
-          </span>
-        </a>
-      </li>
+              </td>
+              <td [attr.data-label]="t('activities.columns.category')">{{ t('activities.categories.' + a.category) }}</td>
+              <td [attr.data-label]="t('activities.status')">
+                <bo-status [tone]="tones[a.status]">{{ t('activities.statuses.' + a.status) }}</bo-status>
+              </td>
+              <td [attr.data-label]="t('activities.columns.availability')">
+                @if (endingSoon(a)) {
+                  <span class="inline-flex items-center gap-1 text-xs font-semibold text-state-warning">
+                    <ng-icon aria-hidden="true" name="heroExclamationTriangle" size="16" />
+                    {{ a.last_slot_at ? t('activities.slots-ending', { time: dateTime(a.last_slot_at) }) : t('activities.no-slots') }}
+                  </span>
+                }
+                <span class="block text-xs text-muted">{{ t('activities.upcoming', { count: a.upcoming_bookings }) }}</span>
+              </td>
+              <td [attr.data-label]="t('activities.columns.rating')" class="bo-num whitespace-nowrap">
+                @if (a.rating !== null) {
+                  <span aria-hidden="true" class="text-brand-accent">★</span> {{ a.rating }} <span class="text-xs text-muted">({{ a.review_count }})</span>
+                } @else {
+                  <span class="text-xs text-muted">{{ t('activities.no-reviews') }}</span>
+                }
+              </td>
+              <td [attr.data-label]="t('activities.columns.updated')" class="text-xs whitespace-nowrap text-muted">{{ dateTime(a.updated_at) }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
     }
-  </ul>
+  </div>
 </section>

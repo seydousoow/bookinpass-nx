@@ -4,7 +4,9 @@ import { RouterLink } from '@angular/router';
 import { form, FormField, FormRoot, maxLength, min, required, validate } from '@angular/forms/signals';
 import { TranslocoDirective } from '@jsverse/transloco';
 import { Observable } from 'rxjs';
-import { Badge, Button, Input, PhoneInput, Select, Spinner, SystemState } from 'components';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { heroArrowLeft } from '@ng-icons/heroicons/outline';
+import { Button, Input, PhoneInput, Select, SystemState, Textarea } from 'components';
 import { createAction } from '../../core/action';
 import { StaffApi } from '../../core/api';
 import { Session } from '../../core/session';
@@ -12,6 +14,8 @@ import { dakarDateTime, dakarTime } from '../../core/dakar';
 import { DepartureDetail, INCIDENT_TYPES, IncidentType } from '../../core/models';
 import { translatedOptions } from '../../core/options';
 import { isValidPhone } from 'utils/phone-number.utils';
+import { PageHeader, StatusBadge } from '../../ui';
+import { departureStatus, departureTone, percent } from '../departures/departures';
 
 interface LuggageDraft {
   sender_name: string;
@@ -41,7 +45,8 @@ const EMPTY_LUGGAGE: LuggageDraft = {
  */
 @Component({
   selector: 'bo-departure',
-  imports: [RouterLink, TranslocoDirective, FormField, FormRoot, Badge, Button, Input, PhoneInput, Select, Spinner, SystemState],
+  imports: [RouterLink, TranslocoDirective, NgIcon, FormField, FormRoot, Button, Input, PhoneInput, Select, SystemState, Textarea, PageHeader, StatusBadge],
+  providers: [provideIcons({ heroArrowLeft })],
   templateUrl: './departure.html',
 })
 export class DeparturePage {
@@ -60,6 +65,9 @@ export class DeparturePage {
   protected readonly incidentText = signal<string | null>('');
   protected readonly time = dakarTime;
   protected readonly dateTime = dakarDateTime;
+  protected readonly status = departureStatus;
+  protected readonly statusTone = departureTone;
+  protected readonly percent = percent;
 
   private readonly luggage = signal<LuggageDraft>({ ...EMPTY_LUGGAGE });
   protected readonly luggageForm = form(

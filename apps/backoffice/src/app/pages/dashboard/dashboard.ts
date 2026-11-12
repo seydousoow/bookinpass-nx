@@ -3,9 +3,8 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { TranslocoDirective } from '@jsverse/transloco';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { heroBanknotes, heroCalendarDays, heroChatBubbleLeftRight, heroExclamationTriangle, heroSparkles } from '@ng-icons/heroicons/outline';
-import { Badge, BadgeTone } from 'components/badge/badge';
-import { Spinner } from 'components/spinner/spinner';
+import { heroBanknotes, heroCalendarDays, heroChatBubbleLeftRight, heroCheckCircle, heroChevronRight, heroExclamationTriangle, heroSparkles } from '@ng-icons/heroicons/outline';
+import { BadgeTone } from 'components/badge/badge';
 import { SystemState } from 'components/system-state/system-state';
 import { slotsEndingSoon } from '../../core/activity-alerts';
 import { StaffApi } from '../../core/api';
@@ -13,6 +12,7 @@ import { dakarDateTime } from '../../core/dakar';
 import { ActivityRefund, Incident } from '../../core/models';
 import { Session } from '../../core/session';
 import { ScanPage } from '../scan/scan';
+import { EmptyState, PageHeader, StatCard, StatusBadge } from '../../ui';
 
 /** Avis en attente montrés sur l'accueil ; les autres sont sur la page de modération. */
 const PENDING_REVIEWS_SHOWN = 5;
@@ -54,8 +54,8 @@ function activityRefundState(refund: ActivityRefund): RefundRow['state'] {
  */
 @Component({
   selector: 'bo-dashboard',
-  imports: [RouterLink, TranslocoDirective, NgIcon, Badge, Spinner, SystemState, ScanPage],
-  providers: [provideIcons({ heroBanknotes, heroCalendarDays, heroChatBubbleLeftRight, heroExclamationTriangle, heroSparkles })],
+  imports: [RouterLink, TranslocoDirective, NgIcon, SystemState, ScanPage, EmptyState, PageHeader, StatCard, StatusBadge],
+  providers: [provideIcons({ heroBanknotes, heroCalendarDays, heroChatBubbleLeftRight, heroCheckCircle, heroChevronRight, heroExclamationTriangle, heroSparkles })],
   templateUrl: './dashboard.html',
 })
 export class DashboardPage {
@@ -63,11 +63,10 @@ export class DashboardPage {
   protected readonly dateTime = dakarDateTime;
   protected readonly timing = incidentTiming;
   protected readonly refundTones = REFUND_TONES;
-  protected readonly ongoing = computed(() => (this.openIncidents.value() ?? []).filter((i) => incidentTiming(i) === 'ongoing'));
-  protected readonly expected = computed(() => (this.openIncidents.value() ?? []).filter((i) => incidentTiming(i) === 'expected'));
-  protected readonly shownReviews = computed(() => (this.pendingReviews.value()?.items ?? []).slice(0, PENDING_REVIEWS_SHOWN));
   private readonly api = inject(StaffApi);
   protected readonly openIncidents = rxResource({ stream: () => this.api.incidents(true, null) });
+  protected readonly ongoing = computed(() => (this.openIncidents.value() ?? []).filter((i) => incidentTiming(i) === 'ongoing'));
+  protected readonly expected = computed(() => (this.openIncidents.value() ?? []).filter((i) => incidentTiming(i) === 'expected'));
   protected readonly resolvedIncidents = rxResource({ stream: () => this.api.resolvedIncidents(RESOLVED_INCIDENTS, null) });
   private readonly manager = computed(() => this.session.manager());
   protected readonly settings = rxResource({
@@ -78,6 +77,7 @@ export class DashboardPage {
     params: () => this.manager() || undefined,
     stream: () => this.api.reviews('pending', null, 0),
   });
+  protected readonly shownReviews = computed(() => (this.pendingReviews.value()?.items ?? []).slice(0, PENDING_REVIEWS_SHOWN));
   private readonly busRefunds = rxResource({
     params: () => this.manager() || undefined,
     stream: () => this.api.refunds(false),

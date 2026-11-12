@@ -1,4 +1,4 @@
-import { AsYouType, CountryCode, isValidPhoneNumber, parsePhoneNumberFromString } from 'libphonenumber-js/min';
+import parsePhoneNumberFromString, { AsYouType, CountryCode, isValidPhoneNumber } from 'libphonenumber-js/min';
 
 /** Numéro E.164 valide (`+221771234567`) : à utiliser dans le schéma du formulaire, avec `validate`. */
 export function isValidPhone(e164: string | null | undefined): boolean {

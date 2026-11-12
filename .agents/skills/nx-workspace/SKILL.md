@@ -185,7 +185,7 @@ Example output:
   "name": "my-app",
   "sourceRoot": "apps/my-app/src",
   "projectType": "application",
-  "tags": ["type:app", "scope:client"],
+  "tags": ["layer:app", "scope:client"],
   "targets": {
     "build": {
       "executor": "@nx/vite:build",
@@ -235,18 +235,16 @@ Example output:
       "my-app": {
         "name": "my-app",
         "type": "app",
-        "data": { "root": "apps/my-app", "tags": ["type:app"] }
+        "data": { "root": "apps/my-app", "tags": ["layer:app"] }
       },
       "shared-ui": {
         "name": "shared-ui",
         "type": "lib",
-        "data": { "root": "libs/shared-ui", "tags": ["type:ui"] }
+        "data": { "root": "libs/shared-ui", "tags": ["layer:ui"] }
       }
     },
     "dependencies": {
-      "my-app": [
-        { "source": "my-app", "target": "shared-ui", "type": "static" }
-      ],
+      "my-app": [{ "source": "my-app", "target": "shared-ui", "type": "static" }],
       "shared-ui": []
     }
   }

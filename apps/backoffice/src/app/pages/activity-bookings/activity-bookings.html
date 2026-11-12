@@ -1,66 +1,101 @@
-<section *transloco="let t" class="space-y-4">
-  <h1 class="text-xl font-bold">{{ t('activity-bookings.title') }}</h1>
-  <p class="text-xs text-muted">{{ t('activity-bookings.hint') }}</p>
+<section *transloco="let t" class="space-y-6">
+  <bo-page-header [subtitle]="t('activity-bookings.hint')" [title]="t('activity-bookings.title')">
+    <bo-filter-toolbar (cleared)="resetFilters()" [active]="activeFilters()" [resetLabel]="t('common.reset-filters')">
+      <bip-input (valueChange)="filter(query, $event)" [value]="query()" class="sm:min-w-64 sm:flex-[2]" label="activity-bookings.search" name="booking-search" type="search" />
+      <bip-select
+        (valueChange)="filter(status, $event[0] ?? null)"
+        [options]="statusOptions()"
+        [value]="status() ? [status()!] : []"
+        class="sm:w-44"
+        label="activity-bookings.status"
+        name="booking-status"
+        placeholder="activity-bookings.any" />
+      <bip-select
+        (valueChange)="filter(activityId, $event[0] ?? null)"
+        [options]="activityOptions()"
+        [value]="activityId() === null ? [] : [activityId()!]"
+        class="sm:w-56"
+        label="activity-bookings.activity"
+        name="booking-activity"
+        placeholder="activity-bookings.any" />
+      <div class="grid grid-cols-2 gap-2 sm:w-80">
+        <bip-input (valueChange)="filter(from, $event)" [value]="from()" label="activity-bookings.from" name="booking-from" type="date" />
+        <bip-input (valueChange)="filter(to, $event)" [value]="to()" label="activity-bookings.to" name="booking-to" type="date" />
+      </div>
+    </bo-filter-toolbar>
+  </bo-page-header>
 
-  <div class="grid gap-3 bo-card sm:grid-cols-2 lg:grid-cols-5 lg:items-end">
-    <bip-input (valueChange)="filter(query, $event)" [value]="query()" class="lg:col-span-2" label="activity-bookings.search" name="booking-search" type="search" />
-    <bip-select
-      (valueChange)="filter(status, $event[0] ?? null)"
-      [options]="statusOptions()"
-      [value]="status() ? [status()!] : []"
-      label="activity-bookings.status"
-      name="booking-status"
-      placeholder="activity-bookings.any" />
-    <bip-select
-      (valueChange)="filter(activityId, $event[0] ?? null)"
-      [options]="activityOptions()"
-      [value]="activityId() === null ? [] : [activityId()!]"
-      label="activity-bookings.activity"
-      name="booking-activity"
-      placeholder="activity-bookings.any" />
-    <div class="grid grid-cols-2 gap-2">
-      <bip-input (valueChange)="filter(from, $event)" [value]="from()" label="activity-bookings.from" name="booking-from" type="date" />
-      <bip-input (valueChange)="filter(to, $event)" [value]="to()" label="activity-bookings.to" name="booking-to" type="date" />
-    </div>
-  </div>
-
-  @if (list.isLoading() && !list.hasValue()) {
-    <bip-spinner class="py-8" label="common.loading" showLabel />
-  } @else if (list.error()) {
-    <bip-system-state (retry)="list.reload()" message="errors.unexpected" status="error" />
-  } @else if (list.value(); as result) {
-    <p class="text-sm text-muted" role="status">{{ t('activity-bookings.count', { count: result.total }) }}</p>
-    @if (!result.items.length) {
-      <bip-system-state status="empty" title="activity-bookings.none" />
-    }
-    <ul class="grid gap-2">
-      @for (b of result.items; track b.reference) {
-        <li>
-          <a [routerLink]="['/activity-bookings', b.reference]" class="bip-focusable flex flex-wrap items-start justify-between gap-2 bo-card text-sm hover:border-brand-primary">
-            <span>
-              <span class="flex flex-wrap items-center gap-2">
-                <span class="font-mono text-base font-bold">{{ b.reference }}</span>
-                <bip-badge [tone]="tones[b.status]" size="sm">{{ t('activity-bookings.statuses.' + b.status) }}</bip-badge>
-                @if (b.refunded !== '0') {
-                  <bip-badge size="sm" tone="info">{{ t('activity-bookings.refunded', { amount: b.refunded, currency: b.currency }) }}</bip-badge>
-                }
-              </span>
-              <span class="block font-semibold">{{ b.activity_title }} · {{ b.option_title }}</span>
-              <span class="block">{{ when(b.starts_at, b.timezone) }} · {{ t('activity-bookings.participants', { adults: b.adults, children: b.children }) }}</span>
-              <span class="block text-muted">{{ b.given_name }} {{ b.family_name }} · {{ b.email }} · {{ b.phone }}</span>
-            </span>
-            <span class="text-right">
-              <span class="block text-lg font-bold">{{ b.total }} {{ b.currency }}</span>
-              @if (b.payment_method) {
-                <span class="block text-xs text-muted">{{ t('activity-bookings.methods.' + b.payment_method) }} · {{ b.payment_status }}</span>
-              }
-            </span>
-          </a>
-        </li>
+  <div class="overflow-hidden rounded-card border border-border-subtle bg-surface-card">
+    @if (list.isLoading() && !list.hasValue()) {
+      <bip-system-state [skeletonCount]="5" [skeletonHeight]="48" class="p-4" status="loading" />
+    } @else if (list.error()) {
+      <bip-system-state (retry)="list.reload()" class="p-4" message="errors.unexpected" status="error" />
+    } @else if (list.value(); as result) {
+      <p class="border-b border-border-subtle px-4 py-2.5 text-sm text-muted" role="status">{{ t('activity-bookings.count', { count: result.total }) }}</p>
+      @if (!result.items.length) {
+        <bo-empty [message]="t(activeFilters() ? 'activity-bookings.none-filtered' : 'activity-bookings.none-hint')" [title]="t('activity-bookings.none')" icon="heroCalendarDays">
+          @if (activeFilters()) {
+            <button (click)="resetFilters()" bipButton size="sm" variant="outline">{{ t('common.reset-filters') }}</button>
+          }
+        </bo-empty>
+      } @else {
+        <table class="bo-table">
+          <thead>
+            <tr>
+              <th scope="col">{{ t('bookings.reference') }}</th>
+              <th scope="col">{{ t('refunds.customer') }}</th>
+              <th scope="col">{{ t('refunds.activity') }}</th>
+              <th scope="col">{{ t('activity-bookings.slot') }}</th>
+              <th class="bo-num" scope="col">{{ t('activity-bookings.party') }}</th>
+              <th class="bo-num" scope="col">{{ t('bookings.amount') }}</th>
+              <th scope="col">{{ t('bookings.state') }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (b of result.items; track b.reference) {
+              <tr (click)="open(b.reference)" data-clickable>
+                <td class="bo-cell-main">
+                  <a
+                    (click)="$event.stopPropagation()"
+                    [routerLink]="['/activity-bookings', b.reference]"
+                    class="bip-focusable rounded-[4px] font-mono font-semibold text-brand-primary hover:underline"
+                    >{{ b.reference }}</a
+                  >
+                </td>
+                <td [attr.data-label]="t('refunds.customer')">
+                  <span class="block">{{ b.given_name }} {{ b.family_name }}</span>
+                  <span class="block text-xs text-muted">{{ b.phone }}</span>
+                </td>
+                <td [attr.data-label]="t('refunds.activity')">
+                  <span class="block">{{ b.activity_title }}</span>
+                  <span class="block text-xs text-muted">{{ b.option_title }}</span>
+                </td>
+                <td [attr.data-label]="t('activity-bookings.slot')" class="whitespace-nowrap">{{ when(b.starts_at, b.timezone) }}</td>
+                <td [attr.data-label]="t('activity-bookings.party')" class="bo-num whitespace-nowrap">
+                  {{ t('activity-bookings.participants', { adults: b.adults, children: b.children }) }}
+                </td>
+                <td [attr.data-label]="t('bookings.amount')" class="bo-num">
+                  <span class="block font-semibold whitespace-nowrap">{{ b.total }} {{ b.currency }}</span>
+                  @if (b.payment_method) {
+                    <span class="block text-xs text-muted">{{ t('activity-bookings.methods.' + b.payment_method) }} · {{ b.payment_status }}</span>
+                  }
+                </td>
+                <td [attr.data-label]="t('bookings.state')">
+                  <bo-status [tone]="tones[b.status]">{{ t('activity-bookings.statuses.' + b.status) }}</bo-status>
+                  @if (b.refunded !== '0') {
+                    <span class="mt-1 block text-xs text-muted">{{ t('activity-bookings.refunded', { amount: b.refunded, currency: b.currency }) }}</span>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+        @if (result.total > pageSize) {
+          <div class="border-t border-border-subtle p-3">
+            <bip-pagination [(page)]="page" [pageSize]="pageSize" [total]="result.total" />
+          </div>
+        }
       }
-    </ul>
-    @if (result.total > pageSize) {
-      <bip-pagination [(page)]="page" [pageSize]="pageSize" [total]="result.total" />
     }
-  }
+  </div>
 </section>

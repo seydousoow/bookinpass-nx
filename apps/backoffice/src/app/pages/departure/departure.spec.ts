@@ -109,7 +109,7 @@ describe('DeparturePage', () => {
     const api = staffApiMock({ departure: () => of(detail()), reportIncident: () => of({} as never) });
     const { element, fixture, stable } = await open(staffUser('inspector'), api);
     pick(fixture, 0, 'breakdown');
-    type(get<HTMLInputElement>(element, 'input[name="incident-text"]'), ' Pneu crevé ');
+    type(get<HTMLInputElement>(element, 'textarea[name="incident-text"]'), ' Pneu crevé ');
     await stable();
     button(element, 'incidents.report').click();
     await stable();

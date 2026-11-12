@@ -1,84 +1,154 @@
-<section *transloco="let t" class="space-y-4">
-  <h1 class="text-xl font-bold">{{ t('staff.title') }}</h1>
+<section *transloco="let t" class="space-y-6">
+  <bo-page-header [subtitle]="t('staff.subtitle')" [title]="t('staff.title')">
+    <button (clicked)="creating.set(true)" actions bipButton>
+      <ng-icon aria-hidden="true" name="heroUserPlus" size="18" />
+      {{ t('staff.new') }}
+    </button>
+  </bo-page-header>
+
   @if (action.error(); as code) {
-    <p class="text-state-error" role="alert">{{ t('errors.' + code) }}</p>
+    <p class="rounded-card bg-state-error-soft p-3 text-sm text-state-error" role="alert">{{ t('errors.' + code) }}</p>
   }
   @if (issued(); as p) {
-    <p class="rounded-card bg-state-warning-soft p-3 text-sm" role="status">
-      {{ t('staff.issued', { username: p.username }) }} <span class="font-mono text-base font-bold">{{ p.password }}</span>
-    </p>
-  }
-
-  <form [formRoot]="createForm" class="grid gap-3 bo-card sm:grid-cols-2 lg:grid-cols-3" novalidate>
-    <h2 class="font-bold sm:col-span-2 lg:col-span-3">{{ t('staff.new') }}</h2>
-    <bip-input [formField]="createForm.username" autocapitalize="none" autocomplete="off" label="staff.username" />
-    <bip-input [formField]="createForm.full_name" label="staff.full-name" />
-    <bip-phone-input [formField]="createForm.phone" label="staff.phone" />
-    <bip-select (valueChange)="newRole.set($event[0] ?? 'inspector')" [options]="roleOptions()" [value]="[newRole()]" label="staff.role" name="role" />
-    @if (needsStation(newRole())) {
-      <bip-select
-        (valueChange)="newStation.set($event[0] ?? null)"
-        [options]="stations()"
-        [value]="newStation() === null ? [] : [newStation()!]"
-        label="common.station"
-        name="station" />
-    }
-    <div class="flex items-end">
-      <button [loading]="action.busy()" bipButton type="submit">{{ t('staff.create') }}</button>
+    <div class="flex flex-wrap items-center gap-3 rounded-card border border-state-warning/30 bg-state-warning-soft p-4 text-sm" role="status">
+      <ng-icon aria-hidden="true" class="shrink-0 text-state-warning" name="heroKey" size="20" />
+      <p class="min-w-0 flex-1">
+        {{ t('staff.issued', { username: p.username }) }}
+        <span class="rounded-button bg-surface-card px-2 py-0.5 font-mono text-base font-semibold select-all">{{ p.password }}</span>
+      </p>
+      <button (clicked)="issued.set(null)" bipButton size="sm" variant="ghost">{{ t('staff.issued-done') }}</button>
     </div>
-  </form>
-
-  @if (list.isLoading() && !list.hasValue()) {
-    <bip-spinner class="py-8" label="common.loading" showLabel />
-  } @else if (list.error()) {
-    <bip-system-state (retry)="list.reload()" message="errors.unexpected" status="error" />
   }
-  <ul class="grid gap-2">
-    @for (u of list.value() ?? []; track u.id) {
-      <li [class.opacity-60]="!u.active" class="space-y-3 bo-card">
-        <p class="flex flex-wrap items-center justify-between gap-2 text-sm">
-          <span class="flex flex-wrap items-center gap-2">
-            <span class="font-semibold">{{ u.full_name }}</span> · <span class="font-mono">{{ u.username }}</span>
-            @if (u.must_change_password) {
-              <bip-badge size="sm" tone="warning">{{ t('staff.temporary') }}</bip-badge>
-            }
-          </span>
-          <span class="text-muted">{{ u.last_login_at ? t('staff.last-login', { time: dateTime(u.last_login_at) }) : t('staff.never') }}</span>
+
+  <!-- Votre compte, à part : il ne se modifie pas ici. -->
+  @if (me(); as u) {
+    <div class="flex flex-wrap items-center gap-3 bo-card">
+      <span aria-hidden="true" class="grid size-10 place-items-center rounded-full bg-brand-soft text-sm font-semibold text-brand-primary">{{ initials(u.full_name) }}</span>
+      <div class="min-w-0 flex-1">
+        <p class="font-semibold">
+          {{ u.full_name }} <span class="font-mono text-sm font-normal text-muted">· {{ u.username }}</span>
         </p>
-        @if (u.id !== session.user()?.id) {
-          @let draft = edit(u);
-          <div class="flex flex-wrap items-end gap-3">
-            <bip-input (valueChange)="patch(u, { full_name: $event ?? '' })" [name]="'name-' + u.id" [value]="draft.full_name" label="staff.full-name" />
-            <bip-input (valueChange)="patch(u, { phone: $event ?? '' })" [name]="'phone-' + u.id" [value]="draft.phone" class="w-44" label="staff.phone" type="tel" />
-            <bip-select
-              (valueChange)="patch(u, { role: $event[0] ?? draft.role })"
-              [name]="'role-' + u.id"
-              [options]="roleOptions()"
-              [value]="[draft.role]"
-              class="w-52"
-              label="staff.role" />
-            @if (needsStation(draft.role)) {
-              <bip-select
-                (valueChange)="patch(u, { station_id: $event[0] ?? null })"
-                [name]="'station-' + u.id"
-                [options]="stations()"
-                [value]="draft.station_id === null ? [] : [draft.station_id]"
-                class="w-64"
-                label="common.station" />
-            }
-            <bip-checkbox
-              (checkedChange)="patch(u, { active: $event })"
-              [checked]="draft.active"
-              [label]="t('staff.active')"
-              [name]="'active-' + u.id"
-              class="flex min-h-11 items-center" />
-            <button (clicked)="save(u)" [loading]="action.busy()" bipButton variant="outline">{{ t('common.save') }}</button>
-            <button (clicked)="reset(u)" [loading]="action.busy()" bipButton variant="outline">{{ t('staff.reset') }}</button>
-          </div>
-        } @else {
-          <p class="text-xs text-muted">{{ t('roles.' + u.role) }} · {{ t('staff.yourself') }}</p>
-        }
-      </li>
+        <p class="text-xs text-muted">{{ t('roles.' + u.role) }}{{ u.station ? ' · ' + u.station.name : '' }} · {{ t('staff.yourself') }}</p>
+      </div>
+      <span class="text-xs text-muted">{{ u.last_login_at ? t('staff.last-login', { time: dateTime(u.last_login_at) }) : t('staff.never') }}</span>
+    </div>
+  }
+
+  <div class="overflow-hidden rounded-card border border-border-subtle bg-surface-card">
+    @if (list.isLoading() && !list.hasValue()) {
+      <bip-system-state [skeletonCount]="4" [skeletonHeight]="48" class="p-4" status="loading" />
+    } @else if (list.error()) {
+      <bip-system-state (retry)="list.reload()" class="p-4" message="errors.unexpected" status="error" />
+    } @else if (!others().length) {
+      <bo-empty [message]="t('staff.none-hint')" [title]="t('staff.none')" icon="heroUsers">
+        <button (clicked)="creating.set(true)" bipButton size="sm" variant="outline">{{ t('staff.new') }}</button>
+      </bo-empty>
+    } @else {
+      <table class="bo-table">
+        <thead>
+          <tr>
+            <th scope="col">{{ t('staff.full-name') }}</th>
+            <th scope="col">{{ t('staff.username') }}</th>
+            <th scope="col">{{ t('staff.phone') }}</th>
+            <th scope="col">{{ t('staff.role') }}</th>
+            <th scope="col">{{ t('common.station') }}</th>
+            <th scope="col">{{ t('staff.state') }}</th>
+            <th scope="col">{{ t('staff.last-login-column') }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (u of others(); track u.id) {
+            <tr
+              (click)="selectedId.set(u.id)"
+              (keydown.enter)="selectedId.set(u.id)"
+              [attr.aria-label]="t('staff.open', { name: u.full_name })"
+              data-clickable
+              role="button"
+              tabindex="0">
+              <td class="bo-cell-main font-semibold">{{ u.full_name }}</td>
+              <td [attr.data-label]="t('staff.username')" class="font-mono">{{ u.username }}</td>
+              <td [attr.data-label]="t('staff.phone')">{{ u.phone ?? '—' }}</td>
+              <td [attr.data-label]="t('staff.role')">{{ t('roles.' + u.role) }}</td>
+              <td [attr.data-label]="t('common.station')">{{ u.station?.name ?? '—' }}</td>
+              <td [attr.data-label]="t('staff.state')">
+                <span class="inline-flex flex-wrap justify-end gap-1">
+                  <bo-status [tone]="u.active ? 'success' : 'neutral'">{{ t(u.active ? 'staff.active' : 'staff.inactive') }}</bo-status>
+                  @if (u.must_change_password) {
+                    <bo-status tone="warning">{{ t('staff.temporary') }}</bo-status>
+                  }
+                </span>
+              </td>
+              <td [attr.data-label]="t('staff.last-login-column')" class="text-xs whitespace-nowrap text-muted">
+                {{ u.last_login_at ? dateTime(u.last_login_at) : t('staff.never') }}
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
     }
-  </ul>
+  </div>
+
+  <!-- Modifier un compte -->
+  <bo-drawer (closed)="selectedId.set(null)" [opened]="!!selected()" [subtitle]="selected()?.username ?? ''" [title]="selected()?.full_name ?? ''">
+    @if (selected(); as u) {
+      @let draft = edit(u);
+      <div class="space-y-4">
+        <bip-input (valueChange)="patch(u, { full_name: $event ?? '' })" [name]="'name-' + u.id" [value]="draft.full_name" label="staff.full-name" required />
+        <bip-input (valueChange)="patch(u, { phone: $event ?? '' })" [name]="'phone-' + u.id" [value]="draft.phone" label="staff.phone" type="tel" />
+        <bip-select (valueChange)="patch(u, { role: $event[0] ?? draft.role })" [name]="'role-' + u.id" [options]="roleOptions()" [value]="[draft.role]" label="staff.role" />
+        @if (needsStation(draft.role)) {
+          <bip-select
+            (valueChange)="patch(u, { station_id: $event[0] ?? null })"
+            [name]="'station-' + u.id"
+            [options]="stations()"
+            [required]="true"
+            [value]="draft.station_id === null ? [] : [draft.station_id]"
+            label="common.station" />
+        }
+        <bip-checkbox (checkedChange)="patch(u, { active: $event })" [checked]="draft.active" [label]="t('staff.active')" [name]="'active-' + u.id" />
+        <p class="text-xs text-muted">{{ u.last_login_at ? t('staff.last-login', { time: dateTime(u.last_login_at) }) : t('staff.never') }}</p>
+      </div>
+      <div class="space-y-2 rounded-card border border-border-subtle p-3">
+        <p class="text-sm font-semibold">{{ t('staff.password') }}</p>
+        <p class="text-xs text-muted">{{ t('staff.reset-hint') }}</p>
+        <button (clicked)="resetting.set(true)" bipButton size="sm" variant="outline">{{ t('staff.reset') }}</button>
+      </div>
+    }
+    <ng-container drawerFooter>
+      <button (clicked)="selectedId.set(null)" bipButton type="button" variant="outline">{{ t('common.close') }}</button>
+      <button (clicked)="save(selected()!)" [loading]="action.busy()" bipButton>{{ t('common.save') }}</button>
+    </ng-container>
+  </bo-drawer>
+
+  <bo-confirm
+    (confirmed)="resetting.set(false); reset(selected()!)"
+    [(opened)]="resetting"
+    [cancelLabel]="t('common.cancel')"
+    [confirmLabel]="t('staff.reset-confirm')"
+    [message]="t('staff.reset-message', { name: selected()?.full_name ?? '' })"
+    [title]="t('staff.reset')" />
+
+  <!-- Nouveau compte -->
+  <bo-drawer [(opened)]="creating" [subtitle]="t('staff.new-hint')" [title]="t('staff.new')">
+    <form [formRoot]="createForm" class="space-y-4" id="new-staff" novalidate>
+      <bip-input [formField]="createForm.username" autocapitalize="none" autocomplete="off" hint="staff.username-format" label="staff.username" />
+      <bip-input [formField]="createForm.full_name" label="staff.full-name" />
+      <bip-phone-input [formField]="createForm.phone" label="staff.phone" />
+      <bip-select (valueChange)="newRole.set($event[0] ?? 'inspector')" [options]="roleOptions()" [value]="[newRole()]" label="staff.role" name="role" />
+      @if (needsStation(newRole())) {
+        <bip-select
+          (valueChange)="newStation.set($event[0] ?? null)"
+          [options]="stations()"
+          [required]="true"
+          [value]="newStation() === null ? [] : [newStation()!]"
+          label="common.station"
+          name="station" />
+      }
+      <p class="text-xs text-muted">{{ t('staff.password-hint') }}</p>
+    </form>
+    <ng-container drawerFooter>
+      <button (clicked)="creating.set(false)" bipButton type="button" variant="outline">{{ t('common.cancel') }}</button>
+      <button [loading]="action.busy()" bipButton form="new-staff" type="submit">{{ t('staff.create') }}</button>
+    </ng-container>
+  </bo-drawer>
 </section>

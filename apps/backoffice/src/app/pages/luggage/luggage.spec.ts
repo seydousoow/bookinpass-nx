@@ -44,7 +44,7 @@ describe('LuggagePage', () => {
     button(element, 'luggage.find').click();
     await stable();
     expect(api.findLuggage).toHaveBeenCalledWith('BG234567');
-    expect(element.querySelector('.border-brand-primary')?.textContent).toContain('BG234567');
+    expect(element.querySelector('[data-found]')?.textContent).toContain('BG234567');
   });
 
   it('remet un bagage au destinataire et recharge la liste', async () => {

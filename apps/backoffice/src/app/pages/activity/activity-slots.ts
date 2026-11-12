@@ -36,7 +36,7 @@ const SPANS = [1, 3, 6, 12, 24] as const;
   template: `
     <section *transloco="let t" class="space-y-3 bo-card">
       <div class="flex flex-wrap items-center gap-3">
-        <h2 class="mr-auto font-bold">{{ t('slots.title') }}</h2>
+        <h2 class="mr-auto bo-section-title">{{ t('slots.title') }}</h2>
         @if (activity().options.length) {
           <bip-select
             (valueChange)="option.set($event[0] ?? null)"
@@ -218,15 +218,8 @@ export class ActivitySlots {
   protected readonly reason = signal<string | null>('');
   protected readonly message = signal<{ key: string; count: number } | null>(null);
   protected readonly optionChoices = computed((): ISelectOption<number>[] => this.activity().options.map((o) => ({ value: o.id, label: o.title })));
-  /** Dernier jour où un créneau peut être ouvert. */
-  protected readonly horizon = computed(() => addYears(this.today(), SLOT_YEARS_AHEAD));
   protected readonly horizonLabel = computed(() => this.dayLabel(this.horizon()));
   protected readonly grid = computed(() => monthGrid(this.month()));
-  /** Un an en arrière au plus (créneaux passés), deux ans en avant (dernier jour ouvrable). */
-  protected readonly canGoBack = computed(() => {
-    const [year, month] = this.today().split('-').map(Number);
-    return this.month() > new Date(year - 1, month - 1, 1);
-  });
   protected readonly canGoForward = computed(() => {
     const [year, month] = this.horizon().split('-').map(Number);
     return this.month() < new Date(year, month - 1, 1);
@@ -234,14 +227,12 @@ export class ActivitySlots {
   private readonly zone = computed(() => this.activity().city.timezone);
   /** Aujourd'hui dans le fuseau de l'activité. */
   protected readonly today = computed(() => zonedDay(new Date().toISOString(), this.zone()));
-  /** Créneaux par jour civil du fuseau de l'activité. */
-  protected readonly byDay = computed(() => {
-    const map = new Map<string, ActivitySlot[]>();
-    for (const slot of this.list.value() ?? []) {
-      const day = zonedDay(slot.starts_at, this.zone());
-      map.set(day, [...(map.get(day) ?? []), slot]);
-    }
-    return map;
+  /** Dernier jour où un créneau peut être ouvert. */
+  protected readonly horizon = computed(() => addYears(this.today(), SLOT_YEARS_AHEAD));
+  /** Un an en arrière au plus (créneaux passés), deux ans en avant (dernier jour ouvrable). */
+  protected readonly canGoBack = computed(() => {
+    const [year, month] = this.today().split('-').map(Number);
+    return this.month() > new Date(year - 1, month - 1, 1);
   });
   private readonly parsedTimes = computed(() =>
     (this.times() ?? '')
@@ -272,6 +263,15 @@ export class ActivitySlots {
       return option === null ? undefined : { option, from: cells[0].iso, to: cells[cells.length - 1].iso };
     },
     stream: ({ params }) => this.api.slots(params.option, params.from, params.to),
+  });
+  /** Créneaux par jour civil du fuseau de l'activité. */
+  protected readonly byDay = computed(() => {
+    const map = new Map<string, ActivitySlot[]>();
+    for (const slot of this.list.value() ?? []) {
+      const day = zonedDay(slot.starts_at, this.zone());
+      map.set(day, [...(map.get(day) ?? []), slot]);
+    }
+    return map;
   });
 
   constructor() {

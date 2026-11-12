@@ -1,5 +1,4 @@
-import { booleanAttribute, Component, computed, inject, input, model, output } from '@angular/core';
-import { TranslocoService } from '@jsverse/transloco';
+import { booleanAttribute, Component, computed, input, model, output } from '@angular/core';
 import { FormValueControl, ValidationError, WithOptionalFieldTree } from '@angular/forms/signals';
 import { Field } from '../field/field';
 import { clsx } from 'clsx';
@@ -9,7 +8,7 @@ import { clsx } from 'clsx';
   imports: [Field],
   host: { class: 'block' },
   template: `
-    <bip-field [errors]="errors()" [hint]="counterHint()" [label]="label()" [name]="name()" [required]="required()" [showErrors]="touched() && invalid()">
+    <bip-field [errors]="errors()" [counter]="counter()" [hint]="hint()" [label]="label()" [name]="name()" [required]="required()" [showErrors]="touched() && invalid()">
       <textarea
         (blur)="touch.emit()"
         (input)="onInput($event)"
@@ -52,18 +51,9 @@ export class Textarea implements FormValueControl<string> {
       this.touched() && this.invalid() ? 'border-state-error focus-visible:ring-state-error' : 'border-border-strong hover:border-brand-primary/60',
     ),
   );
-  private readonly transloco = inject(TranslocoService);
-  private readonly lang = this.transloco.activeLang;
-  protected readonly counterHint = computed(() => {
+  protected readonly counter = computed(() => {
     const max = this.maxLength();
-    const key = this.hint();
-    if (!max) {
-      return key;
-    }
-    this.lang();
-    const hint = key ? this.transloco.translate(key) : '';
-    const used = this.value().length;
-    return hint ? `${hint} — ${used}/${max}` : `${used}/${max}`;
+    return max ? `${this.value().length}/${max}` : undefined;
   });
 
   protected onInput(event: Event): void {

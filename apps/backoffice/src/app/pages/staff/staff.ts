@@ -3,14 +3,14 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { form, FormField, FormRoot, maxLength, minLength, pattern, required, validate } from '@angular/forms/signals';
 import { TranslocoDirective } from '@jsverse/transloco';
 import { Observable } from 'rxjs';
-import { Badge } from 'components/badge/badge';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { heroKey, heroUserPlus, heroUsers } from '@ng-icons/heroicons/outline';
 import { Button } from 'components/button/button';
 import { Checkbox } from 'components/checkbox/checkbox';
 import { Input } from 'components/input/input';
 import { PhoneInput } from 'components/phone-input/phone-input';
 import { isValidPhone } from 'utils/phone-number.utils';
 import { Select } from 'components/select/select';
-import { Spinner } from 'components/spinner/spinner';
 import { SystemState } from 'components/system-state/system-state';
 import { createAction } from '../../core/action';
 import { StaffApi } from '../../core/api';
@@ -20,6 +20,7 @@ import { dakarDateTime } from '../../core/dakar';
 import { StaffRole, StaffUser } from '../../core/models';
 import { translatedOptions } from '../../core/options';
 import { injectStations, stationOptions } from '../../core/stations';
+import { ConfirmDialog, Drawer, EmptyState, PageHeader, StatusBadge } from '../../ui';
 
 const ROLES: readonly StaffRole[] = ['admin', 'manager', 'station_chief', 'inspector'];
 /** Rôles qu'un manager peut donner : ceux d'une gare. */
@@ -48,7 +49,8 @@ function userDraft(user: StaffUser): UserDraft {
  */
 @Component({
   selector: 'bo-staff',
-  imports: [TranslocoDirective, FormField, FormRoot, Badge, Button, Checkbox, Input, PhoneInput, Select, Spinner, SystemState],
+  imports: [TranslocoDirective, NgIcon, FormField, FormRoot, Button, Checkbox, Input, PhoneInput, Select, SystemState, ConfirmDialog, Drawer, EmptyState, PageHeader, StatusBadge],
+  providers: [provideIcons({ heroKey, heroUserPlus, heroUsers })],
   templateUrl: './staff.html',
 })
 export class StaffPage {
@@ -67,6 +69,13 @@ export class StaffPage {
   protected readonly dateTime = dakarDateTime;
   protected readonly newRole = signal<StaffRole>('inspector');
   protected readonly newStation = signal<number | null>(null);
+  /** Le compte connecté, montré à part ; les autres dans le tableau. */
+  protected readonly me = computed(() => this.list.value()?.find((u) => u.id === this.session.user()?.id) ?? null);
+  protected readonly others = computed(() => (this.list.value() ?? []).filter((u) => u.id !== this.session.user()?.id));
+  protected readonly creating = signal(false);
+  protected readonly resetting = signal(false);
+  protected readonly selectedId = signal<number | null>(null);
+  protected readonly selected = computed(() => this.others().find((u) => u.id === this.selectedId()) ?? null);
   private readonly api = inject(StaffApi);
   protected readonly list = rxResource({ stream: () => this.api.users() });
   private readonly newUser = signal({ username: '', full_name: '', phone: '' });
@@ -96,6 +105,15 @@ export class StaffPage {
   /** Brouillons d'édition par compte, créés à la première saisie. */
   private readonly drafts = signal<Readonly<Record<number, UserDraft>>>({});
 
+  protected initials(name: string): string {
+    return name
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((word) => word[0].toUpperCase())
+      .join('');
+  }
+
   protected edit(user: StaffUser): UserDraft {
     return this.drafts()[user.id] ?? userDraft(user);
   }
@@ -111,12 +129,18 @@ export class StaffPage {
       this.action.error.set('station-required');
       return;
     }
-    this.run(this.api.updateUser(user.id, { full_name: draft.full_name.trim(), phone: draft.phone.trim() || null, role: draft.role, station_id: station, active: draft.active }));
+    this.run(
+      this.api.updateUser(user.id, { full_name: draft.full_name.trim(), phone: draft.phone.trim() || null, role: draft.role, station_id: station, active: draft.active }),
+      () => this.selectedId.set(null),
+    );
   }
 
   protected reset(user: StaffUser): void {
     const password = temporaryPassword();
-    this.run(this.api.resetPassword(user.id, password), () => this.issued.set({ username: user.username, password }));
+    this.run(this.api.resetPassword(user.id, password), () => {
+      this.issued.set({ username: user.username, password });
+      this.selectedId.set(null);
+    });
   }
 
   private create(): void {
@@ -131,6 +155,7 @@ export class StaffPage {
     const password = temporaryPassword();
     this.run(this.api.createUser({ username: login, full_name: full_name.trim(), phone: phone || null, role, station_id: station, temporary_password: password }), () => {
       this.issued.set({ username: login, password });
+      this.creating.set(false);
       this.newUser.set({ username: '', full_name: '', phone: '' });
       this.createForm().reset();
     });
