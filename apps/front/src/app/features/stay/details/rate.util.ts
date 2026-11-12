@@ -47,3 +47,12 @@ export function findRate(result: IStayResult | undefined, rateId: string | null)
   }
   return undefined;
 }
+
+/**
+ * Texte brut d'un fragment HTML fourni par Duffel (conditions d'un tarif) : balises retirées, entités décodées.
+ * `DOMParser` analyse sans exécuter de script ni charger de ressource ; le résultat s'affiche par interpolation, donc
+ * toujours échappé.
+ */
+export function htmlToText(html: string): string {
+  return (new DOMParser().parseFromString(html, 'text/html').body.textContent ?? '').trim();
+}

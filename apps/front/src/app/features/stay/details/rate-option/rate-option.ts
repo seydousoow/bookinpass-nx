@@ -4,7 +4,7 @@ import { DatePipe, MoneyPipe } from 'pipes';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroCheck, heroChevronDown } from '@ng-icons/heroicons/outline';
 import { IStayRate } from 'models';
-import { cancellationPolicy } from '../rate.util';
+import { cancellationPolicy, htmlToText } from '../rate.util';
 import { staySellingTotal } from 'utils';
 
 /** Stock affiché à partir de ce seuil : « Plus que 2 chambres ». */
@@ -42,6 +42,6 @@ export class RateOption {
   });
 
   protected plain(text: string): string {
-    return text.replace(/<[^>]*>/g, '');
+    return htmlToText(text);
   }
 }
