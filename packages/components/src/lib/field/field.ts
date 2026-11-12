@@ -10,7 +10,7 @@ import { TranslocoPipe } from '@jsverse/transloco';
   providers: [provideIcons({ heroExclamationCircleSolid })],
   template: `
     @if (label() && !hideLabel()) {
-      <label [attr.for]="name()" class="text-xs text-muted mb-1 block font-semibold">
+      <label [attr.for]="name()" class="mb-1 block text-xs font-semibold text-muted">
         {{ label() | transloco }}
         @if (required()) {
           <span aria-hidden="true" class="text-state-error">*</span>
@@ -26,14 +26,15 @@ import { TranslocoPipe } from '@jsverse/transloco';
       <!-- Cible de l'aria-describedby des champs (\`<name>-error\`). -->
       <div [id]="name() + '-error'">
         @for (error of errors(); track $index) {
-          <p class="text-xs text-state-error flex items-center gap-1">
+          <p class="flex items-center gap-1 text-xs text-state-error">
             <ng-icon color="red" name="heroExclamationCircleSolid" />
             <span>{{ error.message | transloco }}</span>
           </p>
         }
       </div>
-    } @else if (hint()) {
-      <p [id]="name() + '-hint'" class="text-xs text-muted">{{ hint() | transloco }}</p>
+    } @else if (hint() || counter()) {
+      <!-- Le compteur est déjà formaté (ex. « 0/1000 ») : on ne le traduit pas. -->
+      <p [id]="name() + '-hint'" class="text-xs text-muted">{{ hint() | transloco }}{{ hint() && counter() ? ' — ' : '' }}{{ counter() }}</p>
     }
   `,
   imports: [NgIcon, TranslocoPipe],
@@ -42,6 +43,8 @@ export class Field {
   readonly label = input.required<string>();
   readonly name = input.required<string>();
   readonly hint = input<string>();
+  /** Texte affiché tel quel après l'aide (compteur de caractères, etc.). */
+  readonly counter = input<string>();
   readonly errors = input<readonly WithOptionalFieldTree<ValidationError>[]>([]);
   readonly showErrors = input(false);
 
