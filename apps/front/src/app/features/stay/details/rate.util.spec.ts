@@ -1,5 +1,5 @@
 import { IStayRate, IStayResult, IStayRoom } from 'models';
-import { cancellationPolicy, findRate, roomsByPrice } from './rate.util';
+import { cancellationPolicy, findRate, htmlToText, roomsByPrice } from './rate.util';
 
 const rate = (id: string, total: string, timeline: { before: string; refund_amount: string }[] = []): IStayRate =>
   ({ id, total_amount: total, cancellation_timeline: timeline.map((t) => ({ ...t, currency: 'EUR' })) }) as unknown as IStayRate;
@@ -42,5 +42,23 @@ describe('chambres et tarifs', () => {
     expect(findRate(result, 'd2')?.room.name).toBe('Double');
     expect(findRate(result, 'zz')).toBeUndefined();
     expect(findRate(result, null)).toBeUndefined();
+  });
+});
+
+describe('htmlToText', () => {
+  it('retire les balises et décode les entités', () => {
+    expect(htmlToText('<p>Petit-d&eacute;jeuner <b>inclus</b> &amp; parking</p>')).toBe('Petit-déjeuner inclus & parking');
+  });
+
+  it('ne laisse aucune balise reconstituée', () => {
+    expect(htmlToText('<scr<script>ipt>alert(1)</script>Annulation')).not.toContain('<script');
+  });
+
+  it('un « < » échappé reste du texte (affiché par interpolation, donc jamais un élément)', () => {
+    expect(htmlToText('Enfants &lt;12 ans')).toBe('Enfants <12 ans');
+  });
+
+  it('texte sans HTML : inchangé', () => {
+    expect(htmlToText('  Non remboursable ')).toBe('Non remboursable');
   });
 });
