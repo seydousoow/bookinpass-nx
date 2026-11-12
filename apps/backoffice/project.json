@@ -4,7 +4,7 @@
   "projectType": "application",
   "prefix": "bo",
   "sourceRoot": "apps/backoffice/src",
-  "tags": ["type:app", "scope:backoffice"],
+  "tags": ["kind:application", "layer:app", "scope:backoffice"],
   "targets": {
     "build": {
       "executor": "@angular/build:application",

@@ -4,6 +4,6 @@
   "sourceRoot": "packages/configurations/src",
   "prefix": "bip",
   "projectType": "library",
-  "tags": ["test", "lint", "type:config", "scope:shared"],
+  "tags": ["kind:library", "test", "lint", "layer:config", "scope:shared"],
   "targets": {}
 }

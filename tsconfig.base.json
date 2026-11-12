@@ -15,8 +15,8 @@
     "skipLibCheck": true,
     "strict": true,
     "target": "es2022",
-    "noUncheckedSideEffectImports": false,
-    "types": ["*"],
+    "noUncheckedSideEffectImports": true,
+    "types": [],
     "paths": {
       "components": ["./packages/components/src/index.ts"],
       "components/*": ["./packages/components/src/lib/*"],

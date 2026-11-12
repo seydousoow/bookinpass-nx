@@ -12,7 +12,7 @@
       "!{projectRoot}/.eslintrc.json",
       "!{projectRoot}/eslint.config.mjs"
     ],
-    "sharedGlobals": ["{workspaceRoot}/.github/workflows/ci.yml"]
+    "sharedGlobals": ["{workspaceRoot}/package-lock.json", "{workspaceRoot}/nx.json", "{workspaceRoot}/tsconfig.base.json"]
   },
   "plugins": [
     {
@@ -111,6 +111,15 @@
       "dependsOn": ["^build"],
       "inputs": ["production", "^production"],
       "defaultConfiguration": "production"
+    },
+    "test": {
+      "cache": true
+    },
+    "lint": {
+      "cache": true
+    },
+    "typecheck": {
+      "cache": true
     }
   }
 }
