@@ -15,7 +15,8 @@ import { Textarea } from 'components/textarea/textarea';
 import { createAction } from '../../core/action';
 import { StaffApi } from '../../core/api';
 import { dakarDateTime } from '../../core/dakar';
-import { ACTIVITY_CATEGORIES, ActivityCity, ActivityDetail, ActivityForm, ActivityStatus, ItineraryStop, STOP_KINDS } from '../../core/models';
+import { ACTIVITY_CATEGORIES, ActivityCity, ActivityDetail, ActivityForm, ActivityStatus, CONTENT_LANGS, ContentLang, ItineraryStop, STOP_KINDS } from '../../core/models';
+import { ISelectOption } from 'models';
 import { translatedOptions } from '../../core/options';
 import { STATUS_TONES } from '../activities/activities';
 import { activityForm, emptyActivity, emptyStop, KNOW_BEFORE_KEYS, lines, LIST_KEYS, ListKey, missing, payload } from './activity-form';
@@ -23,6 +24,7 @@ import { ConfirmDialog, FormSection, PageHeader, StatusBadge, StepItem, Stepper,
 import { ActivityImages } from './activity-images';
 import { ActivityOptions } from './activity-options';
 import { ActivitySlots } from './activity-slots';
+import { ActivityTranslationEditor } from './activity-translation';
 
 /** Étapes du parcours (brief §5) : informations générales, médias et itinéraire, prix et disponibilités, conditions. */
 const STEPS = ['general', 'media', 'pricing', 'conditions'] as const;
@@ -69,6 +71,7 @@ const CONDITION_KEYS: readonly ListKey[] = ['includes', 'excludes', 'not_allowed
     ActivityImages,
     ActivityOptions,
     ActivitySlots,
+    ActivityTranslationEditor,
     ConfirmDialog,
     FormSection,
     PageHeader,
@@ -92,6 +95,23 @@ export class ActivityPage {
   protected readonly categories = translatedOptions(ACTIVITY_CATEGORIES, 'activities.categories.');
   protected readonly stopKinds = translatedOptions(STOP_KINDS, 'activity.stop-kinds.');
   protected readonly isNew = computed(() => this.id() === 'new');
+  /** Langue affichée : la source (fiche modifiable) ou une traduction, sans changer la langue du back-office. */
+  protected readonly viewLang = signal<ContentLang | null>(null);
+  protected readonly sourceLang = computed(() => this.saved.value()?.lang ?? this.form().lang);
+  protected readonly shownLang = computed(() => this.viewLang() ?? this.sourceLang());
+  protected readonly langOptions = computed((): ISelectOption<ContentLang>[] => {
+    const activity = this.saved.value();
+    return CONTENT_LANGS.map((lang) => {
+      const status = activity?.translations.find((t) => t.lang === lang)?.status;
+      const name = this.transloco.translate('activity.translation.langs.' + lang);
+      const state =
+        lang === activity?.lang ? this.transloco.translate('activity.translation.source') : this.transloco.translate('activity.translation.statuses.' + (status ?? 'none'));
+      return { value: lang, label: `${name} · ${state}` };
+    });
+  });
+  protected readonly sourceLangOptions = computed((): ISelectOption<ContentLang>[] =>
+    CONTENT_LANGS.map((lang) => ({ value: lang, label: this.transloco.translate('activity.translation.langs.' + lang) })),
+  );
   /** Saisie en cours ; repart de la fiche enregistrée à chaque chargement ou enregistrement. */
   protected readonly form = signal<ActivityForm>(emptyActivity());
   /** Zones de texte des listes, une ligne par élément. */
@@ -107,7 +127,7 @@ export class ActivityPage {
   });
   private readonly api = inject(StaffApi);
   protected readonly saved = rxResource({
-    params: () => (this.isNew() ? undefined : Number(this.id())),
+    params: () => (this.isNew() ? undefined : this.id()),
     stream: ({ params }) => this.api.activity(params),
   });
   protected readonly cities = toSignal(
@@ -170,18 +190,18 @@ export class ActivityPage {
     }
     const body = payload(form);
     if (this.isNew()) {
-      this.action.run(this.api.createActivity(body), (created) => void this.router.navigate(['/activities', created.id]));
+      this.action.run(this.api.createActivity(body), (created) => void this.router.navigate(['/activities', created.ref]));
     } else {
-      this.action.run(this.api.updateActivity(Number(this.id()), body), (activity) => this.refresh(activity));
+      this.action.run(this.api.updateActivity(this.id(), body), (activity) => this.refresh(activity));
     }
   }
 
   protected changeStatus(status: ActivityStatus): void {
-    this.action.run(this.api.activityStatus(Number(this.id()), status), (activity) => this.refresh(activity));
+    this.action.run(this.api.activityStatus(this.id(), status), (activity) => this.refresh(activity));
   }
 
   protected summarize(): void {
-    this.action.run(this.api.summarizeReviews(Number(this.id())), (activity) => this.refresh(activity));
+    this.action.run(this.api.summarizeReviews(this.id()), (activity) => this.refresh(activity));
   }
 
   /** Fiche renvoyée par le serveur après une action : elle devient la version enregistrée. */

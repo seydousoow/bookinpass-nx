@@ -12,7 +12,7 @@ const detail = (over: Partial<DepartureDetail['departure']> = {}): DepartureDeta
 
 const LUGGAGE: Luggage = {
   code: 'BG234567',
-  departure_id: 3,
+  departure_id: '3',
   origin: 'Dakar',
   destination: 'Thiès',
   departs_at: '2026-10-25T07:00:00Z',
@@ -36,7 +36,7 @@ describe('DeparturePage', () => {
 
   it('montre le départ et ses passagers', async () => {
     const { element, api } = await open();
-    expect(api.departure).toHaveBeenCalledWith(3);
+    expect(api.departure).toHaveBeenCalledWith('3');
     expect(element.querySelector('h1')?.textContent).toContain('Dakar → Thiès');
     expect(element.querySelector('tbody')?.textContent).toContain('Diop Awa');
   });
@@ -46,7 +46,7 @@ describe('DeparturePage', () => {
     const { element, stable } = await open(staffUser('station_chief'), api);
     button(element, 'departure.mark-departed').click();
     await stable();
-    expect(api.markDeparted).toHaveBeenCalledWith(3);
+    expect(api.markDeparted).toHaveBeenCalledWith('3');
     expect(element.textContent).toContain('departure.mark-arrived');
   });
 
@@ -65,7 +65,7 @@ describe('DeparturePage', () => {
     await stable();
     button(element, 'common.save').click();
     await stable();
-    expect(api.resize).toHaveBeenCalledWith(3, 60);
+    expect(api.resize).toHaveBeenCalledWith('3', 60);
   });
 
   it('enregistre un bagage valide et affiche son code d’étiquette', async () => {
@@ -84,7 +84,7 @@ describe('DeparturePage', () => {
     await stable();
     button(element, 'luggage.register').click();
     await stable();
-    expect(api.registerLuggage).toHaveBeenCalledWith(3, {
+    expect(api.registerLuggage).toHaveBeenCalledWith('3', {
       sender_name: 'Awa Diop',
       sender_phone: '+221771234567',
       sender_id_number: null,
@@ -113,7 +113,7 @@ describe('DeparturePage', () => {
     await stable();
     button(element, 'incidents.report').click();
     await stable();
-    expect(api.reportIncident).toHaveBeenCalledWith({ departure_id: 3, route_id: null, type: 'breakdown', description: 'Pneu crevé' });
+    expect(api.reportIncident).toHaveBeenCalledWith({ departure_id: '3', route_id: null, type: 'breakdown', description: 'Pneu crevé' });
     expect(api.departure).toHaveBeenCalledTimes(2);
   });
 });

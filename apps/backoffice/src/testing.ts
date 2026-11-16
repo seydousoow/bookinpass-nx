@@ -42,13 +42,13 @@ export function staffApiMock(overrides: Partial<{ [K in keyof StaffApi]: StaffAp
 }
 
 export const STATIONS: Station[] = [
-  { id: 1, code: 'DKR', name: 'Gare des Baux maraîchers', place: 'Dakar', address: null, phone: null },
-  { id: 2, code: 'THS', name: 'Gare routière', place: 'Thiès', address: null, phone: null },
+  { id: '1', code: 'DKR', name: 'Gare des Baux maraîchers', place: 'Dakar', address: null, phone: null },
+  { id: '2', code: 'THS', name: 'Gare routière', place: 'Thiès', address: null, phone: null },
 ];
 
 export function staffUser(role: StaffRole, over: Partial<StaffUser> = {}): StaffUser {
   return {
-    id: 1,
+    id: '1',
     username: 'awa',
     full_name: 'Awa Diop',
     phone: null,
@@ -63,8 +63,8 @@ export function staffUser(role: StaffRole, over: Partial<StaffUser> = {}): Staff
 
 export function departure(over: Partial<Departure> = {}): Departure {
   return {
-    id: 3,
-    route_id: 9,
+    id: '3',
+    route_id: '9',
     route_code: 'DKR-THS',
     origin: STATIONS[0],
     destination: STATIONS[1],

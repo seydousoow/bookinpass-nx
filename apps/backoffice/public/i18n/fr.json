@@ -389,7 +389,8 @@
     "invalid-image-url": "Donnez une adresse HTTPS publique.",
     "image-download-failed": "La photo n’a pas pu être téléchargée depuis cette adresse.",
     "image-upload-failed": "La photo n’a pas pu être déposée sur le CDN. Réessayez.",
-    "images-unavailable": "Dépôt des photos non configuré sur le serveur."
+    "images-unavailable": "Dépôt des photos non configuré sur le serveur.",
+    "invalid-language": "Choisissez une autre langue que celle de la fiche."
   },
   "bookings": {
     "title": "Réservations transport",
@@ -525,6 +526,7 @@
     "no-match": "Aucune activité ne correspond",
     "no-match-hint": "Essayez un autre titre, une autre ville ou un autre statut.",
     "columns": {
+      "ref": "Réf.",
       "activity": "Activité",
       "category": "Catégorie",
       "availability": "Disponibilités",
@@ -616,7 +618,7 @@
       "description": "Écrivez la description.",
       "meeting-point": "Indiquez le point de rendez-vous.",
       "duration": "Indiquez la durée.",
-      "location": "Donnez la latitude et la longitude, ou aucune des deux.",
+      "location": "Donnez la latitude et la longitude de l'activité : la recherche par ville s'en sert.",
       "images": "Chaque photo doit avoir une adresse https://.",
       "itinerary": "Chaque étape doit avoir un nom."
     },
@@ -663,7 +665,48 @@
     },
     "archive-title": "Archiver l'activité ?",
     "archive-confirm": "Elle sera retirée du site. Les réservations déjà faites ne sont pas annulées.",
-    "step-of": "Étape {{step}} sur {{total}}"
+    "step-of": "Étape {{step}} sur {{total}}",
+    "translation": {
+      "view": "Langue affichée",
+      "source-lang": "Langue de saisie",
+      "source-hint": "Les autres langues sont traduites par Claude, puis relues ici.",
+      "langs": {
+        "fr": "Français",
+        "en": "Anglais"
+      },
+      "source": "source",
+      "statuses": {
+        "none": "Pas de traduction",
+        "pending": "Traduction en cours",
+        "proposed": "À relire",
+        "applied": "Appliquée",
+        "outdated": "À mettre à jour",
+        "failed": "Échec de la traduction"
+      },
+      "hints": {
+        "none": "Aucune traduction : les visiteurs de cette langue voient la fiche dans sa langue de saisie. Faites-la traduire par Claude ou saisissez-la.",
+        "pending": "Claude prépare une proposition (quelques minutes après la modification de la fiche). Rechargez la page, ou demandez-la tout de suite.",
+        "proposed": "Claude a proposé une traduction : relisez-la, corrigez-la si besoin, puis appliquez-la pour la montrer sur le site.",
+        "applied": "Cette traduction est montrée sur le site aux visiteurs de cette langue.",
+        "outdated": "La fiche a changé depuis : la traduction montrée sur le site n'est plus à jour. Faites-la retraduire ou corrigez-la.",
+        "failed": "Claude n'a pas pu traduire la fiche. Réessayez, ou saisissez la traduction à la main."
+      },
+      "title": "Version {{lang}} (traduite du {{source}})",
+      "compare": "Voir la source en regard",
+      "translate": "Traduire avec Claude",
+      "retranslate": "Nouvelle proposition de Claude",
+      "applied-meta": "Appliquée le {{time}} par {{by}}",
+      "editing": "Vous modifiez {{what}}.",
+      "the-proposal": "la proposition de Claude",
+      "the-applied": "la traduction appliquée",
+      "show-applied": "Voir la traduction appliquée",
+      "show-proposal": "Voir la proposition",
+      "incomplete": "Titre, résumé, description et point de rendez-vous sont obligatoires.",
+      "apply": "Appliquer la traduction",
+      "applied": "Traduction appliquée",
+      "option-title": "Titre de l'option",
+      "option-description": "Description de l'option"
+    }
   },
   "options": {
     "title": "Options et prix",

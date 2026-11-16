@@ -206,10 +206,10 @@
             <bo-empty [title]="t('dashboard.slots.none')" compact icon="heroCheckCircle" />
           } @else {
             <ul class="-mx-2 divide-y divide-border-subtle">
-              @for (a of endingActivities(); track a.id) {
+              @for (a of endingActivities(); track a.ref) {
                 <li>
                   <a
-                    [routerLink]="['/activities', a.id]"
+                    [routerLink]="['/activities', a.ref]"
                     class="bip-focusable flex flex-wrap items-center gap-x-3 gap-y-1 rounded-button px-2 py-2.5 text-sm hover:bg-surface-muted">
                     <ng-icon aria-hidden="true" class="text-state-warning" name="heroExclamationTriangle" size="18" />
                     <span class="min-w-0 flex-1 font-semibold">{{ a.title }}</span>

@@ -29,7 +29,7 @@ describe('StaffApi', () => {
     expect(all.request.params.keys()).toEqual(['date']);
     all.flush([]);
 
-    api.departures('2026-10-25', 4).subscribe();
+    api.departures('2026-10-25', '4').subscribe();
     const one = http.expectOne((r) => r.url.endsWith('/staff/departures'));
     expect(one.request.params.get('station_id')).toBe('4');
     one.flush([]);
@@ -44,7 +44,7 @@ describe('StaffApi', () => {
     api.changePassword('ancien', 'nouveau-mot').subscribe();
     expect(http.expectOne((r) => r.url.endsWith('/auth/password')).request.body).toEqual({ current_password: 'ancien', new_password: 'nouveau-mot' });
 
-    api.resetPassword(7, 'Provisoire23').subscribe();
+    api.resetPassword('7', 'Provisoire23').subscribe();
     expect(http.expectOne((r) => r.url.endsWith('/users/7/password')).request.body).toEqual({ temporary_password: 'Provisoire23' });
 
     api.searchBookings('DIOP').subscribe();

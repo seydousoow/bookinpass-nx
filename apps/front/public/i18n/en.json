@@ -1019,15 +1019,14 @@
     "card": {
       "free-cancellation": "Free cancellation",
       "rating": "Rated {rating} out of 5, {count} reviews",
-      "from": "From"
+      "from": "From",
+      "distance": "{km} km away"
     },
     "search": {
-      "city": "Destination",
-      "any-city": "All destinations",
+      "city": "Where?",
       "query": "What do you want to do?",
       "query-placeholder": "Tour, cruise, Gorée Island…",
       "submit": "Search",
-      "destinations-failed": "Destinations could not be loaded.",
       "categories": "Categories",
       "all": "All",
       "category": {
@@ -1045,7 +1044,13 @@
       "retry": "Try again",
       "count": "{count, plural, =0 {No activities} one {# activity} other {# activities}}",
       "empty-title": "No matching activities",
-      "empty-message": "Try another destination or other words."
+      "empty-message": "Try another destination or other words.",
+      "place-placeholder": "City or country: Dakar, Senegal…",
+      "clear-place": "Clear the place",
+      "place-city": "City · {country} · and 100 km around",
+      "place-country": "Country · all its activities",
+      "place-min": "Type at least {count} letters",
+      "place-none": "No activity near “{value}”"
     },
     "book-card": {
       "label": "Book this activity",

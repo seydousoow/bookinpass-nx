@@ -4,7 +4,7 @@ import { button, get, optionsOf, pick, renderPage, staffApiMock, STATIONS, type 
 import { groupSchedules, RoutesPage } from './routes';
 
 const ROUTE: Route = {
-  id: 9,
+  id: '9',
   code: 'DKR-THS',
   network: 'interurban',
   origin: STATIONS[0],
@@ -14,15 +14,15 @@ const ROUTE: Route = {
   currency: 'XOF',
   capacity: 50,
   active: true,
-  schedules: [{ id: 21, day_of_week: 1, departs_at: '07:00', last_departure: null }],
+  schedules: [{ id: '21', day_of_week: 1, departs_at: '07:00', last_departure: null }],
 };
 
 describe('groupSchedules', () => {
   it('regroupe les jours d’une même heure, heures dans l’ordre', () => {
     const groups = groupSchedules([
-      { id: 1, day_of_week: 5, departs_at: '08:30', last_departure: null },
-      { id: 2, day_of_week: 1, departs_at: '08:30', last_departure: null },
-      { id: 3, day_of_week: 1, departs_at: '06:00', last_departure: '20:00' },
+      { id: '1', day_of_week: 5, departs_at: '08:30', last_departure: null },
+      { id: '2', day_of_week: 1, departs_at: '08:30', last_departure: null },
+      { id: '3', day_of_week: 1, departs_at: '06:00', last_departure: '20:00' },
     ]);
     expect(groups.map((g) => [g.departs_at, g.schedules.map((s) => s.day_of_week)])).toEqual([
       ['06:00', [1]],
@@ -44,13 +44,13 @@ describe('RoutesPage', () => {
     expect(button(element, 'routes.create').hasAttribute('disabled')).toBe(true);
     expect(optionsOf(fixture, 2).map((o) => o.value)).toEqual(['interurban', 'international', 'airport']);
     // Sélecteurs : départ (0), arrivée (1), réseau (2).
-    pick(fixture, 0, 1);
-    pick(fixture, 1, 2);
+    pick(fixture, 0, '1');
+    pick(fixture, 1, '2');
     pick(fixture, 2, 'airport');
     await stable();
     button(element, 'routes.create').click();
     await stable();
-    expect(api.createRoute).toHaveBeenCalledWith({ origin_station_id: 1, destination_station_id: 2, network: 'airport', price: 1000, capacity: 50 });
+    expect(api.createRoute).toHaveBeenCalledWith({ origin_station_id: '1', destination_station_id: '2', network: 'airport', price: 1000, capacity: 50 });
     expect(element.querySelector('#new-route')).toBeNull();
   });
 
@@ -63,7 +63,7 @@ describe('RoutesPage', () => {
     await stable();
     button(get(element, 'article'), 'common.save').click();
     await stable();
-    expect(api.updateRoute).toHaveBeenCalledWith(9, { price: 3500, capacity: 50, active: false });
+    expect(api.updateRoute).toHaveBeenCalledWith('9', { price: 3500, capacity: 50, active: false });
   });
 
   it('exige au moins un jour pour un horaire', async () => {
@@ -89,10 +89,10 @@ describe('RoutesPage', () => {
     await stable();
     button(element, 'routes.add-schedule').click();
     await stable();
-    expect(api.addSchedule).toHaveBeenCalledWith(9, { days: [1, 5], departs_at: '08:30', last_departure: '18:00' });
+    expect(api.addSchedule).toHaveBeenCalledWith('9', { days: [1, 5], departs_at: '08:30', last_departure: '18:00' });
 
     get<HTMLButtonElement>(element, 'button[aria-label="routes.remove-schedule"]').click();
     await stable();
-    expect(api.deleteSchedule).toHaveBeenCalledWith(21);
+    expect(api.deleteSchedule).toHaveBeenCalledWith('21');
   });
 });

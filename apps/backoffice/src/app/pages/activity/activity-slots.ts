@@ -204,7 +204,7 @@ export class ActivitySlots {
   protected readonly spans = SPANS;
   protected readonly shownPerDay = SHOWN_PER_DAY;
   protected readonly action = createAction();
-  protected readonly option = signal<number | null>(null);
+  protected readonly option = signal<string | null>(null);
   /** Premier jour du mois affiché. */
   protected readonly month = signal(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
   protected readonly selected = signal<string | null>(null);
@@ -213,11 +213,11 @@ export class ActivitySlots {
   protected readonly openDays = signal<readonly boolean[]>(DAYS.map(() => true));
   protected readonly times = signal<string | null>('');
   protected readonly capacity = signal<number | null>(null);
-  protected readonly capacities = signal<Readonly<Record<number, number | null>>>({});
-  protected readonly cancelling = signal<number | null>(null);
+  protected readonly capacities = signal<Readonly<Record<string, number | null>>>({});
+  protected readonly cancelling = signal<string | null>(null);
   protected readonly reason = signal<string | null>('');
   protected readonly message = signal<{ key: string; count: number } | null>(null);
-  protected readonly optionChoices = computed((): ISelectOption<number>[] => this.activity().options.map((o) => ({ value: o.id, label: o.title })));
+  protected readonly optionChoices = computed((): ISelectOption<string>[] => this.activity().options.map((o) => ({ value: o.id, label: o.title })));
   protected readonly horizonLabel = computed(() => this.dayLabel(this.horizon()));
   protected readonly grid = computed(() => monthGrid(this.month()));
   protected readonly canGoForward = computed(() => {
@@ -344,7 +344,7 @@ export class ActivitySlots {
     this.openDays.update((days) => days.map((value, index) => (index === day - 1 ? checked : value)));
   }
 
-  protected setCapacity(id: number, capacity: number | null): void {
+  protected setCapacity(id: string, capacity: number | null): void {
     this.capacities.update((all) => ({ ...all, [id]: capacity }));
   }
 

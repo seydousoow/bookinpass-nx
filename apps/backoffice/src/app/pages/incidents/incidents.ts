@@ -33,10 +33,10 @@ export class IncidentsPage {
   protected readonly session = inject(Session);
   protected readonly action = createAction();
   protected readonly openOnly = signal(true);
-  protected readonly station = signal<number | null>(null);
+  protected readonly station = signal<string | null>(null);
   protected readonly stations = stationOptions(injectStations(), { all: true });
   protected readonly types = translatedOptions(INCIDENT_TYPES, 'incidents.types.');
-  protected readonly routeId = signal<number | null>(null);
+  protected readonly routeId = signal<string | null>(null);
   protected readonly type = signal<IncidentType>('delay');
   protected readonly description = signal<string | null>('');
   /** Filtre par type, appliqué à la liste reçue. */
@@ -44,9 +44,9 @@ export class IncidentsPage {
   /** Tiroir « Signaler un incident ». */
   protected readonly reporting = signal(false);
   /** Incident ouvert dans le tiroir de détail. */
-  protected readonly selectedId = signal<number | null>(null);
+  protected readonly selectedId = signal<string | null>(null);
   /** Résolution en cours de saisie, par incident. */
-  protected readonly resolutions = signal<Readonly<Record<number, string>>>({});
+  protected readonly resolutions = signal<Readonly<Record<string, string>>>({});
   protected readonly dateTime = dakarDateTime;
   protected readonly shown = computed(() => {
     const type = this.typeFilter();
@@ -64,7 +64,7 @@ export class IncidentsPage {
   private readonly routes = toSignal(this.session.manager() ? this.api.routes().pipe(catchError(() => of([] as Route[]))) : of([] as Route[]), {
     initialValue: [] as Route[],
   });
-  protected readonly routeOptions = computed<readonly ISelectOption<number>[]>(() =>
+  protected readonly routeOptions = computed<readonly ISelectOption<string>[]>(() =>
     this.routes().map((route) => ({ value: route.id, label: `${route.origin.place} → ${route.destination.place} (${route.origin.name})` })),
   );
 
@@ -74,7 +74,7 @@ export class IncidentsPage {
     this.station.set(null);
   }
 
-  protected setResolution(id: number, text: string | null): void {
+  protected setResolution(id: string, text: string | null): void {
     this.resolutions.update((all) => ({ ...all, [id]: text ?? '' }));
   }
 
@@ -92,7 +92,7 @@ export class IncidentsPage {
     });
   }
 
-  protected resolve(id: number): void {
+  protected resolve(id: string): void {
     const resolution = this.resolutions()[id]?.trim();
     if (!resolution) {
       return;

@@ -4,8 +4,8 @@ import { button, get, renderPage, staffApiMock, type } from '../../../testing';
 import { ActivityReviewsPage } from './activity-reviews';
 
 const REVIEW: ActivityReview = {
-  id: 9,
-  activity_id: 3,
+  id: '9',
+  activity_ref: 'ACT00003',
   activity_title: 'Île de Gorée',
   reference: 'K7MPQ2',
   rating: 1,
@@ -59,11 +59,11 @@ describe('ActivityReviewsPage', () => {
     await stable();
     get<HTMLButtonElement>(element, 'form button[type="submit"]').click();
     await stable();
-    expect(mock.rejectReview).toHaveBeenCalledWith(9, 'Publicité');
+    expect(mock.rejectReview).toHaveBeenCalledWith('9', 'Publicité');
 
     button(element, 'reviews.approve').click();
     await stable();
-    expect(mock.approveReview).toHaveBeenCalledWith(9);
+    expect(mock.approveReview).toHaveBeenCalledWith('9');
   });
 
   it('active la modération automatique', async () => {

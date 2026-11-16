@@ -8,7 +8,7 @@ const iso = (offset: number) => new Date(Date.now() + offset).toISOString();
 
 function incident(over: Partial<Incident>): Incident {
   return {
-    id: 1,
+    id: '1',
     route_code: 'DKR-THS',
     origin: 'Dakar',
     destination: 'Thiès',
@@ -36,7 +36,7 @@ describe('DashboardPage', () => {
       activitySettings: () => of({ auto_moderation: true, ai_enabled: true, ai_model: 'claude-haiku-5-5', pending_reviews: 7, auto_approved_reviews: 42 }),
       reviews: () =>
         of({
-          items: [{ id: 5, activity_title: 'Île de Gorée', rating: 4, text: 'Superbe', author_name: 'Moussa', ai_verdict: 'review' } as ActivityReview],
+          items: [{ id: '5', activity_title: 'Île de Gorée', rating: 4, text: 'Superbe', author_name: 'Moussa', ai_verdict: 'review' } as ActivityReview],
           page: 0,
           size: 20,
           total: 7,
@@ -44,7 +44,7 @@ describe('DashboardPage', () => {
       refunds: () =>
         of([
           {
-            id: 1,
+            id: '1',
             reference: 'BUS123',
             origin: 'Dakar',
             destination: 'Thiès',
@@ -58,7 +58,7 @@ describe('DashboardPage', () => {
       activityRefunds: () =>
         of([
           {
-            id: 2,
+            id: '2',
             reference: 'ACT456',
             activity_title: 'Gorée',
             customer: 'Moussa',
@@ -69,7 +69,7 @@ describe('DashboardPage', () => {
             created_at: iso(-2 * DAY),
           } as ActivityRefund,
           {
-            id: 3,
+            id: '3',
             reference: 'ACT789',
             activity_title: 'Lac Rose',
             customer: 'Fatou',
@@ -82,11 +82,11 @@ describe('DashboardPage', () => {
         ]),
       activities: () =>
         of([
-          { id: 8, title: 'Lac Rose', status: 'published', last_slot_at: iso(10 * DAY), upcoming_bookings: 3 } as ActivitySummary,
-          { id: 9, title: 'Saloum', status: 'published', last_slot_at: iso(90 * DAY), upcoming_bookings: 1 } as ActivitySummary,
+          { ref: 'ACT00008', title: 'Lac Rose', status: 'published', last_slot_at: iso(10 * DAY), upcoming_bookings: 3 } as ActivitySummary,
+          { ref: 'ACT00009', title: 'Saloum', status: 'published', last_slot_at: iso(90 * DAY), upcoming_bookings: 1 } as ActivitySummary,
         ]),
-      incidents: () => of([incident({ id: 1 }), incident({ id: 2, type: 'breakdown', departs_at: iso(DAY), departure_id: 4 })]),
-      resolvedIncidents: () => of([incident({ id: 3, resolved_at: iso(-DAY), resolution: 'Car remplacé' })]),
+      incidents: () => of([incident({ id: '1' }), incident({ id: '2', type: 'breakdown', departs_at: iso(DAY), departure_id: '4' })]),
+      resolvedIncidents: () => of([incident({ id: '3', resolved_at: iso(-DAY), resolution: 'Car remplacé' })]),
     });
     const { element } = await renderPage(DashboardPage, { api, user: staffUser('manager') });
     const text = element.textContent ?? '';
@@ -102,7 +102,7 @@ describe('DashboardPage', () => {
     expect(text).toContain('dashboard.refund-states.requested');
     expect(text).not.toContain('ACT789');
     // Seule l'activité dont les créneaux s'arrêtent dans moins d'un mois.
-    expect(element.querySelector('a[href="/activities/8"]')).not.toBeNull();
+    expect(element.querySelector('a[href="/activities/ACT00008"]')).not.toBeNull();
     expect(element.querySelector('a[href="/activities/9"]')).toBeNull();
     expect(text).toContain('dashboard.incidents.ongoing');
     expect(element.querySelector('a[href="/departures/4"]')).not.toBeNull();

@@ -22,9 +22,9 @@ export function stationLabel(station: Station): string {
 }
 
 /** Options de gare pour `bip-select` ; avec `all`, une première option « Toutes les gares » (valeur `null`). */
-export function stationOptions(stations: Signal<readonly Station[]>, options: { all: true }): Signal<readonly ISelectOption<number | null>[]>;
-export function stationOptions(stations: Signal<readonly Station[]>): Signal<readonly ISelectOption<number>[]>;
-export function stationOptions(stations: Signal<readonly Station[]>, options?: { all: true }): Signal<readonly ISelectOption<number | null>[]> {
+export function stationOptions(stations: Signal<readonly Station[]>, options: { all: true }): Signal<readonly ISelectOption<string | null>[]>;
+export function stationOptions(stations: Signal<readonly Station[]>): Signal<readonly ISelectOption<string>[]>;
+export function stationOptions(stations: Signal<readonly Station[]>, options?: { all: true }): Signal<readonly ISelectOption<string | null>[]> {
   const allLabel = translateSignal('common.all-stations');
   return computed(() => [...(options?.all ? [{ value: null, label: allLabel() }] : []), ...stations().map((station) => ({ value: station.id, label: stationLabel(station) }))]);
 }

@@ -6,7 +6,7 @@ import { byOrigin, DeparturesPage } from './departures';
 describe('DeparturesPage', () => {
   it('liste les départs du jour, avec leur état', async () => {
     const api = staffApiMock({
-      departures: () => of([departure({ id: 3 }), departure({ id: 4, departed_at: '2026-10-25T07:05:00Z', open_incidents: 1 })]),
+      departures: () => of([departure({ id: '3' }), departure({ id: '4', departed_at: '2026-10-25T07:05:00Z', open_incidents: 1 })]),
     });
     const { element } = await renderPage(DeparturesPage, { api });
     const links = [...element.querySelectorAll('a')];
@@ -21,7 +21,7 @@ describe('DeparturesPage', () => {
     const thies = { ...STATIONS[1] };
     const api = staffApiMock({
       departures: () =>
-        of([departure({ id: 3 }), departure({ id: 4, origin: thies, destination: STATIONS[0], passengers: 5, scanned: 2 }), departure({ id: 5, open_incidents: 2 })]),
+        of([departure({ id: '3' }), departure({ id: '4', origin: thies, destination: STATIONS[0], passengers: 5, scanned: 2 }), departure({ id: '5', open_incidents: 2 })]),
     });
     const { element, stable } = await renderPage(DeparturesPage, { api });
     const panels = [...element.querySelectorAll('details')];
@@ -32,7 +32,7 @@ describe('DeparturesPage', () => {
     button(element, 'departures.expand-all').click();
     await stable();
     expect([...element.querySelectorAll('details')].every((p) => p.open)).toBe(true);
-    expect(byOrigin([departure({ id: 3 }), departure({ id: 5, open_incidents: 2, passengers: 3, scanned: 1 })])[0]).toEqual(
+    expect(byOrigin([departure({ id: '3' }), departure({ id: '5', open_incidents: 2, passengers: 3, scanned: 1 })])[0]).toEqual(
       expect.objectContaining({ passengers: 15, scanned: 5, incidents: 2 }),
     );
   });
@@ -41,13 +41,13 @@ describe('DeparturesPage', () => {
     const api = staffApiMock({ stations: () => of(STATIONS) });
     const { element, fixture, stable } = await renderPage(DeparturesPage, { api, user: staffUser('manager') });
     expect(api.departures).toHaveBeenLastCalledWith(expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/), null);
-    expect(optionsOf(fixture, 0).map((o) => o.value)).toEqual([null, 1, 2]);
+    expect(optionsOf(fixture, 0).map((o) => o.value)).toEqual([null, '1', '2']);
 
     type(get<HTMLInputElement>(element, 'input[type="date"]'), '2026-11-02');
     await stable();
-    pick(fixture, 0, 2);
+    pick(fixture, 0, '2');
     await stable();
-    expect(api.departures).toHaveBeenLastCalledWith('2026-11-02', 2);
+    expect(api.departures).toHaveBeenLastCalledWith('2026-11-02', '2');
   });
 
   it('ne propose pas le choix de gare au personnel d’une gare', async () => {

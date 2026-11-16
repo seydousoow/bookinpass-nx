@@ -22,7 +22,12 @@ import { ActivityPhoto } from './activity-photo';
       class="bip-focusable flex h-full flex-col overflow-hidden rounded-card border border-border-subtle bg-surface-card transition-shadow hover:shadow-md">
       <bip-activity-photo [alt]="activity().image?.alt ?? activity().title" [url]="activity().image?.url" class="aspect-[3/2] w-full" />
       <div class="flex flex-1 flex-col gap-1 p-4">
-        <p class="text-xs font-semibold tracking-wide text-muted uppercase">{{ activity().city.name }}</p>
+        <p class="text-xs font-semibold tracking-wide text-muted uppercase">
+          {{ activity().city.name }}
+          @if (activity().distance_km; as km) {
+            <span class="font-normal normal-case">· {{ t('distance', { km }) }}</span>
+          }
+        </p>
         <h3 class="line-clamp-3 text-lg leading-snug font-bold">{{ activity().title }}</h3>
         <p class="text-sm text-muted">
           {{ duration() }}

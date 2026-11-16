@@ -5,16 +5,16 @@ import { button, get, renderPage, staffApiMock, type } from '../../../testing';
 import { ActivitySlots } from './activity-slots';
 
 const ACTIVITY = {
-  id: 1,
-  city: { id: 2253354, name: 'Dakar', country_code: 'SN', timezone: 'Africa/Dakar' },
-  options: [{ id: 11, title: 'Standard', capacity: 20 }],
+  id: '1',
+  city: { id: '2253354', name: 'Dakar', country_code: 'SN', timezone: 'Africa/Dakar' },
+  options: [{ id: '11', title: 'Standard', capacity: 20 }],
 } as unknown as ActivityDetail;
 
 describe('ActivitySlots', () => {
   const today = zonedDay(new Date().toISOString(), 'Africa/Dakar');
   const slot = (over: Partial<ActivitySlot>): ActivitySlot => ({
-    id: 1,
-    option_id: 11,
+    id: '1',
+    option_id: '11',
     starts_at: `${today}T23:00:00Z`,
     capacity: 20,
     sold: 3,
@@ -25,12 +25,12 @@ describe('ActivitySlots', () => {
   });
 
   it('montre les créneaux du mois sur le calendrier, et ceux du jour choisi', async () => {
-    const api = staffApiMock({ slots: () => of([slot({ id: 1 }), slot({ id: 2, starts_at: `${today}T23:30:00Z`, sold: 20 })]) });
+    const api = staffApiMock({ slots: () => of([slot({ id: '1' }), slot({ id: '2', starts_at: `${today}T23:30:00Z`, sold: 20 })]) });
     const { element } = await renderPage(ActivitySlots, { api, inputs: { activity: ACTIVITY } });
 
     // Six semaines demandées d'un coup, pour l'option choisie.
     const [option, from, to] = api.slots.mock.calls.at(-1) ?? [];
-    expect(option).toBe(11);
+    expect(option).toBe('11');
     expect((Date.parse(to) - Date.parse(from)) / 86_400_000).toBe(41);
     const cell = get(element, '[aria-pressed="true"]');
     expect(cell.textContent).toContain('23:00 · 3/20');
@@ -50,7 +50,7 @@ describe('ActivitySlots', () => {
     await stable();
     button(element, 'slots.open-button').click();
     await stable();
-    expect(api.openSlots).toHaveBeenCalledWith(11, expect.objectContaining({ from: today, to: addDays(addYears(today, 2), -1), times: ['09:00'] }));
+    expect(api.openSlots).toHaveBeenCalledWith('11', expect.objectContaining({ from: today, to: addDays(addYears(today, 2), -1), times: ['09:00'] }));
     expect(element.textContent).toContain('slots.opened');
 
     type(get<HTMLInputElement>(element, 'input[name="slots-to"]'), addYears(today, 3));

@@ -73,7 +73,7 @@ export class ActivityBookingPage {
     });
   }
 
-  protected retry(id: number): void {
+  protected retry(id: string): void {
     this.action.run(this.api.retryActivityRefund(id), () => this.detail.reload());
   }
 }

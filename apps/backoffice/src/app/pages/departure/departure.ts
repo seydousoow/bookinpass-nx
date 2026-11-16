@@ -55,7 +55,7 @@ export class DeparturePage {
   protected readonly api = inject(StaffApi);
   protected readonly action = createAction();
   protected readonly detail = rxResource({
-    params: () => Number(this.id()),
+    params: () => this.id(),
     stream: ({ params }) => this.api.departure(params),
   });
   protected readonly lastLuggage = signal<string | null>(null);
@@ -112,14 +112,14 @@ export class DeparturePage {
     this.action.run(request, (detail) => this.detail.set(detail));
   }
 
-  protected resize(departureId: number): void {
+  protected resize(departureId: string): void {
     const capacity = this.capacity();
     if (capacity && capacity >= 1) {
       this.act(this.api.resize(departureId, capacity));
     }
   }
 
-  protected report(departureId: number): void {
+  protected report(departureId: string): void {
     const description = this.incidentText()?.trim();
     if (!description || this.action.busy()) {
       return;

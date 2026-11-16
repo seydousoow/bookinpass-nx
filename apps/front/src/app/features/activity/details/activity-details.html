@@ -268,7 +268,7 @@
             </div>
           </div>
           <ul #related class="mt-4 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2">
-            @for (card of a.related; track card.id) {
+            @for (card of a.related; track card.ref) {
               <li class="w-72 shrink-0 snap-start"><bip-activity-card [activity]="card" /></li>
             }
           </ul>
@@ -278,7 +278,7 @@
       <bip-activity-reviews [activity]="a" class="mt-10 scroll-mt-20 border-t border-border-subtle pt-8" id="activity-reviews" />
 
       <footer class="mt-10 text-sm text-muted">
-        <p>{{ t('product-id', { id: a.id }) }}</p>
+        <p>{{ t('product-id', { id: a.ref }) }}</p>
         <p>{{ t('provider', { name: a.provider_name }) }}</p>
       </footer>
     </article>

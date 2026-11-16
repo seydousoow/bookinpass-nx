@@ -15,7 +15,8 @@ export interface IActivityContact {
  */
 export interface IActivityDraft {
   readonly activity: string;
-  readonly slot: number;
+  /** Identifiant public du créneau. */
+  readonly slot: string;
   readonly date: string;
   readonly adults: number;
   readonly children: number;
@@ -31,7 +32,7 @@ export function loadActivityDraft(): IActivityDraft | null {
   try {
     const raw = sessionStorage.getItem(KEY);
     const draft = raw ? (JSON.parse(raw) as Partial<IActivityDraft>) : null;
-    if (!draft?.activity || !draft.slot || !draft.requestId || !draft.contact) {
+    if (!draft?.activity || typeof draft.slot !== 'string' || !draft.slot || !draft.requestId || !draft.contact) {
       return null;
     }
     return draft as IActivityDraft;

@@ -4,7 +4,7 @@ import { button, get, renderPage, staffApiMock, type } from '../../../testing';
 import { RefundsPage } from './refunds';
 
 const REFUND: Refund = {
-  id: 5,
+  id: '5',
   reference: 'BIP123',
   passengers: 'Awa Diop',
   email: 'awa@example.sn',
@@ -25,7 +25,7 @@ const REFUND: Refund = {
 };
 
 const ACTIVITY_REFUND = {
-  id: 7,
+  id: '7',
   reference: 'ACT9',
   activity_title: 'Gorée',
   customer: 'Moussa',
@@ -37,7 +37,7 @@ const ACTIVITY_REFUND = {
 
 describe('RefundsPage', () => {
   it('montre les remboursements à faire, puis l’historique', async () => {
-    const api = staffApiMock({ refunds: () => of([REFUND, { ...REFUND, id: 6, reference: 'BIP999', status: 'refunded' as const }]) });
+    const api = staffApiMock({ refunds: () => of([REFUND, { ...REFUND, id: '6', reference: 'BIP999', status: 'refunded' as const }]) });
     const { element, stable } = await renderPage(RefundsPage, { api });
     expect(api.refunds).toHaveBeenLastCalledWith(false);
     expect(element.textContent).toContain('BIP123');
@@ -58,7 +58,7 @@ describe('RefundsPage', () => {
     await stable();
     button(element, 'refunds.confirm').click();
     await stable();
-    expect(api.markRefunded).toHaveBeenCalledWith(5, 'Wave TX 42');
+    expect(api.markRefunded).toHaveBeenCalledWith('5', 'Wave TX 42');
     expect(api.refunds).toHaveBeenCalledTimes(2);
     expect(element.querySelector('input[name="refund-note"]')).toBeNull();
   });
@@ -76,6 +76,6 @@ describe('RefundsPage', () => {
     await stable();
     button(element, 'refunds.confirm').click();
     await stable();
-    expect(api.markActivityRefunded).toHaveBeenCalledWith(7, 'OM 77');
+    expect(api.markActivityRefunded).toHaveBeenCalledWith('7', 'OM 77');
   });
 });

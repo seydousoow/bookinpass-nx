@@ -33,6 +33,7 @@
     "@angular/forms": "~22.2.6",
     "@angular/platform-browser": "~22.2.6",
     "@angular/router": "~22.2.6",
+    "@fontsource/ubuntu": "5.3.0",
     "@jsverse/transloco": "^9.0.0-alpha.4",
     "@jsverse/transloco-locale": "^9.0.0-alpha.4",
     "@jsverse/transloco-persist-lang": "^9.0.0-alpha.4",

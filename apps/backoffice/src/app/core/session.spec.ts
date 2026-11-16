@@ -7,7 +7,7 @@ import { StaffUser } from './models';
 import { credentialsInterceptor, passwordGuard, roleGuard, Session, signedInGuard, signedOutInterceptor } from './session';
 
 const user = (over: Partial<StaffUser> = {}): StaffUser => ({
-  id: 1,
+  id: '1',
   username: 'awa',
   full_name: 'Awa Diop',
   phone: null,

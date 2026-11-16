@@ -8,7 +8,7 @@ const BOOKING: DeskBooking = {
   status: 'confirmed',
   origin: 'Dakar',
   destination: 'Thiès',
-  departure_id: 3,
+  departure_id: '3',
   departs_at: '2026-10-25T07:00:00Z',
   email: 'awa@example.sn',
   phone: '+221771234567',

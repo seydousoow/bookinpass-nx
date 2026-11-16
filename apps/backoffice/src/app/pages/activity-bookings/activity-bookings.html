@@ -11,9 +11,9 @@
         name="booking-status"
         placeholder="activity-bookings.any" />
       <bip-select
-        (valueChange)="filter(activityId, $event[0] ?? null)"
+        (valueChange)="filter(activityRef, $event[0] ?? null)"
         [options]="activityOptions()"
-        [value]="activityId() === null ? [] : [activityId()!]"
+        [value]="activityRef() === null ? [] : [activityRef()!]"
         class="sm:w-56"
         label="activity-bookings.activity"
         name="booking-activity"

@@ -29,7 +29,7 @@
           {{ t('activity-booking.prices', { adult: d.adult_price, child: d.child_price ?? '—', currency: b.currency }) }}
         </p>
         <p class="text-lg font-bold">{{ b.total }} {{ b.currency }}</p>
-        <a [routerLink]="['/activities', b.activity_id]" class="bo-link">{{ t('activity-booking.open-activity') }}</a>
+        <a [routerLink]="['/activities', b.activity_ref]" class="bo-link">{{ t('activity-booking.open-activity') }}</a>
       </div>
       <div class="space-y-1 bo-card text-sm">
         <h2 class="bo-section-title">{{ t('activity-booking.customer') }}</h2>
@@ -111,7 +111,7 @@
     @if (d.review; as review) {
       <p class="bo-card text-sm">
         {{ t('activity-booking.review', { rating: review.rating }) }} · {{ t('reviews.statuses.' + review.status) }}
-        <a [queryParams]="{ activity: b.activity_id }" class="bo-link" routerLink="/activity-reviews">{{ t('activity-booking.see-review') }}</a>
+        <a [queryParams]="{ activity: b.activity_ref }" class="bo-link" routerLink="/activity-reviews">{{ t('activity-booking.see-review') }}</a>
       </p>
     }
 

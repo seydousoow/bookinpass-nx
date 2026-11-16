@@ -37,7 +37,8 @@ export interface IPage<T> {
 
 /** Activité dans une liste (recherche, « Vous aimerez aussi »). */
 export interface IActivityCard {
-  readonly id: number;
+  /** Référence de l'activité (8 caractères). */
+  readonly ref: string;
   readonly slug: string;
   readonly title: string;
   readonly city: IActivityCity;
@@ -53,6 +54,18 @@ export interface IActivityCard {
   readonly original_price: string | null;
   readonly currency: string;
   readonly free_cancellation: boolean;
+  /** Recherche par ville : distance (km) depuis cette ville, pour une activité d'une ville voisine. */
+  readonly distance_km?: number | null;
+}
+
+/** Lieu proposé à la saisie : une ville (et 100 km autour) ou un pays. */
+export interface IActivityPlace {
+  readonly kind: 'city' | 'country';
+  /** `null` pour un pays. */
+  readonly city: IActivityCity | null;
+  readonly country_code: string;
+  readonly country_name: string;
+  readonly activities: number;
 }
 
 export interface IActivityDestination {
@@ -71,7 +84,7 @@ export interface IActivityRating {
 }
 
 export interface IActivityReview {
-  readonly id: number;
+  readonly id: string;
   readonly rating: number;
   readonly author_name: string;
   /** ISO 3166-1 alpha-2. */
@@ -83,7 +96,7 @@ export interface IActivityReview {
 }
 
 export interface IActivityOption {
-  readonly id: number;
+  readonly id: string;
   readonly title: string;
   readonly description: string | null;
   readonly price: string;
@@ -93,7 +106,7 @@ export interface IActivityOption {
 }
 
 export interface IActivityDetail {
-  readonly id: number;
+  readonly ref: string;
   readonly slug: string;
   readonly title: string;
   readonly city: IActivityCity;
@@ -132,8 +145,8 @@ export interface IActivityDetail {
 
 /** Créneau d'une option à une date. */
 export interface IActivitySlot {
-  readonly slot_id: number;
-  readonly option_id: number;
+  readonly slot_id: string;
+  readonly option_id: string;
   readonly starts_at: string;
   readonly remaining: number;
   /** Assez de places pour les participants demandés, et encore réservable. */
@@ -143,7 +156,10 @@ export interface IActivitySlot {
 export type TActivityReviewSort = 'recent' | 'rating_high' | 'rating_low' | 'helpful';
 
 export interface IActivitySearch {
+  /** Ville (GeoNames) : ses activités et celles à moins de 100 km. */
   readonly city_id: number | null;
+  /** Pays (ISO 3166-1 alpha-2) : toutes ses activités ; ignoré avec une ville. */
+  readonly country: string | null;
   readonly category: TActivityCategory | null;
   readonly q: string;
   readonly page: number;

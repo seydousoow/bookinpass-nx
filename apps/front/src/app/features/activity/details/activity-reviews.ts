@@ -33,8 +33,7 @@ const VOTES_KEY = 'bip.activity-review-votes';
           <p class="mt-4 font-semibold">{{ t('overall') }}</p>
           <div class="mt-2 flex flex-col items-center gap-2 text-center">
             <p>
-              <span class="text-4xl font-bold">{{ average() }}</span
-              ><span class="text-lg text-muted">/5</span>
+              <span class="text-4xl font-bold">{{ average() }}</span><span class="text-lg text-muted">/5</span>
             </p>
             <bip-star-rating [rating]="rating().average ?? 0" size="2rem" />
             <p class="text-muted">{{ t('based-on', { count: rating().count }) }}</p>
@@ -134,7 +133,7 @@ export class ActivityReviews {
   protected readonly sort = signal<TActivityReviewSort>('recent');
   protected readonly ratingFilter = signal(0);
   /** Avis déjà jugés utiles depuis ce navigateur. */
-  protected readonly votes = signal<ReadonlySet<number>>(loadVotes());
+  protected readonly votes = signal<ReadonlySet<string>>(loadVotes());
   private readonly sortLabels = SORTS.map((value) => ({ value, label: translateSignal(`activity.reviews.sorts.${value}`) }));
   protected readonly sortOptions = computed((): ISelectOption<TActivityReviewSort>[] => this.sortLabels.map(({ value, label }) => ({ value, label: label() })));
   protected readonly details = computed(() =>
@@ -228,15 +227,17 @@ export class ActivityReviews {
   }
 }
 
-function loadVotes(): ReadonlySet<number> {
+function loadVotes(): ReadonlySet<string> {
   try {
-    return new Set(JSON.parse(localStorage.getItem(VOTES_KEY) ?? '[]') as number[]);
+    const stored = JSON.parse(localStorage.getItem(VOTES_KEY) ?? '[]') as unknown[];
+    // Identifiants publics seulement : les votes d'avant (clés techniques) sont oubliés.
+    return new Set(stored.filter((id): id is string => typeof id === 'string'));
   } catch {
     return new Set();
   }
 }
 
-function saveVotes(votes: ReadonlySet<number>): void {
+function saveVotes(votes: ReadonlySet<string>): void {
   try {
     localStorage.setItem(VOTES_KEY, JSON.stringify([...votes].slice(-500)));
   } catch {

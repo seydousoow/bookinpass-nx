@@ -32,7 +32,7 @@
 
   /* Typographie — pile complète explicite : la maquette saute à Arial et
      laisse le rendu Android au hasard (cadrage §6.4). */
-  --font-sans: 'Segoe UI', system-ui, -apple-system, Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-sans: 'Ubuntu', 'Segoe UI', system-ui, -apple-system, Roboto, 'Helvetica Neue', Arial, sans-serif;
 
   --text-xss: 0.625rem;
   --text-xss--line-height: 1.4;
