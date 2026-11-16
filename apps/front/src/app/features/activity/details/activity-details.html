@@ -12,9 +12,9 @@
       </div>
     </div>
   } @else if (activity.value(); as a) {
-    <article class="mx-auto max-w-7xl px-4 py-6">
+    <article class="mx-auto max-w-7xl px-4 py-6 text-[0.9375rem]">
       <header class="mb-4">
-        <h1 class="text-2xl leading-tight font-extrabold md:text-4xl">{{ a.title }}</h1>
+        <h1 class="text-xl leading-tight font-extrabold md:text-3xl">{{ a.title }}</h1>
         <div class="mt-2 flex flex-wrap items-center justify-between gap-3">
           <p class="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
             @if (a.rating.count) {
@@ -39,7 +39,7 @@
             <bip-activity-gallery [images]="a.images" [title]="a.title" />
           }
 
-          <p class="text-lg">{{ a.summary }}</p>
+          <p class="text-base">{{ a.summary }}</p>
 
           <div class="grid gap-4 border-t border-border-subtle pt-6 sm:grid-cols-2">
             <div class="flex gap-3">
@@ -67,7 +67,7 @@
 
           @if (a.featured_reviews.length) {
             <section aria-labelledby="loved-title">
-              <h2 class="text-2xl font-bold" id="loved-title">{{ t('loved') }}</h2>
+              <h2 class="text-xl font-bold" id="loved-title">{{ t('loved') }}</h2>
               <div class="mt-4 grid gap-4 md:grid-cols-2">
                 @for (review of a.featured_reviews; track review.id) {
                   <bip-activity-review-item [boxed]="true" [review]="review" />
@@ -82,7 +82,7 @@
           <dl class="divide-y divide-border-subtle">
             @if (a.highlights.length) {
               <div class="grid gap-3 py-6 md:grid-cols-[14rem_1fr]">
-                <dt class="text-xl font-bold">{{ t('highlights') }}</dt>
+                <dt class="text-lg font-bold">{{ t('highlights') }}</dt>
                 <dd>
                   <ul class="list-disc space-y-1 pl-5">
                     @for (item of a.highlights; track $index) {
@@ -94,7 +94,7 @@
             }
 
             <div class="grid gap-3 py-6 md:grid-cols-[14rem_1fr]">
-              <dt class="text-xl font-bold">{{ t('description') }}</dt>
+              <dt class="text-lg font-bold">{{ t('description') }}</dt>
               <dd>
                 <p [class.line-clamp-4]="!descriptionOpen()" class="whitespace-pre-line">{{ a.description }}</p>
                 @if (a.description.length > 300) {
@@ -107,52 +107,56 @@
 
             @if (a.itinerary.length) {
               <div class="grid gap-3 py-6 md:grid-cols-[14rem_1fr]">
-                <dt class="text-xl font-bold">{{ t('itinerary') }}</dt>
-                <dd class="grid gap-6 xl:grid-cols-2">
-                  <ol class="space-y-4">
+                <dt class="text-lg font-bold">{{ t('itinerary') }}</dt>
+                <dd class="grid gap-6">
+                  <!-- Frise : chaque étape est reliée à la suivante par un trait pointillé terminé par une flèche. -->
+                  <ol>
                     <li class="flex gap-3">
-                      <span aria-hidden="true" class="flex size-8 shrink-0 items-center justify-center rounded-full bg-brand-primary text-onbrand"
-                        ><ng-icon name="heroMapPin"
-                      /></span>
-                      <div>
-                        <p class="font-semibold">{{ t('meeting-point') }}</p>
-                        <p class="text-sm">{{ a.meeting_point }}</p>
+                      <div aria-hidden="true" class="flex w-7 shrink-0 flex-col items-center">
+                        <span class="flex size-7 shrink-0 items-center justify-center rounded-full bg-brand-primary text-onbrand"><ng-icon name="heroMapPin" size="1rem" /></span>
+                        <span class="mt-1 w-0 flex-1 border-l-2 border-dashed border-muted"></span>
+                        <ng-icon class="-mt-1 shrink-0 text-muted" name="heroChevronDown" size="0.875rem" />
+                      </div>
+                      <div class="pb-4">
+                        <p class="text-sm font-semibold">{{ t('meeting-point') }}</p>
+                        <p class="text-xs text-muted">{{ a.meeting_point }}</p>
                       </div>
                     </li>
-                    @for (stop of a.itinerary; track $index) {
+                    @for (stop of a.itinerary; track $index; let last = $last) {
                       <li class="flex gap-3">
-                        <span aria-hidden="true" class="mt-1 size-6 shrink-0 rounded-full border-2 border-ink"></span>
-                        <div>
-                          <p class="font-semibold">{{ stop.name }}</p>
-                          <p class="text-sm text-muted">
+                        <div aria-hidden="true" class="flex w-7 shrink-0 flex-col items-center">
+                          <span class="mt-0.5 size-4 shrink-0 rounded-full border-2 border-ink"></span>
+                          @if (!last) {
+                            <span class="mt-1 w-0 flex-1 border-l-2 border-dashed border-muted"></span>
+                            <ng-icon class="-mt-1 shrink-0 text-muted" name="heroChevronDown" size="0.875rem" />
+                          }
+                        </div>
+                        <div [class.pb-4]="!last">
+                          <p class="text-sm font-semibold">{{ stop.name }}</p>
+                          <p class="text-xs text-muted">
                             {{ t('stop-kind.' + stop.kind) }}
                             @if (stop.duration_minutes) {
                               ({{ t('stop-minutes', { count: stop.duration_minutes }) }})
                             }
                           </p>
                           @if (stop.optional) {
-                            <p class="text-sm text-muted italic">{{ t('optional') }}</p>
+                            <p class="text-xs text-muted italic">{{ t('optional') }}</p>
                           }
                           @if (stop.description) {
-                            <p class="mt-1 text-sm">{{ stop.description }}</p>
+                            <p class="mt-1 text-xs">{{ stop.description }}</p>
                           }
                         </div>
                       </li>
                     }
                   </ol>
-                  @if (a.latitude !== null && a.longitude !== null) {
-                    <bip-activity-map [label]="a.meeting_point" [latitude]="a.latitude" [longitude]="a.longitude" />
-                  }
-                  <p class="flex items-center gap-2 text-sm text-muted xl:col-span-2">
-                    <ng-icon aria-hidden="true" name="heroInformationCircle" size="1.25rem" /> {{ t('itinerary-note') }}
-                  </p>
+                  <p class="flex items-center gap-2 text-xs text-muted"><ng-icon aria-hidden="true" name="heroInformationCircle" size="1rem" /> {{ t('itinerary-note') }}</p>
                 </dd>
               </div>
             }
 
             @if (a.includes.length || a.excludes.length) {
               <div class="grid gap-3 py-6 md:grid-cols-[14rem_1fr]">
-                <dt class="text-xl font-bold">{{ t('includes') }}</dt>
+                <dt class="text-lg font-bold">{{ t('includes') }}</dt>
                 <dd>
                   <ul class="space-y-1">
                     @for (item of a.includes; track $index) {
@@ -171,7 +175,7 @@
             }
 
             <div class="grid gap-3 py-6 md:grid-cols-[14rem_1fr]" id="activity-location">
-              <dt class="text-xl font-bold">{{ t('location') }}</dt>
+              <dt class="text-lg font-bold">{{ t('location') }}</dt>
               <dd class="grid gap-4 xl:grid-cols-2">
                 <p>
                   {{ a.meeting_point }}<br /><span class="text-muted">{{ a.city.name }}</span>
@@ -185,7 +189,7 @@
             @let toBring = a.to_bring ?? [];
             @if (a.not_allowed.length || toBring.length || a.know_before.length) {
               <div class="grid gap-3 py-6 md:grid-cols-[14rem_1fr]">
-                <dt class="text-xl font-bold">{{ t('important') }}</dt>
+                <dt class="text-lg font-bold">{{ t('important') }}</dt>
                 <dd class="space-y-5">
                   @if (a.not_allowed.length) {
                     <div>
@@ -249,7 +253,7 @@
       @if (a.related.length) {
         <section aria-labelledby="related-title" class="mt-10">
           <div class="flex items-center justify-between gap-2">
-            <h2 class="text-2xl font-bold" id="related-title">{{ t('related') }}</h2>
+            <h2 class="text-xl font-bold" id="related-title">{{ t('related') }}</h2>
             <div class="hidden gap-2 md:flex">
               <button
                 (click)="scrollRelated(related, -1)"

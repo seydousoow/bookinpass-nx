@@ -13,6 +13,7 @@ import {
   heroArrowUpTray,
   heroCalendarDays,
   heroCheck,
+  heroChevronDown,
   heroChevronLeft,
   heroChevronRight,
   heroClock,
@@ -43,7 +44,19 @@ const FOLDED_ITEMS = 4;
   selector: 'bip-activity-details',
   imports: [TranslocoDirective, RouterLink, NgIcon, Button, Spinner, ActivityGallery, ActivityBookingCard, ActivityMap, ActivityReviewItem, ActivityReviews, ActivityCardComponent],
   providers: [
-    provideIcons({ heroArrowUpTray, heroCalendarDays, heroCheck, heroChevronLeft, heroChevronRight, heroClock, heroInformationCircle, heroMapPin, heroStarSolid, heroXMark }),
+    provideIcons({
+      heroArrowUpTray,
+      heroCalendarDays,
+      heroCheck,
+      heroChevronDown,
+      heroChevronLeft,
+      heroChevronRight,
+      heroClock,
+      heroInformationCircle,
+      heroMapPin,
+      heroStarSolid,
+      heroXMark,
+    }),
   ],
   templateUrl: './activity-details.html',
 })

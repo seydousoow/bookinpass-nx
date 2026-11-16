@@ -44,7 +44,7 @@ interface IOptionSlots {
           }
         </p>
         <p>
-          <span [class.text-state-error]="activity().original_price" class="text-2xl font-bold">{{ price | bipMoney: activity().currency }}</span>
+          <span [class.text-state-error]="activity().original_price" class="text-xl font-bold">{{ price | bipMoney: activity().currency }}</span>
           <span class="text-sm"> {{ t('per-person') }}</span>
         </p>
       } @else {

@@ -28,12 +28,12 @@ const VOTES_KEY = 'bip.activity-review-votes';
   template: `
     <section *transloco="let t; prefix: 'activity.reviews'" aria-labelledby="activity-reviews-title" class="grid gap-8 lg:grid-cols-[18rem_1fr]">
       <div>
-        <h2 class="text-2xl font-bold" id="activity-reviews-title">{{ t('title') }}</h2>
+        <h2 class="text-xl font-bold" id="activity-reviews-title">{{ t('title') }}</h2>
         @if (rating().count) {
           <p class="mt-4 font-semibold">{{ t('overall') }}</p>
           <div class="mt-2 flex flex-col items-center gap-2 text-center">
             <p>
-              <span class="text-4xl font-bold">{{ average() }}</span><span class="text-lg text-muted">/5</span>
+              <span class="text-3xl font-bold">{{ average() }}</span><span class="text-base text-muted">/5</span>
             </p>
             <bip-star-rating [rating]="rating().average ?? 0" size="2rem" />
             <p class="text-muted">{{ t('based-on', { count: rating().count }) }}</p>
