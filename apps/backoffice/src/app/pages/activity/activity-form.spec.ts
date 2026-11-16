@@ -7,7 +7,7 @@ describe('activity form', () => {
   });
 
   it('lists what is missing before saving', () => {
-    expect(missing(emptyActivity())).toEqual(['title', 'city', 'provider', 'summary', 'description', 'meeting-point']);
+    expect(missing(emptyActivity())).toEqual(['title', 'city', 'provider', 'summary', 'description', 'meeting-point', 'location']);
     const form = { ...emptyActivity(), latitude: 14.7, images: [{ url: 'http://insecure.example/a.jpg', alt: null }] };
     expect(missing(form)).toContain('location');
     expect(missing(form)).toContain('images');

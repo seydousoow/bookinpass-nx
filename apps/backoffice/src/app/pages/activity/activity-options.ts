@@ -106,7 +106,7 @@ export class ActivityOptions {
 
   protected readonly action = createAction();
   protected readonly next = signal<ActivityOptionForm>({ ...EMPTY });
-  private readonly drafts = signal<Readonly<Record<number, ActivityOptionForm>>>({});
+  private readonly drafts = signal<Readonly<Record<string, ActivityOptionForm>>>({});
   private readonly api = inject(StaffApi);
 
   protected draft(option: ActivityOption): ActivityOptionForm {
@@ -133,7 +133,7 @@ export class ActivityOptions {
   }
 
   protected add(): void {
-    this.action.run(this.api.addOption(this.activity().id, this.next()), (activity) => {
+    this.action.run(this.api.addOption(this.activity().ref, this.next()), (activity) => {
       this.next.set({ ...EMPTY });
       this.changed.emit(activity);
     });

@@ -1019,15 +1019,14 @@
     "card": {
       "free-cancellation": "Annulation gratuite",
       "rating": "Note {rating} sur 5, {count} avis",
-      "from": "À partir de"
+      "from": "À partir de",
+      "distance": "à {km} km"
     },
     "search": {
-      "city": "Destination",
-      "any-city": "Toutes les destinations",
+      "city": "Où ?",
       "query": "Que voulez-vous faire ?",
       "query-placeholder": "Visite, croisière, île de Gorée…",
       "submit": "Rechercher",
-      "destinations-failed": "Les destinations n'ont pas pu être chargées.",
       "categories": "Catégories",
       "all": "Tout",
       "category": {
@@ -1045,7 +1044,13 @@
       "retry": "Réessayer",
       "count": "{count, plural, =0 {Aucune activité} one {# activité} other {# activités}}",
       "empty-title": "Aucune activité ne correspond",
-      "empty-message": "Essayez une autre destination ou d'autres mots."
+      "empty-message": "Essayez une autre destination ou d'autres mots.",
+      "place-placeholder": "Ville ou pays : Dakar, Sénégal…",
+      "clear-place": "Effacer le lieu",
+      "place-city": "Ville · {country} · et 100 km autour",
+      "place-country": "Pays · toutes ses activités",
+      "place-min": "Tapez au moins {count} lettres",
+      "place-none": "Aucune activité près de « {value} »"
     },
     "book-card": {
       "label": "Réserver cette activité",

@@ -1,4 +1,8 @@
 @import 'tailwindcss';
+/* Police Ubuntu, servie par le site lui-même (pas d'appel à Google Fonts) ; graisses 400, 500 et 700. */
+@import '@fontsource/ubuntu/400.css';
+@import '@fontsource/ubuntu/500.css';
+@import '@fontsource/ubuntu/700.css';
 /* Thème et règles de base partagés avec le back-office : bibliothèque components. */
 @import '../../../packages/components/src/styles/theme.css';
 @import '../../../packages/components/src/styles/base.css';

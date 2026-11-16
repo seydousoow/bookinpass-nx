@@ -50,30 +50,31 @@ export class ActivityReviewsPage {
   /** File choisie à l'arrivée par `?status=approved` (lien depuis l'accueil), sinon les avis en attente. */
   protected readonly status = signal<ReviewStatus | ''>(initialStatus(inject(ActivatedRoute).snapshot.queryParamMap.get('status')));
   protected readonly page = signal(1);
-  protected readonly rejecting = signal<number | null>(null);
+  protected readonly rejecting = signal<string | null>(null);
   protected readonly reason = signal<string | null>('');
-  protected readonly activityId = computed(() => {
-    const id = Number(this.activity());
-    return Number.isInteger(id) && id > 0 ? id : null;
+  /** Référence de l'activité choisie (`?activity=`), sinon toutes. */
+  protected readonly activityRef = computed(() => {
+    const ref = this.activity()?.trim().toUpperCase() ?? '';
+    return /^[A-Z0-9]{8}$/.test(ref) ? ref : null;
   });
   private readonly api = inject(StaffApi);
   protected readonly settings = rxResource({ stream: () => this.api.activitySettings() });
   protected readonly list = rxResource({
-    params: () => ({ status: this.status(), activity: this.activityId(), page: this.page() - 1 }),
+    params: () => ({ status: this.status(), activity: this.activityRef(), page: this.page() - 1 }),
     stream: ({ params }) => this.api.reviews(params.status, params.activity, params.page),
   });
   private readonly router = inject(Router);
   private readonly activities = rxResource({ stream: () => this.api.activities() });
-  protected readonly activityOptions = computed((): ISelectOption<number>[] => (this.activities.value() ?? []).map((a) => ({ value: a.id, label: a.title })));
+  protected readonly activityOptions = computed((): ISelectOption<string>[] => (this.activities.value() ?? []).map((a) => ({ value: a.ref, label: a.title })));
 
   protected show(status: ReviewStatus | ''): void {
     this.status.set(status);
     this.page.set(1);
   }
 
-  protected chooseActivity(id: number | null): void {
+  protected chooseActivity(ref: string | null): void {
     this.page.set(1);
-    void this.router.navigate([], { queryParams: { activity: id ?? undefined } });
+    void this.router.navigate([], { queryParams: { activity: ref ?? undefined } });
   }
 
   protected toggleAuto(enabled: boolean): void {

@@ -15,7 +15,10 @@ import {
   ActivitySlot,
   ActivitySlotsForm,
   ActivityStatus,
+  ActivityTranslation,
+  ActivityTranslationContent,
   ActivitySummary,
+  ContentLang,
   Departure,
   DepartureDetail,
   DeskBooking,
@@ -34,8 +37,8 @@ import {
 } from './models';
 
 /** Paramètres de filtre : la gare n'est envoyée que si elle est choisie. */
-function withStation(params: Record<string, string>, stationId: number | null): Record<string, string> {
-  return stationId === null ? params : { ...params, station_id: String(stationId) };
+function withStation(params: Record<string, string>, stationId: string | null): Record<string, string> {
+  return stationId === null ? params : { ...params, station_id: stationId };
 }
 
 /** Appels du back-office (`/staff/**`). Le cookie de session accompagne chaque requête (intercepteur). */
@@ -64,23 +67,23 @@ export class StaffApi {
     return this.http.get<Station[]>(`${this.url}/stations`);
   }
 
-  departures(date: string, stationId: number | null): Observable<Departure[]> {
+  departures(date: string, stationId: string | null): Observable<Departure[]> {
     return this.http.get<Departure[]>(`${this.url}/departures`, { params: withStation({ date }, stationId) });
   }
 
-  departure(id: number): Observable<DepartureDetail> {
+  departure(id: string): Observable<DepartureDetail> {
     return this.http.get<DepartureDetail>(`${this.url}/departures/${id}`);
   }
 
-  markDeparted(id: number): Observable<DepartureDetail> {
+  markDeparted(id: string): Observable<DepartureDetail> {
     return this.http.post<DepartureDetail>(`${this.url}/departures/${id}/departed`, null);
   }
 
-  markArrived(id: number): Observable<DepartureDetail> {
+  markArrived(id: string): Observable<DepartureDetail> {
     return this.http.post<DepartureDetail>(`${this.url}/departures/${id}/arrived`, null);
   }
 
-  resize(id: number, capacity: number): Observable<DepartureDetail> {
+  resize(id: string, capacity: number): Observable<DepartureDetail> {
     return this.http.patch<DepartureDetail>(`${this.url}/departures/${id}`, { capacity });
   }
 
@@ -88,11 +91,11 @@ export class StaffApi {
     return this.http.post<TicketCheck>(`${this.url}/tickets/${encodeURIComponent(code)}/scan`, null);
   }
 
-  registerLuggage(departureId: number, form: LuggageForm): Observable<Luggage> {
+  registerLuggage(departureId: string, form: LuggageForm): Observable<Luggage> {
     return this.http.post<Luggage>(`${this.url}/departures/${departureId}/luggage`, form);
   }
 
-  luggage(date: string, stationId: number | null): Observable<Luggage[]> {
+  luggage(date: string, stationId: string | null): Observable<Luggage[]> {
     return this.http.get<Luggage[]>(`${this.url}/luggage`, { params: withStation({ date }, stationId) });
   }
 
@@ -104,20 +107,20 @@ export class StaffApi {
     return this.http.post<Luggage>(`${this.url}/luggage/${encodeURIComponent(code)}/delivered`, null);
   }
 
-  incidents(open: boolean, stationId: number | null): Observable<Incident[]> {
+  incidents(open: boolean, stationId: string | null): Observable<Incident[]> {
     return this.http.get<Incident[]>(`${this.url}/incidents`, { params: withStation({ open: String(open) }, stationId) });
   }
 
-  reportIncident(report: { departure_id: number | null; route_id: number | null; type: IncidentType; description: string }): Observable<Incident> {
+  reportIncident(report: { departure_id: string | null; route_id: string | null; type: IncidentType; description: string }): Observable<Incident> {
     return this.http.post<Incident>(`${this.url}/incidents`, report);
   }
 
   /** Derniers incidents clos, les plus récents d'abord. */
-  resolvedIncidents(limit: number, stationId: number | null): Observable<Incident[]> {
+  resolvedIncidents(limit: number, stationId: string | null): Observable<Incident[]> {
     return this.http.get<Incident[]>(`${this.url}/incidents/resolved`, { params: withStation({ limit: String(limit) }, stationId) });
   }
 
-  resolveIncident(id: number, resolution: string): Observable<Incident> {
+  resolveIncident(id: string, resolution: string): Observable<Incident> {
     return this.http.post<Incident>(`${this.url}/incidents/${id}/resolve`, { resolution });
   }
 
@@ -125,19 +128,19 @@ export class StaffApi {
     return this.http.get<Route[]>(`${this.url}/routes`);
   }
 
-  createRoute(route: { origin_station_id: number; destination_station_id: number; network: Network; price: number; capacity: number }): Observable<Route> {
+  createRoute(route: { origin_station_id: string; destination_station_id: string; network: Network; price: number; capacity: number }): Observable<Route> {
     return this.http.post<Route>(`${this.url}/routes`, route);
   }
 
-  updateRoute(id: number, route: { price: number; capacity: number; active: boolean }): Observable<Route> {
+  updateRoute(id: string, route: { price: number; capacity: number; active: boolean }): Observable<Route> {
     return this.http.patch<Route>(`${this.url}/routes/${id}`, route);
   }
 
-  addSchedule(routeId: number, schedule: { days: number[]; departs_at: string; last_departure: string | null }): Observable<Route> {
+  addSchedule(routeId: string, schedule: { days: number[]; departs_at: string; last_departure: string | null }): Observable<Route> {
     return this.http.post<Route>(`${this.url}/routes/${routeId}/schedules`, schedule);
   }
 
-  deleteSchedule(id: number): Observable<Route> {
+  deleteSchedule(id: string): Observable<Route> {
     return this.http.delete<Route>(`${this.url}/schedules/${id}`);
   }
 
@@ -149,11 +152,11 @@ export class StaffApi {
     return this.http.post<StaffUser>(`${this.url}/users`, form);
   }
 
-  updateUser(id: number, form: StaffUserForm): Observable<StaffUser> {
+  updateUser(id: string, form: StaffUserForm): Observable<StaffUser> {
     return this.http.patch<StaffUser>(`${this.url}/users/${id}`, form);
   }
 
-  resetPassword(id: number, temporaryPassword: string): Observable<StaffUser> {
+  resetPassword(id: string, temporaryPassword: string): Observable<StaffUser> {
     return this.http.post<StaffUser>(`${this.url}/users/${id}/password`, { temporary_password: temporaryPassword });
   }
 
@@ -170,7 +173,7 @@ export class StaffApi {
     return this.http.get<Refund[]>(`${this.url}/refunds`, { params: { all: String(all) } });
   }
 
-  markRefunded(id: number, note: string): Observable<Refund> {
+  markRefunded(id: string, note: string): Observable<Refund> {
     return this.http.post<Refund>(`${this.url}/refunds/${id}/refunded`, { note });
   }
 
@@ -183,20 +186,35 @@ export class StaffApi {
     return this.http.get<ActivitySummary[]>(`${this.url}/activities`);
   }
 
-  activity(id: number): Observable<ActivityDetail> {
-    return this.http.get<ActivityDetail>(`${this.url}/activities/${id}`);
+  activity(ref: string): Observable<ActivityDetail> {
+    return this.http.get<ActivityDetail>(`${this.url}/activities/${ref}`);
   }
 
   createActivity(form: ActivityForm): Observable<ActivityDetail> {
     return this.http.post<ActivityDetail>(`${this.url}/activities`, form);
   }
 
-  updateActivity(id: number, form: ActivityForm): Observable<ActivityDetail> {
-    return this.http.put<ActivityDetail>(`${this.url}/activities/${id}`, form);
+  updateActivity(ref: string, form: ActivityForm): Observable<ActivityDetail> {
+    return this.http.put<ActivityDetail>(`${this.url}/activities/${ref}`, form);
   }
 
-  activityStatus(id: number, status: ActivityStatus): Observable<ActivityDetail> {
-    return this.http.post<ActivityDetail>(`${this.url}/activities/${id}/status`, { status });
+  activityStatus(ref: string, status: ActivityStatus): Observable<ActivityDetail> {
+    return this.http.post<ActivityDetail>(`${this.url}/activities/${ref}/status`, { status });
+  }
+
+  /** Traduction d'une fiche dans une langue, la source en regard. */
+  translation(ref: string, lang: ContentLang): Observable<ActivityTranslation> {
+    return this.http.get<ActivityTranslation>(`${this.url}/activities/${ref}/translations/${lang}`);
+  }
+
+  /** Nouvelle proposition de Claude, tout de suite. */
+  proposeTranslation(ref: string, lang: ContentLang): Observable<ActivityTranslation> {
+    return this.http.post<ActivityTranslation>(`${this.url}/activities/${ref}/translations/${lang}/proposal`, null);
+  }
+
+  /** Traduction relue : montrée sur le site. */
+  applyTranslation(ref: string, lang: ContentLang, content: ActivityTranslationContent): Observable<ActivityTranslation> {
+    return this.http.put<ActivityTranslation>(`${this.url}/activities/${ref}/translations/${lang}`, content);
   }
 
   /** Photo envoyée depuis l'appareil : déposée dans S3, rend son adresse sur le CDN. */
@@ -216,49 +234,49 @@ export class StaffApi {
     return this.http.delete<void>(`${this.url}/activity-images`, { params: { url } });
   }
 
-  addOption(activityId: number, form: ActivityOptionForm): Observable<ActivityDetail> {
-    return this.http.post<ActivityDetail>(`${this.url}/activities/${activityId}/options`, form);
+  addOption(ref: string, form: ActivityOptionForm): Observable<ActivityDetail> {
+    return this.http.post<ActivityDetail>(`${this.url}/activities/${ref}/options`, form);
   }
 
-  updateOption(id: number, form: ActivityOptionForm): Observable<ActivityDetail> {
+  updateOption(id: string, form: ActivityOptionForm): Observable<ActivityDetail> {
     return this.http.put<ActivityDetail>(`${this.url}/activity-options/${id}`, form);
   }
 
   /** Créneaux d'une option, du jour `from` au jour `to` (3 mois au plus). */
-  slots(optionId: number, from: string, to: string): Observable<ActivitySlot[]> {
+  slots(optionId: string, from: string, to: string): Observable<ActivitySlot[]> {
     return this.http.get<ActivitySlot[]>(`${this.url}/activity-options/${optionId}/slots`, { params: { from, to } });
   }
 
-  openSlots(optionId: number, form: ActivitySlotsForm): Observable<{ created: number }> {
+  openSlots(optionId: string, form: ActivitySlotsForm): Observable<{ created: number }> {
     return this.http.post<{ created: number }>(`${this.url}/activity-options/${optionId}/slots`, form);
   }
 
-  resizeSlot(id: number, capacity: number): Observable<ActivitySlot> {
+  resizeSlot(id: string, capacity: number): Observable<ActivitySlot> {
     return this.http.patch<ActivitySlot>(`${this.url}/activity-slots/${id}`, { capacity });
   }
 
-  deleteSlot(id: number): Observable<void> {
+  deleteSlot(id: string): Observable<void> {
     return this.http.delete<void>(`${this.url}/activity-slots/${id}`);
   }
 
   /** Créneau annulé : chaque réservation payée est annulée et remboursée en entier. */
-  cancelSlot(id: number, reason: string): Observable<{ cancelled: number }> {
+  cancelSlot(id: string, reason: string): Observable<{ cancelled: number }> {
     return this.http.post<{ cancelled: number }>(`${this.url}/activity-slots/${id}/cancel`, { reason });
   }
 
-  summarizeReviews(activityId: number): Observable<ActivityDetail> {
-    return this.http.post<ActivityDetail>(`${this.url}/activities/${activityId}/review-summary`, null);
+  summarizeReviews(ref: string): Observable<ActivityDetail> {
+    return this.http.post<ActivityDetail>(`${this.url}/activities/${ref}/review-summary`, null);
   }
 
-  activityBookings(filter: { q: string; status: string; activity_id: number | null; from: string; to: string; page: number }): Observable<Page<ActivityBooking>> {
+  activityBookings(filter: { q: string; status: string; activity_ref: string | null; from: string; to: string; page: number }): Observable<Page<ActivityBooking>> {
     const params: Record<string, string | number> = { page: filter.page, size: 25 };
     for (const key of ['q', 'status', 'from', 'to'] as const) {
       if (filter[key]) {
         params[key] = filter[key];
       }
     }
-    if (filter.activity_id !== null) {
-      params['activity_id'] = filter.activity_id;
+    if (filter.activity_ref !== null) {
+      params['activity_ref'] = filter.activity_ref;
     }
     return this.http.get<Page<ActivityBooking>>(`${this.url}/activity-bookings`, { params });
   }
@@ -282,32 +300,32 @@ export class StaffApi {
     return this.http.get<ActivityRefund[]>(`${this.url}/activity-refunds`, { params: { all: String(all) } });
   }
 
-  markActivityRefunded(id: number, note: string): Observable<ActivityRefund> {
+  markActivityRefunded(id: string, note: string): Observable<ActivityRefund> {
     return this.http.post<ActivityRefund>(`${this.url}/activity-refunds/${id}/refunded`, { note });
   }
 
-  retryActivityRefund(id: number): Observable<void> {
+  retryActivityRefund(id: string): Observable<void> {
     return this.http.post<void>(`${this.url}/activity-refunds/${id}/retry`, null);
   }
 
-  reviews(status: string, activityId: number | null, page: number): Observable<Page<ActivityReview>> {
+  reviews(status: string, activityRef: string | null, page: number): Observable<Page<ActivityReview>> {
     const params: Record<string, string | number> = { status, page, size: 20 };
-    if (activityId !== null) {
-      params['activity_id'] = activityId;
+    if (activityRef !== null) {
+      params['activity_ref'] = activityRef;
     }
     return this.http.get<Page<ActivityReview>>(`${this.url}/activity-reviews`, { params });
   }
 
-  approveReview(id: number): Observable<ActivityReview> {
+  approveReview(id: string): Observable<ActivityReview> {
     return this.http.post<ActivityReview>(`${this.url}/activity-reviews/${id}/approve`, null);
   }
 
-  rejectReview(id: number, reason: string): Observable<ActivityReview> {
+  rejectReview(id: string, reason: string): Observable<ActivityReview> {
     return this.http.post<ActivityReview>(`${this.url}/activity-reviews/${id}/reject`, { reason });
   }
 
   /** Nouvel avis de Claude sur un avis en attente. */
-  moderateReview(id: number): Observable<ActivityReview> {
+  moderateReview(id: string): Observable<ActivityReview> {
     return this.http.post<ActivityReview>(`${this.url}/activity-reviews/${id}/moderate`, null);
   }
 

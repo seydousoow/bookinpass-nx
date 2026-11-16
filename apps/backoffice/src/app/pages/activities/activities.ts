@@ -43,11 +43,13 @@ export class ActivitiesPage {
   protected readonly shown = computed(() => {
     const text = (this.query() ?? '').trim().toLowerCase();
     const status = this.status();
-    return (this.list.value() ?? []).filter((a) => (!status || a.status === status) && (!text || a.title.toLowerCase().includes(text) || a.city.name.toLowerCase().includes(text)));
+    return (this.list.value() ?? []).filter(
+      (a) => (!status || a.status === status) && (!text || a.ref.toLowerCase().includes(text) || a.title.toLowerCase().includes(text) || a.city.name.toLowerCase().includes(text)),
+    );
   });
   private readonly router = inject(Router);
 
-  protected open(id: number): void {
-    void this.router.navigate(['/activities', id]);
+  protected open(ref: string): void {
+    void this.router.navigate(['/activities', ref]);
   }
 }

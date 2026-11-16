@@ -4,11 +4,11 @@ import { button, get, pick, renderPage, staffApiMock, staffUser, STATIONS, type 
 import { IncidentsPage } from './incidents';
 
 const INCIDENT: Incident = {
-  id: 8,
+  id: '8',
   route_code: 'DKR-THS',
   origin: 'Dakar',
   destination: 'Thiès',
-  departure_id: 3,
+  departure_id: '3',
   departs_at: '2026-10-25T07:00:00Z',
   type: 'delay',
   description: 'Retard de 20 minutes',
@@ -19,7 +19,7 @@ const INCIDENT: Incident = {
 };
 
 const ROUTE: Route = {
-  id: 9,
+  id: '9',
   code: 'DKR-THS',
   network: 'interurban',
   origin: STATIONS[0],
@@ -52,7 +52,7 @@ describe('IncidentsPage', () => {
     await stable();
     button(element, 'incidents.resolve').click();
     await stable();
-    expect(api.resolveIncident).toHaveBeenCalledWith(8, 'Car de remplacement');
+    expect(api.resolveIncident).toHaveBeenCalledWith('8', 'Car de remplacement');
   });
 
   it('ne laisse pas un contrôleur clore ni signaler sur une ligne', async () => {
@@ -72,18 +72,18 @@ describe('IncidentsPage', () => {
     await stable();
     expect(button(element, 'incidents.report').hasAttribute('disabled')).toBe(true);
     // Sélecteurs : filtre de type (0), gare (1), puis dans le tiroir : ligne (2), type (3).
-    pick(fixture, 2, 9);
+    pick(fixture, 2, '9');
     pick(fixture, 3, 'breakdown');
     type(get<HTMLInputElement>(element, 'textarea[name="description"]'), 'Car en panne');
     await stable();
     button(element, 'incidents.report').click();
     await stable();
-    expect(api.reportIncident).toHaveBeenCalledWith({ departure_id: null, route_id: 9, type: 'breakdown', description: 'Car en panne' });
+    expect(api.reportIncident).toHaveBeenCalledWith({ departure_id: null, route_id: '9', type: 'breakdown', description: 'Car en panne' });
     expect(element.querySelector('textarea[name="description"]')).toBeNull();
   });
 
   it('filtre par type sans rappeler le serveur', async () => {
-    const api = staffApiMock({ incidents: () => of([INCIDENT, { ...INCIDENT, id: 9, type: 'breakdown', description: 'Pneu' }]) });
+    const api = staffApiMock({ incidents: () => of([INCIDENT, { ...INCIDENT, id: '9', type: 'breakdown', description: 'Pneu' }]) });
     const { element, fixture, stable } = await renderPage(IncidentsPage, { api, user: staffUser('inspector') });
     expect(element.querySelectorAll('tbody tr')).toHaveLength(2);
     pick(fixture, 0, 'breakdown');

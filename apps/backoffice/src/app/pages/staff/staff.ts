@@ -30,7 +30,7 @@ interface UserDraft {
   readonly full_name: string;
   readonly phone: string;
   readonly role: StaffRole;
-  readonly station_id: number | null;
+  readonly station_id: string | null;
   readonly active: boolean;
 }
 
@@ -68,13 +68,13 @@ export class StaffPage {
   protected readonly issued = signal<{ username: string; password: string } | null>(null);
   protected readonly dateTime = dakarDateTime;
   protected readonly newRole = signal<StaffRole>('inspector');
-  protected readonly newStation = signal<number | null>(null);
+  protected readonly newStation = signal<string | null>(null);
   /** Le compte connecté, montré à part ; les autres dans le tableau. */
   protected readonly me = computed(() => this.list.value()?.find((u) => u.id === this.session.user()?.id) ?? null);
   protected readonly others = computed(() => (this.list.value() ?? []).filter((u) => u.id !== this.session.user()?.id));
   protected readonly creating = signal(false);
   protected readonly resetting = signal(false);
-  protected readonly selectedId = signal<number | null>(null);
+  protected readonly selectedId = signal<string | null>(null);
   protected readonly selected = computed(() => this.others().find((u) => u.id === this.selectedId()) ?? null);
   private readonly api = inject(StaffApi);
   protected readonly list = rxResource({ stream: () => this.api.users() });
@@ -103,7 +103,7 @@ export class StaffPage {
   );
 
   /** Brouillons d'édition par compte, créés à la première saisie. */
-  private readonly drafts = signal<Readonly<Record<number, UserDraft>>>({});
+  private readonly drafts = signal<Readonly<Record<string, UserDraft>>>({});
 
   protected initials(name: string): string {
     return name

@@ -8,7 +8,7 @@ describe('ActivityPage', () => {
     const city = { id: 2253354, name: 'Dakar', country_code: 'SN', timezone: 'Africa/Dakar' };
     const api = staffApiMock({
       cities: () => of([{ city, population: 2_476_400 }]),
-      createActivity: () => of({ id: 7 } as ActivityDetail),
+      createActivity: () => of({ ref: 'ACT00007' } as ActivityDetail),
     });
     const { element, stable, navigate } = await renderPage(ActivityPage, { api, inputs: { id: 'new' } });
 
@@ -28,6 +28,8 @@ describe('ActivityPage', () => {
     type(get<HTMLTextAreaElement>(element, 'textarea[name="description"]') as unknown as HTMLInputElement, 'La Maison des Esclaves.');
     type(get<HTMLTextAreaElement>(element, 'textarea[name="highlights"]') as unknown as HTMLInputElement, 'Maison des Esclaves\n\nCastel');
     type(get<HTMLInputElement>(element, 'input[name="meeting-point"]'), 'Embarcadère');
+    type(get<HTMLInputElement>(element, 'input[name="latitude"]'), '14.667');
+    type(get<HTMLInputElement>(element, 'input[name="longitude"]'), '-17.4');
     await stable();
     button(element, 'activity.create').click();
     await stable();
@@ -35,7 +37,7 @@ describe('ActivityPage', () => {
     expect(api.createActivity).toHaveBeenCalledWith(
       expect.objectContaining({ title: 'Île de Gorée', city_id: 2253354, highlights: ['Maison des Esclaves', 'Castel'], free_cancellation_hours: 24 }),
     );
-    expect(navigate).toHaveBeenCalledWith(['/activities', 7]);
+    expect(navigate).toHaveBeenCalledWith(['/activities', 'ACT00007']);
   });
 
   it('mène à l’étape à corriger quand celle affichée est complète', async () => {

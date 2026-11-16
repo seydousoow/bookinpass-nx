@@ -10,6 +10,7 @@ export const GENERAL_LIST_KEYS: readonly ListKey[] = LIST_KEYS.filter((key) => !
 
 export function emptyActivity(): ActivityForm {
   return {
+    lang: 'fr',
     title: '',
     slug: '',
     city_id: null,
@@ -38,6 +39,7 @@ export function emptyActivity(): ActivityForm {
 /** Saisie à partir de la fiche enregistrée (copies modifiables). */
 export function activityForm(activity: ActivityDetail): ActivityForm {
   return {
+    lang: activity.lang,
     title: activity.title,
     slug: activity.slug,
     city_id: activity.city.id,
@@ -85,7 +87,7 @@ export function missing(form: ActivityForm): string[] {
     [!form.description.trim(), 'description'],
     [!form.meeting_point.trim(), 'meeting-point'],
     [!form.duration_min_minutes || form.duration_min_minutes < 1, 'duration'],
-    [(form.latitude === null) !== (form.longitude === null), 'location'],
+    [form.latitude === null || form.longitude === null, 'location'],
     [form.images.some((image) => !/^https:\/\/\S+$/.test(image.url.trim())), 'images'],
     [form.itinerary.some((stop) => !stop.name.trim()), 'itinerary'],
   ];

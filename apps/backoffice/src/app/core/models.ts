@@ -5,7 +5,7 @@
 export type StaffRole = 'admin' | 'manager' | 'station_chief' | 'inspector';
 
 export interface Station {
-  readonly id: number;
+  readonly id: string;
   readonly code: string;
   readonly name: string;
   /** Ville (ou aéroport) de la gare. */
@@ -15,7 +15,7 @@ export interface Station {
 }
 
 export interface StaffUser {
-  readonly id: number;
+  readonly id: string;
   readonly username: string;
   readonly full_name: string;
   readonly phone: string | null;
@@ -27,8 +27,8 @@ export interface StaffUser {
 }
 
 export interface Departure {
-  readonly id: number;
-  readonly route_id: number;
+  readonly id: string;
+  readonly route_id: string;
   readonly route_code: string;
   readonly origin: Station;
   readonly destination: Station;
@@ -58,7 +58,7 @@ export interface Passenger {
 
 export interface Luggage {
   readonly code: string;
-  readonly departure_id: number;
+  readonly departure_id: string;
   readonly origin: string;
   readonly destination: string;
   readonly departs_at: string;
@@ -81,11 +81,11 @@ export const INCIDENT_TYPES = ['delay', 'breakdown', 'accident', 'passenger', 'l
 export type IncidentType = (typeof INCIDENT_TYPES)[number];
 
 export interface Incident {
-  readonly id: number;
+  readonly id: string;
   readonly route_code: string;
   readonly origin: string;
   readonly destination: string;
-  readonly departure_id: number | null;
+  readonly departure_id: string | null;
   readonly departs_at: string | null;
   readonly type: IncidentType;
   readonly description: string;
@@ -119,7 +119,7 @@ export interface TicketCheck {
 }
 
 export interface Schedule {
-  readonly id: number;
+  readonly id: string;
   /** 1 = lundi … 7 = dimanche. */
   readonly day_of_week: number;
   /** « 07:00 », heure de Dakar. */
@@ -131,7 +131,7 @@ export const NETWORKS = ['interurban', 'international', 'airport'] as const;
 export type Network = (typeof NETWORKS)[number];
 
 export interface Route {
-  readonly id: number;
+  readonly id: string;
   readonly code: string;
   readonly network: Network;
   readonly origin: Station;
@@ -149,7 +149,7 @@ export interface DeskBooking {
   readonly status: 'held' | 'confirmed' | 'released';
   readonly origin: string;
   readonly destination: string;
-  readonly departure_id: number;
+  readonly departure_id: string;
   readonly departs_at: string;
   readonly email: string;
   readonly phone: string;
@@ -165,7 +165,7 @@ export interface DeskBooking {
 
 /** Paiement mobile reçu après la revente des places : à rembourser à la main. */
 export interface Refund {
-  readonly id: number;
+  readonly id: string;
   readonly reference: string;
   readonly passengers: string;
   readonly email: string;
@@ -191,7 +191,7 @@ export interface StaffUserForm {
   full_name: string;
   phone: string | null;
   role: StaffRole;
-  station_id: number | null;
+  station_id: string | null;
   temporary_password?: string;
   active?: boolean;
 }
@@ -249,7 +249,8 @@ export interface ActivityRating {
 }
 
 export interface ActivitySummary {
-  readonly id: number;
+  /** Référence de l'activité (8 caractères), employée dans les adresses. */
+  readonly ref: string;
   readonly slug: string;
   readonly status: ActivityStatus;
   readonly title: string;
@@ -268,7 +269,7 @@ export interface ActivitySummary {
 }
 
 export interface ActivityOption {
-  readonly id: number;
+  readonly id: string;
   readonly title: string;
   readonly description: string | null;
   readonly price: string;
@@ -279,8 +280,49 @@ export interface ActivityOption {
   readonly active: boolean;
 }
 
+/** Langues des fiches : la langue de saisie (source) et ses traductions. */
+export const CONTENT_LANGS = ['fr', 'en'] as const;
+export type ContentLang = (typeof CONTENT_LANGS)[number];
+
+/** État d'une traduction : aucune, proposition de Claude attendue, à relire, appliquée, périmée (source modifiée), échec. */
+export type TranslationStatus = 'none' | 'pending' | 'proposed' | 'applied' | 'outdated' | 'failed';
+
+/** Textes d'une fiche dans une langue ; listes dans l'ordre de la source. */
+export interface ActivityTranslationContent {
+  title: string;
+  summary: string;
+  description: string;
+  highlights: string[];
+  includes: string[];
+  excludes: string[];
+  not_allowed: string[];
+  to_bring: string[];
+  know_before: string[];
+  itinerary: { name: string; description: string }[];
+  meeting_point: string;
+  image_alts: string[];
+  options: { id: string; title: string; description: string }[];
+}
+
+export interface ActivityTranslation {
+  readonly lang: ContentLang;
+  readonly source_lang: ContentLang;
+  readonly status: TranslationStatus;
+  readonly source: ActivityTranslationContent;
+  /** Appliquée : montrée sur le site. */
+  readonly content: ActivityTranslationContent | null;
+  /** Proposition de Claude à relire. */
+  readonly proposal: ActivityTranslationContent | null;
+  readonly applied_at: string | null;
+  readonly applied_by: string | null;
+  readonly proposed_at: string | null;
+  readonly ai_error: string | null;
+}
+
 /** Contenu modifiable d'une fiche (création et modification). */
 export interface ActivityForm {
+  /** Langue de saisie. */
+  lang: ContentLang;
   title: string;
   /** Vide : tirée du titre. */
   slug: string;
@@ -310,7 +352,8 @@ export interface ActivityForm {
 }
 
 export interface ActivityDetail extends Omit<ActivityForm, 'city_id' | 'slug'> {
-  readonly id: number;
+  readonly translations: readonly { readonly lang: ContentLang; readonly status: TranslationStatus }[];
+  readonly ref: string;
   readonly slug: string;
   readonly status: ActivityStatus;
   readonly city: ActivityCity;
@@ -334,8 +377,8 @@ export interface ActivityOptionForm {
 }
 
 export interface ActivitySlot {
-  readonly id: number;
-  readonly option_id: number;
+  readonly id: string;
+  readonly option_id: string;
   readonly starts_at: string;
   readonly capacity: number;
   readonly sold: number;
@@ -368,7 +411,7 @@ export type ActivityBookingStatus = (typeof ACTIVITY_BOOKING_STATUSES)[number];
 export interface ActivityBooking {
   readonly reference: string;
   readonly status: ActivityBookingStatus;
-  readonly activity_id: number;
+  readonly activity_ref: string;
   readonly activity_title: string;
   readonly option_title: string;
   readonly starts_at: string;
@@ -389,7 +432,7 @@ export interface ActivityBooking {
 }
 
 export interface ActivityRefund {
-  readonly id: number;
+  readonly id: string;
   readonly reference: string;
   readonly activity_title: string;
   readonly starts_at: string;
@@ -412,8 +455,8 @@ export interface ActivityRefund {
 
 export interface ActivityBookingDetail {
   readonly booking: ActivityBooking;
-  readonly slot_id: number;
-  readonly option_id: number;
+  readonly slot_id: string;
+  readonly option_id: string;
   readonly lang: string;
   readonly adult_price: string;
   readonly child_price: string | null;
@@ -435,15 +478,15 @@ export interface ActivityBookingDetail {
   readonly refunds: readonly ActivityRefund[];
   /** Encore remboursable (payé moins remboursé). */
   readonly refundable: string;
-  readonly review: { readonly id: number; readonly status: ReviewStatus; readonly rating: number } | null;
+  readonly review: { readonly id: string; readonly status: ReviewStatus; readonly rating: number } | null;
 }
 
 export const REVIEW_STATUSES = ['pending', 'approved', 'rejected'] as const;
 export type ReviewStatus = (typeof REVIEW_STATUSES)[number];
 
 export interface ActivityReview {
-  readonly id: number;
-  readonly activity_id: number;
+  readonly id: string;
+  readonly activity_ref: string;
   readonly activity_title: string;
   readonly reference: string;
   readonly rating: number;

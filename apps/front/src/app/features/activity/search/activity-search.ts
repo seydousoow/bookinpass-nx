@@ -2,7 +2,7 @@ import { Component, computed, inject } from '@angular/core';
 import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { map } from 'rxjs';
-import { TranslocoDirective } from '@jsverse/transloco';
+import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { Button, Pagination, Spinner } from 'components';
 import { ACTIVITY_CATEGORIES, IActivitySearch, TActivityCategory } from 'models';
 import { ActivityService } from '../activity.service';
@@ -42,7 +42,7 @@ const PAGE_SIZE = 12;
         <p class="mb-3 text-sm text-muted" role="status">{{ t('count', { count: page.total }) }}</p>
         @if (page.items.length) {
           <ul class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            @for (activity of page.items; track activity.id) {
+            @for (activity of page.items; track activity.ref) {
               <li><bip-activity-card [activity]="activity" /></li>
             }
           </ul>
@@ -67,9 +67,11 @@ export class ActivitySearch {
     initialValue: fromActivityQueryParams({}),
   });
   private readonly api = inject(ActivityService);
+  private readonly transloco = inject(TranslocoService);
   protected readonly results = rxResource({
-    params: () => this.search(),
-    stream: ({ params }) => this.api.search(params, PAGE_SIZE),
+    // Langue du site : titres des cartes relus dans cette langue.
+    params: () => ({ search: this.search(), lang: this.transloco.activeLang() }),
+    stream: ({ params }) => this.api.search(params.search, PAGE_SIZE),
   });
   protected readonly empty = computed(() => this.results.value()?.total === 0);
 

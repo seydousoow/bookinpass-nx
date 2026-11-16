@@ -78,18 +78,18 @@ export class RoutesPage {
   /** Tiroir « Nouvelle ligne ». */
   protected readonly creating = signal(false);
   /** Ligne ouverte dans le tiroir. */
-  protected readonly selectedId = signal<number | null>(null);
+  protected readonly selectedId = signal<string | null>(null);
   protected readonly selected = computed(() => this.list.value()?.find((r) => r.id === this.selectedId()) ?? null);
-  protected readonly origin = signal<number | null>(null);
-  protected readonly destination = signal<number | null>(null);
+  protected readonly origin = signal<string | null>(null);
+  protected readonly destination = signal<string | null>(null);
   protected readonly network = signal<Network>('interurban');
   protected readonly price = signal<number | null>(1000);
   protected readonly capacity = signal<number | null>(50);
   private readonly toasts = inject(Toasts);
   private readonly transloco = inject(TranslocoService);
   /** Brouillons d'édition par ligne, créés à la première saisie : une saisie en cours n'est pas écrasée au rechargement. */
-  private readonly edits = signal<Readonly<Record<number, RouteDraft>>>({});
-  private readonly schedules = signal<Readonly<Record<number, ScheduleDraft>>>({});
+  private readonly edits = signal<Readonly<Record<string, RouteDraft>>>({});
+  private readonly schedules = signal<Readonly<Record<string, ScheduleDraft>>>({});
 
   protected readonly grouped = (route: Route) => groupSchedules(route.schedules);
 

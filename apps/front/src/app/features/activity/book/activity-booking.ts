@@ -4,7 +4,7 @@ import { rxResource, takeUntilDestroyed, toSignal } from '@angular/core/rxjs-int
 import { DOCUMENT, ViewportScroller } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { catchError, finalize, forkJoin, map, of } from 'rxjs';
-import { TranslocoDirective } from '@jsverse/transloco';
+import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { Button, Spinner } from 'components';
 import { DatePipe, MoneyPipe } from 'pipes';
 import { loadContact, saveContact } from 'state';
@@ -67,23 +67,28 @@ export class ActivityBooking {
   protected readonly choice = computed(() => {
     const draft = this.draft();
     const activity = this.activity() ?? draft?.activity;
-    const slot = Number(this.slot() ?? draft?.slot);
+    const slot = this.slot() ?? draft?.slot;
     const date = this.date() ?? draft?.date;
     const adults = Number(this.adults() ?? draft?.adults ?? 1);
     const children = Number(this.children() ?? draft?.children ?? 0);
     const count = adults + children;
-    if (!activity || !Number.isInteger(slot) || !date || !Number.isInteger(adults) || !Number.isInteger(children) || adults < 0 || children < 0) {
+    if (!activity || !slot || !/^[A-Za-z0-9]{12,32}$/.test(slot) || !date || !Number.isInteger(adults) || !Number.isInteger(children) || adults < 0 || children < 0) {
       return null;
     }
     return count >= 1 && count <= MAX_PARTICIPANTS ? { activity, slot, date, adults, children } : null;
   });
   private readonly api = inject(ActivityService);
+  private readonly transloco = inject(TranslocoService);
   protected readonly methods = toSignal(this.api.paymentMethods().pipe(catchError(() => of({ card: true, methods: [] }))), {
     initialValue: { card: true, methods: [] } as IPaymentMethods,
   });
   /** L'activité et le créneau relus : titre, option, prix, places encore disponibles. */
   private readonly lookup = rxResource({
-    params: () => this.choice() ?? undefined,
+    params: () => {
+      const choice = this.choice();
+      // Langue du site : titre et option relus dans cette langue.
+      return choice ? { ...choice, lang: this.transloco.activeLang() } : undefined;
+    },
     stream: ({ params }) =>
       forkJoin({
         activity: this.api.detail(params.activity),

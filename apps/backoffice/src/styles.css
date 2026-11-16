@@ -1,4 +1,8 @@
 @import 'tailwindcss';
+/* Police Ubuntu, servie par le site lui-même (pas d'appel à Google Fonts) ; graisses 400, 500 et 700. */
+@import '@fontsource/ubuntu/400.css';
+@import '@fontsource/ubuntu/500.css';
+@import '@fontsource/ubuntu/700.css';
 /* Design du site : thème et règles de base de la bibliothèque components. */
 @import '../../../packages/components/src/styles/theme.css';
 @import '../../../packages/components/src/styles/base.css';
@@ -31,7 +35,7 @@
   --color-state-info: #315edb;
   --color-state-info-soft: #eaf0ff;
 
-  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-sans: 'Ubuntu', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 
   --radius-card: 12px;
   --radius-panel: 14px;

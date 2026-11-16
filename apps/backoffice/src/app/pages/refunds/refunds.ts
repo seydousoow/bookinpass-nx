@@ -17,7 +17,7 @@ type RefundKind = 'transport' | 'activities';
 /** Remboursement en cours de confirmation. */
 interface Marking {
   readonly kind: RefundKind;
-  readonly id: number;
+  readonly id: string;
   readonly reference: string;
   readonly amount: string;
   readonly customer: string;
@@ -67,7 +67,7 @@ export class RefundsPage {
       : (this.activityList.value() ?? []).filter((r) => r.status !== 'refunded').length;
   }
 
-  protected askMark(kind: RefundKind, id: number, reference: string, amount: string, customer: string): void {
+  protected askMark(kind: RefundKind, id: string, reference: string, amount: string, customer: string): void {
     this.action.error.set(null);
     this.note.set('');
     this.marking.set({ kind, id, reference, amount, customer });
@@ -91,7 +91,7 @@ export class RefundsPage {
     });
   }
 
-  protected retryActivity(id: number): void {
+  protected retryActivity(id: string): void {
     this.action.run(this.api.retryActivityRefund(id), () => this.activityList.reload());
   }
 }

@@ -33,7 +33,7 @@
       <bip-select
         (valueChange)="chooseActivity($event[0] ?? null)"
         [options]="activityOptions()"
-        [value]="activityId() === null ? [] : [activityId()!]"
+        [value]="activityRef() === null ? [] : [activityRef()!]"
         class="pb-2 sm:w-64"
         label="reviews.activity"
         name="review-activity"

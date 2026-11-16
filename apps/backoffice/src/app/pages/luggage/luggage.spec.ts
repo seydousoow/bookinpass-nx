@@ -5,7 +5,7 @@ import { LuggagePage } from './luggage';
 
 const BAG: Luggage = {
   code: 'BG234567',
-  departure_id: 3,
+  departure_id: '3',
   origin: 'Dakar',
   destination: 'Thiès',
   departs_at: '2026-10-25T07:00:00Z',

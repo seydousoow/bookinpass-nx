@@ -60,9 +60,10 @@ export class ActivityDetails {
   private readonly locale = inject(TranslocoLocaleService);
   private readonly document = inject(DOCUMENT);
 
+  /** Rechargée quand la langue du site change : le serveur sert la fiche dans cette langue (sa source à défaut). */
   protected readonly activity = rxResource({
-    params: () => this.slug(),
-    stream: ({ params }) => this.api.detail(params).pipe(tap((activity) => this.title.setTitle(`${activity.title} — Book In Pass`))),
+    params: () => ({ slug: this.slug(), lang: this.transloco.activeLang() }),
+    stream: ({ params }) => this.api.detail(params.slug).pipe(tap((activity) => this.title.setTitle(`${activity.title} — Book In Pass`))),
   });
   protected readonly notFound = computed(() => {
     const error = this.activity.error();

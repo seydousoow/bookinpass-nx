@@ -9,6 +9,7 @@ import {
   IActivityCard,
   IActivityDestination,
   IActivityDetail,
+  IActivityPlace,
   IActivityReview,
   IActivityReviewForm,
   IActivitySearch,
@@ -27,7 +28,7 @@ export interface IActivityHold {
 export interface IActivityHoldRequest {
   /** Choisi avant l'envoi et rejoué tel quel : un nouvel essai retrouve la même réservation. */
   readonly request_id: string;
-  readonly slot_id: number;
+  readonly slot_id: string;
   readonly adults: number;
   readonly children: number;
   readonly given_name: string;
@@ -41,17 +42,30 @@ export interface IActivityHoldRequest {
 @Injectable({ providedIn: 'root' })
 export class ActivityService {
   private readonly http = inject(HttpClient);
-  private readonly url = `${inject(APP_CONFIG).apiBaseUrl}/activities`;
+  private readonly apiBaseUrl = inject(APP_CONFIG).apiBaseUrl;
+  private readonly url = `${this.apiBaseUrl}/activities`;
   private readonly transloco = inject(TranslocoService);
 
   destinations(): Observable<IActivityDestination[]> {
     return this.http.get<IActivityDestination[]>(`${this.url}/destinations`);
   }
 
+  /** Nom d'une ville (GeoNames), pour réafficher le lieu d'une recherche. */
+  city(id: number): Observable<{ id: number; name: string; countryCode: string }> {
+    return this.http.get<{ id: number; name: string; countryCode: string }>(`${this.apiBaseUrl}/stays/destinations/${id}`);
+  }
+
+  /** Villes et pays qui ont des activités, pour une saisie de 2 caractères au moins. */
+  places(query: string): Observable<IActivityPlace[]> {
+    return this.http.get<IActivityPlace[]>(`${this.url}/places`, { params: { q: query } });
+  }
+
   search(search: IActivitySearch, size = 12): Observable<IPage<IActivityCard>> {
     const params: Record<string, string | number> = { page: search.page, size };
     if (search.city_id !== null) {
       params['city_id'] = search.city_id;
+    } else if (search.country) {
+      params['country'] = search.country;
     }
     if (search.category) {
       params['category'] = search.category;
@@ -83,7 +97,7 @@ export class ActivityService {
     return this.http.get<IPage<IActivityReview>>(`${this.url}/${encodeURIComponent(slug)}/reviews`, { params });
   }
 
-  markHelpful(id: number): Observable<void> {
+  markHelpful(id: string): Observable<void> {
     return this.http.post<void>(`${this.url}/reviews/${id}/helpful`, null);
   }
 

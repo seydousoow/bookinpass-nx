@@ -389,7 +389,8 @@
     "invalid-image-url": "Give a public HTTPS address.",
     "image-download-failed": "The photo could not be downloaded from this address.",
     "image-upload-failed": "The photo could not be stored on the CDN. Try again.",
-    "images-unavailable": "Photo storage is not configured on the server."
+    "images-unavailable": "Photo storage is not configured on the server.",
+    "invalid-language": "Choose a language other than the listing's own."
   },
   "bookings": {
     "title": "Transport bookings",
@@ -525,6 +526,7 @@
     "no-match": "No matching activities",
     "no-match-hint": "Try another title, city or status.",
     "columns": {
+      "ref": "Ref.",
       "activity": "Activity",
       "category": "Category",
       "availability": "Availability",
@@ -616,7 +618,7 @@
       "description": "Write the description.",
       "meeting-point": "Give the meeting point.",
       "duration": "Give the duration.",
-      "location": "Give both latitude and longitude, or neither.",
+      "location": "Give the activity's latitude and longitude: the city search relies on them.",
       "images": "Each photo needs an https:// address.",
       "itinerary": "Each stop needs a name."
     },
@@ -663,7 +665,48 @@
     },
     "archive-title": "Archive this activity?",
     "archive-confirm": "It will be removed from the site. Existing bookings are not cancelled.",
-    "step-of": "Step {{step}} of {{total}}"
+    "step-of": "Step {{step}} of {{total}}",
+    "translation": {
+      "view": "Shown language",
+      "source-lang": "Writing language",
+      "source-hint": "Other languages are translated by Claude, then reviewed here.",
+      "langs": {
+        "fr": "French",
+        "en": "English"
+      },
+      "source": "source",
+      "statuses": {
+        "none": "No translation",
+        "pending": "Translating",
+        "proposed": "To review",
+        "applied": "Applied",
+        "outdated": "Needs update",
+        "failed": "Translation failed"
+      },
+      "hints": {
+        "none": "No translation: visitors in this language see the listing in its writing language. Have Claude translate it, or type it in.",
+        "pending": "Claude is preparing a proposal (a few minutes after the listing changed). Reload the page, or ask for it now.",
+        "proposed": "Claude proposed a translation: review it, fix it if needed, then apply it to show it on the site.",
+        "applied": "This translation is shown on the site to visitors in this language.",
+        "outdated": "The listing changed since: the translation on the site is out of date. Have it translated again or fix it.",
+        "failed": "Claude could not translate the listing. Try again, or type the translation in."
+      },
+      "title": "{{lang}} version (translated from {{source}})",
+      "compare": "Show the source alongside",
+      "translate": "Translate with Claude",
+      "retranslate": "New proposal from Claude",
+      "applied-meta": "Applied on {{time}} by {{by}}",
+      "editing": "You are editing {{what}}.",
+      "the-proposal": "Claude's proposal",
+      "the-applied": "the applied translation",
+      "show-applied": "Show the applied translation",
+      "show-proposal": "Show the proposal",
+      "incomplete": "Title, summary, description and meeting point are required.",
+      "apply": "Apply the translation",
+      "applied": "Translation applied",
+      "option-title": "Option title",
+      "option-description": "Option description"
+    }
   },
   "options": {
     "title": "Options and prices",

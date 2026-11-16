@@ -41,6 +41,7 @@
       <table class="bo-table">
         <thead>
           <tr>
+            <th scope="col">{{ t('activities.columns.ref') }}</th>
             <th scope="col">{{ t('activities.columns.activity') }}</th>
             <th scope="col">{{ t('activities.columns.category') }}</th>
             <th scope="col">{{ t('activities.status') }}</th>
@@ -50,8 +51,9 @@
           </tr>
         </thead>
         <tbody>
-          @for (a of shown(); track a.id) {
-            <tr (click)="open(a.id)" data-clickable>
+          @for (a of shown(); track a.ref) {
+            <tr (click)="open(a.ref)" data-clickable>
+              <td [attr.data-label]="t('activities.columns.ref')" class="font-mono text-xs whitespace-nowrap">{{ a.ref }}</td>
               <td class="bo-cell-main">
                 <span class="flex items-center gap-3">
                   <span class="size-12 shrink-0 overflow-hidden rounded-button bg-surface-muted">
@@ -64,7 +66,7 @@
                   <span class="min-w-0">
                     <a
                       (click)="$event.stopPropagation()"
-                      [routerLink]="['/activities', a.id]"
+                      [routerLink]="['/activities', a.ref]"
                       class="bip-focusable block truncate rounded-[4px] font-semibold text-ink hover:text-brand-primary"
                       >{{ a.title }}</a
                     >

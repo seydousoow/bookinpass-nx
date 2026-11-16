@@ -3,7 +3,7 @@ import { StaffUser } from '../../core/models';
 import { button, get, optionsOf, pick, renderPage, staffApiMock, staffUser, STATIONS, type } from '../../../testing';
 import { needsStation, StaffPage } from './staff';
 
-const COLLEAGUE: StaffUser = { ...staffUser('inspector'), id: 2, username: 'moussa', full_name: 'Moussa Fall' };
+const COLLEAGUE: StaffUser = { ...staffUser('inspector'), id: '2', username: 'moussa', full_name: 'Moussa Fall' };
 
 describe('StaffPage', () => {
   const open = (user = staffUser('admin'), overrides: Parameters<typeof staffApiMock>[0] = {}) => {
@@ -40,7 +40,7 @@ describe('StaffPage', () => {
   });
 
   it('crée un compte avec un mot de passe provisoire affiché une fois', async () => {
-    const created = { ...COLLEAGUE, id: 3, username: 'fatou' };
+    const created = { ...COLLEAGUE, id: '3', username: 'fatou' };
     const { element, fixture, stable, api } = await openCreate(await open(staffUser('admin'), { createUser: () => of(created) }));
     const form = get(element, 'form');
     const [username, fullName] = [...form.querySelectorAll<HTMLInputElement>('bip-input input')];
@@ -60,7 +60,7 @@ describe('StaffPage', () => {
     await stable();
     expect(element.querySelector('[role="alert"]')?.textContent).toContain('errors.station-required');
 
-    pick(fixture, 1, 2);
+    pick(fixture, 1, '2');
     await stable();
     button(element, 'staff.create').click();
     await stable();
@@ -70,7 +70,7 @@ describe('StaffPage', () => {
         full_name: 'Fatou Sow',
         phone: null,
         role: 'inspector',
-        station_id: 2,
+        station_id: '2',
         temporary_password: expect.stringMatching(/^[A-Za-z2-9]{12}$/),
       }),
     );
@@ -90,7 +90,7 @@ describe('StaffPage', () => {
     await stable();
     button(element, 'common.save').click();
     await stable();
-    expect(api.updateUser).toHaveBeenCalledWith(2, { full_name: 'Moussa Fall Ndiaye', phone: null, role: 'inspector', station_id: 1, active: false });
+    expect(api.updateUser).toHaveBeenCalledWith('2', { full_name: 'Moussa Fall Ndiaye', phone: null, role: 'inspector', station_id: '1', active: false });
   });
 
   it('donne un nouveau mot de passe provisoire', async () => {
@@ -100,7 +100,7 @@ describe('StaffPage', () => {
     expect(api.resetPassword).not.toHaveBeenCalled();
     button(element, 'staff.reset-confirm').click();
     await stable();
-    expect(api.resetPassword).toHaveBeenCalledWith(2, expect.stringMatching(/^[A-Za-z2-9]{12}$/));
+    expect(api.resetPassword).toHaveBeenCalledWith('2', expect.stringMatching(/^[A-Za-z2-9]{12}$/));
     expect(element.querySelector('[role="status"]')?.textContent).toContain('staff.issued');
   });
 });

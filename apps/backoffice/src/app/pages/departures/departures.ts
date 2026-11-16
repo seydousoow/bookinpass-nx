@@ -41,7 +41,7 @@ export interface StationDepartures {
 
 /** Départs regroupés par gare de départ, gares dans l'ordre alphabétique de leur ville. */
 export function byOrigin(departures: readonly Departure[]): StationDepartures[] {
-  const groups = new Map<number, Departure[]>();
+  const groups = new Map<string, Departure[]>();
   for (const d of departures) {
     groups.set(d.origin.id, [...(groups.get(d.origin.id) ?? []), d]);
   }
@@ -66,7 +66,7 @@ export function byOrigin(departures: readonly Departure[]): StationDepartures[] 
 export class DeparturesPage {
   protected readonly session = inject(Session);
   protected readonly date = signal<string | null>(dakarToday());
-  protected readonly station = signal<number | null>(null);
+  protected readonly station = signal<string | null>(null);
   protected readonly stations = stationOptions(injectStations(), { all: true });
   protected readonly time = dakarTime;
   protected readonly percent = percent;
@@ -92,13 +92,13 @@ export class DeparturesPage {
   });
   protected readonly groups = computed(() => byOrigin(this.departures.value() ?? []));
   /** Gares ouvertes dans l'accordéon ; une seule gare : ouverte d'office. */
-  private readonly opened = signal<ReadonlySet<number>>(new Set());
+  private readonly opened = signal<ReadonlySet<string>>(new Set());
 
-  protected isOpen(station: number): boolean {
+  protected isOpen(station: string): boolean {
     return this.groups().length === 1 || this.opened().has(station);
   }
 
-  protected toggle(station: number, open: boolean): void {
+  protected toggle(station: string, open: boolean): void {
     this.opened.update((all) => {
       const next = new Set(all);
       if (open) {

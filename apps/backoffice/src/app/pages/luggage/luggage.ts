@@ -31,7 +31,7 @@ export class LuggagePage {
   protected readonly action = createAction();
   protected readonly codeLength = LUGGAGE_CODE_LENGTH;
   protected readonly date = signal<string | null>(dakarToday());
-  protected readonly station = signal<number | null>(null);
+  protected readonly station = signal<string | null>(null);
   protected readonly stations = stationOptions(injectStations(), { all: true });
   protected readonly found = signal<Luggage | null>(null);
   protected readonly code = signal<string | null>('');

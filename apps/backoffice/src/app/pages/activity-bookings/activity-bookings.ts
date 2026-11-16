@@ -44,23 +44,23 @@ export class ActivityBookingsPage {
   protected readonly statusOptions = translatedOptions(ACTIVITY_BOOKING_STATUSES, 'activity-bookings.statuses.');
   protected readonly query = signal<string | null>('');
   protected readonly status = signal<ActivityBookingStatus | null>(null);
-  protected readonly activityId = signal<number | null>(null);
+  protected readonly activityRef = signal<string | null>(null);
   protected readonly from = signal<string | null>(null);
   protected readonly to = signal<string | null>(null);
   protected readonly page = signal(1);
   protected readonly activeFilters = computed(
-    () => Number(!!this.query()?.trim()) + Number(this.status() !== null) + Number(this.activityId() !== null) + Number(!!this.from()) + Number(!!this.to()),
+    () => Number(!!this.query()?.trim()) + Number(this.status() !== null) + Number(this.activityRef() !== null) + Number(!!this.from()) + Number(!!this.to()),
   );
   private readonly api = inject(StaffApi);
   private readonly activities = rxResource({ stream: () => this.api.activities() });
-  protected readonly activityOptions = computed((): ISelectOption<number>[] => (this.activities.value() ?? []).map((a) => ({ value: a.id, label: a.title })));
+  protected readonly activityOptions = computed((): ISelectOption<string>[] => (this.activities.value() ?? []).map((a) => ({ value: a.ref, label: a.title })));
   /** La saisie du texte attend une pause avant d'interroger le serveur. */
   private readonly text = toSignal(toObservable(this.query).pipe(debounceTime(300)), { initialValue: '' });
   protected readonly list = rxResource({
     params: () => ({
       q: (this.text() ?? '').trim(),
       status: this.status() ?? '',
-      activity_id: this.activityId(),
+      activity_ref: this.activityRef(),
       from: this.from() ?? '',
       to: this.to() ?? '',
       page: this.page() - 1,
@@ -76,7 +76,7 @@ export class ActivityBookingsPage {
   protected resetFilters(): void {
     this.query.set('');
     this.status.set(null);
-    this.activityId.set(null);
+    this.activityRef.set(null);
     this.from.set(null);
     this.to.set(null);
     this.page.set(1);
